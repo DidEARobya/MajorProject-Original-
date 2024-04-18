@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Animations;
 
 public class Path_AStar
 {
@@ -14,7 +15,7 @@ public class Path_AStar
         {
             return;
         }
-
+        
         if(world.pathGraph == null)
         {
             world.pathGraph = new Path_TileGraph(world);
@@ -23,8 +24,6 @@ public class Path_AStar
         Node startNode = start.pathNode;
         Node endNode = end.pathNode;
 
-        Node[,] nodes = world.pathGraph.nodes;
-
         List<Node> closedSet = new List<Node>();
 
         SimplePriorityQueue<Node> openSet = new SimplePriorityQueue<Node>();
@@ -32,55 +31,36 @@ public class Path_AStar
 
         Dictionary<Node, Node> cameFrom = new Dictionary<Node, Node>();
 
-        Dictionary<Node, float> gScore = new Dictionary<Node, float>();
-
-        foreach(Node node in nodes)
-        {
-            gScore[node] = Mathf.Infinity;
-        }
-
-        Dictionary<Node, float> fScore = new Dictionary<Node, float>();
-
-        foreach (Node node in nodes)
-        {
-            fScore[node] = Mathf.Infinity;
-        }
-
-        fScore[nodes[startNode.x, startNode.y]] = HeuristicCostEstimate(nodes[startNode.x, startNode.y], nodes[endNode.x, endNode.y]);
-
         while(openSet.Count > 0)
         {
             Node current = openSet.Dequeue();
+            closedSet.Add(current);
 
-            if(current == endNode)
+            if (current == endNode)
             {
                 ReconstructPath(cameFrom, current);
                 return;
             }
 
-            closedSet.Add(current);
-
-            foreach(Edge neighbour in current.edges)
+            foreach(Node neighbour in current.neighbours)
             {
-                if(closedSet.Contains(neighbour.node) == true)
+                if(closedSet.Contains(neighbour) == true)
                 {
                     continue;
                 }
 
-                float tentativeGScore = gScore[current] + DistanceBetween(current, neighbour.node, neighbour);
+                float tentativeGScore = current.gCost + DistanceBetween(current, neighbour);
 
-                if(openSet.Contains(neighbour.node) == true && tentativeGScore >= gScore[neighbour.node])
+                if(tentativeGScore < neighbour.gCost || openSet.Contains(neighbour) == false)
                 {
-                    continue;
-                }
+                    neighbour.gCost = tentativeGScore;
+                    neighbour.hCost = DistanceBetween(neighbour, endNode);
+                    cameFrom[neighbour] = current;
 
-                cameFrom[neighbour.node] = current;
-                gScore[neighbour.node] = tentativeGScore;
-                fScore[neighbour.node] = gScore[neighbour.node] + HeuristicCostEstimate(neighbour.node, endNode);
-
-                if(openSet.Contains(neighbour.node) == false)
-                {
-                    openSet.Enqueue(neighbour.node, fScore[neighbour.node]);
+                    if (openSet.Contains(neighbour) == false)
+                    {
+                        openSet.Enqueue(neighbour, neighbour.fCost);
+                    }
                 }
             }
         }
@@ -90,46 +70,53 @@ public class Path_AStar
 
     void ReconstructPath(Dictionary<Node, Node> cameFrom, Node current)
     {
-        Queue<INodeData> totalPath = new Queue<INodeData>();
-        totalPath.Enqueue(current.data);
+        List<INodeData> totalPath = new List<INodeData>();
+        totalPath.Add(current.data);
 
-        while(cameFrom.ContainsKey(current))
+        while (cameFrom.ContainsKey(current))
         {
             current = cameFrom[current];
-            totalPath.Enqueue(current.data);
+            totalPath.Add(current.data);
         }
 
-        path = new Queue<INodeData>(totalPath.Reverse());
+        path = new Queue<INodeData>(SimplifyPath(totalPath).Reverse());
     }
-    float HeuristicCostEstimate(Node start, Node goal)
+    Queue<INodeData> SimplifyPath(List<INodeData> path)
     {
-        return Mathf.Sqrt(Mathf.Pow(goal.x - start.x, 2) + Mathf.Pow(goal.y - start.y, 2));
-    }
-    float DistanceBetween(Node start, Node goal, Edge edge)
-    {
-        int x1 = start.x;
-        int y1 = start.y;
+        Queue<INodeData> waypoints = new Queue<INodeData>();
+        Vector2 oldDir = Vector2.zero;
 
-        int x2 = goal.x;
-        int y2 = goal.y;
+        for(int i = 1; i < path.Count; i++)
+        {
+            Vector2 newDir = new Vector2(path[i - 1].GetTile().x - path[i].GetTile().x, path[i - 1].GetTile().y - path[i].GetTile().y);
+
+            if(newDir != oldDir)
+            {
+                waypoints.Enqueue(path[i - 1]);
+            }
+
+            oldDir = newDir;
+        }
+
+        return waypoints;
+    }
+    float DistanceBetween(Node start, Node goal)
+    {
+        int distX = Mathf.Abs(start.x - goal.x);
+        int distY = Mathf.Abs(start.y - goal.y);
 
         float val = 0;
 
-        if (Mathf.Abs(x2 - x1) + Mathf.Abs(y2 - y1) == 1)
+        if(distX > distY)
         {
-            val += 1;
-        }
-        else if (Mathf.Abs(x2 - x1) == 1 && Mathf.Abs(y2 - y1) == 1)
-        {
-            val += 1.41421356237f;
+            val += 14 * distY + 10 * (distX -  distY);
         }
         else
         {
-            val += Mathf.Pow(goal.x - start.x, 2) + Mathf.Pow(goal.y - start.y, 2);
+            val += 14 * distX + 10 * (distY - distX);
         }
 
-        return val * edge.cost;
-        //x1 == x2 + 1 || x1 == x2 - 1 && Mathf.Abs(x2 - x1) == 1 && Mathf.Abs(y2 - y1) == 1
+        return val * goal.data.GetCost();
     }
     public Tile DequeueNextTile()
     {
@@ -150,3 +137,17 @@ public class Path_AStar
         return path.Count;
     }
 }
+
+/*void ReconstructPath(Dictionary<Node, Node> cameFrom, Node current)
+{
+    Queue<INodeData> totalPath = new Queue<INodeData>();
+    totalPath.Enqueue(current.data);
+
+    while(cameFrom.ContainsKey(current))
+    {
+        current = cameFrom[current];
+        totalPath.Enqueue(current.data);
+    }
+
+    path = new Queue<INodeData>(totalPath.Reverse());
+}*/

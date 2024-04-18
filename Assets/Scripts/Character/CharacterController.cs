@@ -64,7 +64,8 @@ public class CharacterController
             activeTask.DoWork(deltaTime);
         }
     }
-    void Move(float deltaTime)
+
+    void FindPath(float deltaTime)
     {
         if (currentTile == destinationTile)
         {
@@ -72,13 +73,13 @@ public class CharacterController
             return;
         }
 
-        if(nextTile == null || nextTile == currentTile)
+        if (nextTile == null || nextTile == currentTile)
         {
-            if(pathFinder == null || pathFinder.Length() == 0)
+            if (pathFinder == null || pathFinder.Length() == 0)
             {
                 pathFinder = new Path_AStar(GameManager.GetWorldController().worldGrid, currentTile, destinationTile);
 
-                if(pathFinder.Length() == 0)
+                if (pathFinder.Length() == 0)
                 {
                     Debug.Log("Return no path");
                     CancelTask();
@@ -89,7 +90,7 @@ public class CharacterController
 
             nextTile = pathFinder.DequeueNextTile();
 
-            if(nextTile == null)
+            if (nextTile == null)
             {
                 return;
             }
@@ -117,7 +118,7 @@ public class CharacterController
     public void Update(float deltaTime)
     {
         Work(deltaTime);
-        Move(deltaTime);
+        FindPath(deltaTime);
     }
     public void SetDestination(Tile tile)
     {
