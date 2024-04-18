@@ -19,16 +19,7 @@ public class Path_TileGraph
 
         foreach (Node node in nodes)
         {
-            List<Node> neighbours = GetNeighbourNodes(node);
-            List<Edge> edges = new List<Edge>();
-
-            for(int i = 0; i < neighbours.Count; i++)
-            {
-                Edge edge = new Edge(neighbours[i], neighbours[i].data.GetCost());
-                edges.Add(edge);
-            }
-
-            node.edges = edges.ToArray();
+            node.neighbours = GetNeighbourNodes(node).ToArray();
         }
     }
 
@@ -37,49 +28,25 @@ public class Path_TileGraph
     {
         List<Node> neighbours = new List<Node>();
 
-        int x = node.x;
-        int y = node.y;
-
         int length = nodes.GetLength(0);
 
-        if((x + 1 < length) && nodes[x + 1, y] != null)
+        for(int x = -1; x <= 1;  x++)
         {
-            neighbours.Add(nodes[x + 1, y]);
-        }
+            for (int y = -1; y <= 1; y++)
+            {
+                if(x == 0 && y == 0)
+                {
+                    continue;
+                }
 
-        if ((x + 1 < length) && (y + 1 < length) && nodes[x + 1, y + 1] != null)
-        {
-            neighbours.Add(nodes[x + 1, y + 1]);
-        }
+                int checkX = node.x + x;
+                int checkY = node.y + y;
 
-        if ((y + 1 < length) && nodes[x, y + 1] != null)
-        {
-            neighbours.Add(nodes[x, y + 1]);
-        }
-
-        if ((x - 1 >= 0) && (y + 1 < length) && nodes[x - 1, y + 1] != null)
-        {
-            neighbours.Add(nodes[x - 1, y + 1]);
-        }
-
-        if ((x - 1 >= 0) && nodes[x - 1, y] != null)
-        {
-            neighbours.Add(nodes[x - 1, y]);
-        }
-
-        if ((x - 1 >= 0) && (y - 1 >= 0) && nodes[x - 1, y - 1] != null)
-        {
-            neighbours.Add(nodes[x - 1, y - 1]);
-        }
-
-        if ((y - 1 >= 0) && nodes[x, y - 1] != null)
-        {
-            neighbours.Add(nodes[x, y - 1]);
-        }
-
-        if ((x + 1 < length) && (y - 1 >= 0) && nodes[x + 1, y - 1] != null)
-        {
-            neighbours.Add(nodes[x + 1, y - 1]);
+                if(checkX >= 0 && checkX < length && checkY >= 0 && checkY < length)
+                {
+                    neighbours.Add(nodes[checkX, checkY]);
+                }
+            }
         }
 
         return neighbours;
@@ -90,8 +57,15 @@ public class Node
     public int x;
     public int y;
 
+    public float gCost;
+    public float hCost;
+    public float fCost
+    {
+        get { return gCost + hCost; }
+    }
+
     public INodeData data;
-    public Edge[] edges;
+    public Node[] neighbours;
 
     public Node(INodeData _data, int _x, int _y)
     {
@@ -100,16 +74,5 @@ public class Node
         y = _y;
 
         data.SetNode(this);
-    }
-}
-public class Edge
-{
-    public Node node;
-    public float cost;
-
-    public Edge(Node _node,  float _cost)
-    {
-        node = _node;
-        cost = _cost;
     }
 }
