@@ -48,11 +48,21 @@ public class InstalledObject
     public void Install()
     {
         isInstalled = true;
+        baseTile.isPendingTask = false;
+        baseTile.isPlayerWalkable = false;
+        GameManager.GetWorldController().worldGrid.InvalidatePathGraph();
 
         if(updateObjectCallback != null)
         {
             updateObjectCallback(this);
         }
+    }
+    public void UnInstall()
+    {
+        GameManager.GetWorldController().worldGrid.InvalidatePathGraph();
+        GameManager.GetInstalledSpriteController().Uninstall(this);
+        baseTile.UninstallObject();
+        MonoBehaviour.Destroy(gameObject);
     }
     public void AddOnUpdateCallback(Action<InstalledObject> callback)
     {
@@ -72,7 +82,7 @@ public class InstalledObjectTypes
     protected readonly int width = 1;
     protected readonly int height = 1;
 
-    public static readonly InstalledObjectTypes WALL = new InstalledObjectTypes(InstalledObjectType.WALL, 9999);
+    public static readonly InstalledObjectTypes WALL = new InstalledObjectTypes(InstalledObjectType.WALL, 100);
     protected InstalledObjectTypes(InstalledObjectType _type, int _movementCost)
     {
         type = _type;

@@ -17,7 +17,8 @@ public enum BuildMode
 {
     FLOOR,
     OBJECT,
-    CLEAR
+    CLEAR,
+    DESTROY
 }
 public class MouseController : MonoBehaviour
 {
@@ -87,16 +88,23 @@ public class MouseController : MonoBehaviour
 
         if (Input.GetKeyUp(KeyCode.Alpha0))
         {
+            Debug.Log("ClearMode");
             buildMode = BuildMode.CLEAR;
         }
         if (Input.GetKeyUp(KeyCode.Alpha1))
         {
+            Debug.Log("FloorMode");
             buildMode = BuildMode.FLOOR;
         }
         if(Input.GetKeyUp(KeyCode.Alpha2))
         {
-            Debug.Log("ObjectMOde");
+            Debug.Log("ObjectMode");
             buildMode = BuildMode.OBJECT;
+        }
+        if (Input.GetKeyUp(KeyCode.Alpha3))
+        {
+            Debug.Log("DestroyMode");
+            buildMode = BuildMode.DESTROY;
         }
 
         UpdateMousePos();

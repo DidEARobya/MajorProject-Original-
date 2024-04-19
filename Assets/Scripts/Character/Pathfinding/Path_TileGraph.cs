@@ -23,7 +23,6 @@ public class Path_TileGraph
         }
     }
 
-    
     List<Node> GetNeighbourNodes(Node node)
     {
         List<Node> neighbours = new List<Node>();
@@ -44,12 +43,36 @@ public class Path_TileGraph
 
                 if(checkX >= 0 && checkX < length && checkY >= 0 && checkY < length)
                 {
-                    neighbours.Add(nodes[checkX, checkY]);
+                    if(nodes[checkX, checkY].data.GetTile().isPlayerWalkable == true && isClippingCorner(node, nodes[checkX, checkY]) == false)
+                    {
+                        neighbours.Add(nodes[checkX, checkY]);
+                    }
                 }
             }
         }
 
         return neighbours;
+    }
+
+    bool isClippingCorner(Node current, Node neighbour)
+    {
+        int dirX = current.x - neighbour.x;
+        int dirY = current.y - neighbour.y;
+
+        if(Mathf.Abs(dirX) + Mathf.Abs(dirY) == 2)
+        {
+            if(nodes[current.x - dirX, current.y].data.GetTile().isPlayerWalkable == false)
+            {
+                return true;
+            }
+
+            if (nodes[current.x, current.y - dirY].data.GetTile().isPlayerWalkable == false)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
 public class Node
@@ -62,6 +85,10 @@ public class Node
     public float fCost
     {
         get { return gCost + hCost; }
+    }
+    public int movementCost
+    {
+        get { return Mathf.FloorToInt(data.GetCost()); }
     }
 
     public INodeData data;

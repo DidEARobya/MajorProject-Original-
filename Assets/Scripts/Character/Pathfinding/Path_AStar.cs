@@ -9,14 +9,16 @@ public class Path_AStar
 {
     Queue<INodeData> path = new Queue<INodeData>();
 
-    public Path_AStar(WorldGrid world, Tile start, Tile end)
+    public Path_AStar(Tile start, Tile end)
     {
         if(start == null || end == null)
         {
             return;
         }
-        
-        if(world.pathGraph == null)
+
+        WorldGrid world = GameManager.GetWorldController().worldGrid;
+
+        if (world.pathGraph == null)
         {
             world.pathGraph = new Path_TileGraph(world);
         }
@@ -61,11 +63,13 @@ public class Path_AStar
                     {
                         openSet.Enqueue(neighbour, neighbour.fCost);
                     }
+                    else
+                    {
+                        openSet.UpdatePriority(neighbour, neighbour.fCost);
+                    }
                 }
             }
         }
-
-        Debug.Log("No Path Found");
     }
 
     void ReconstructPath(Dictionary<Node, Node> cameFrom, Node current)
@@ -116,7 +120,7 @@ public class Path_AStar
             val += 14 * distX + 10 * (distY - distX);
         }
 
-        return val * goal.data.GetCost();
+        return val + goal.movementCost;
     }
     public Tile DequeueNextTile()
     {

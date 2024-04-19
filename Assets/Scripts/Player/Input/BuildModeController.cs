@@ -31,7 +31,7 @@ public class BuildModeController : MonoBehaviour
 
                 if (Input.GetMouseButtonUp(0))
                 {
-                    if (tile != null && tile.isPendingTask == false)
+                    if (tile != null && tile.GetInstalledObject() == null && tile.isPendingTask == false)
                     {
                         grid.InstallObject(InstalledObjectTypes.WALL, tile);
                         InstalledObject obj = tile.GetInstalledObject();
@@ -51,6 +51,15 @@ public class BuildModeController : MonoBehaviour
             case BuildMode.CLEAR:
 
                 tile.SetFloorType(FloorTypes.NONE);
+                break;
+
+            case BuildMode.DESTROY:
+
+                if(tile.GetInstalledObject() != null && tile.GetInstalledObject().isInstalled == true)
+                {
+                    tile.GetInstalledObject().UnInstall();
+                }
+
                 break;
         }    
     }
