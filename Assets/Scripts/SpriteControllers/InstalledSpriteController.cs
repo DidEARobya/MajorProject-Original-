@@ -66,4 +66,9 @@ public class InstalledSpriteController : MonoBehaviour
             renderer.sortingLayerName = "Walls";
         }
     }
+
+    public void Uninstall(InstalledObject obj)
+    {
+        installedObjects.Remove(obj);
+    }
 }

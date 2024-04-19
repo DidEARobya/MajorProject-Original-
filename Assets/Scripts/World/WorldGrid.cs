@@ -75,7 +75,6 @@ public class WorldGrid
 
         if(installObjectCallback != null)
         {
-            InvalidatePathGraph();
             installObjectCallback(obj);
         }
     }
@@ -94,6 +93,11 @@ public class WorldGrid
     }
     public void InvalidatePathGraph()
     {
+        foreach(CharacterController character in  characters)
+        {
+            character.ignoredTasks.Clear();
+        }
+
         pathGraph = null;
     }
     public void SetInstallObjectCallback(Action<InstalledObject> callback)

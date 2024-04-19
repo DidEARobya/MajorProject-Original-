@@ -34,6 +34,8 @@ public class Tile : INodeData
     Action<Tile> tileChangedCallback;
 
     public bool isPendingTask = false;
+    public bool isPlayerWalkable = true;
+    public bool isEnemyWalkable = true;
 
     public Tile(WorldGrid grid, int _x, int _y)
     {
@@ -102,6 +104,12 @@ public class Tile : INodeData
     public InstalledObject GetInstalledObject()
     {
         return installedObject;
+    }
+    public void UninstallObject()
+    {
+        installedObject = null;
+        isPlayerWalkable = true;
+        isEnemyWalkable = true;
     }
     public int GetCost()
     {

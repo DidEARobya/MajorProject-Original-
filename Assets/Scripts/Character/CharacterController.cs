@@ -20,12 +20,14 @@ public class CharacterController
     public Tile nextTile;
     public Tile destinationTile;
 
-    Path_AStar pathFinder;
+    public Path_AStar pathFinder;
 
     float movementPercentage = 0f;
     float movementSpeed = 2f;
 
     Task activeTask;
+    float workDelay = 0f;
+    public HashSet<Task> ignoredTasks = new HashSet<Task>(); 
 
     Action<CharacterController> characterUpdateCallback;
 
@@ -43,14 +45,23 @@ public class CharacterController
 
     void Work(float deltaTime)
     {
+        workDelay += deltaTime;
+
         if (activeTask == null)
         {
-            activeTask = TaskManager.GetTask(TaskType.CONSTRUCTION);
+            if(workDelay < 0.5f)
+            {
+                return;
+            }
+
+            activeTask = TaskManager.GetTask(TaskType.CONSTRUCTION, this);
 
             if (activeTask == null)
             {
                 return;
             }
+
+            workDelay = 0f;
 
             activeTask.worker = this;
             activeTask.AddTaskCompleteCallback(EndTask);
@@ -73,15 +84,17 @@ public class CharacterController
             return;
         }
 
+        if(pathFinder == null)
+        {
+            return;
+        }
+
         if (nextTile == null || nextTile == currentTile)
         {
             if (pathFinder == null || pathFinder.Length() == 0)
             {
-                pathFinder = new Path_AStar(GameManager.GetWorldController().worldGrid, currentTile, destinationTile);
-
                 if (pathFinder.Length() == 0)
                 {
-                    Debug.Log("Return no path");
                     CancelTask();
                     pathFinder = null;
                     return;
@@ -151,7 +164,5 @@ public class CharacterController
             activeTask = null;
             return;
         }
-
-        Debug.Log("Completing wrong task");
     }
 }

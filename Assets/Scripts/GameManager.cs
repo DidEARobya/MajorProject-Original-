@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
         characterSpriteController.Init();
         taskSpriteController.Init();
         buildModeController.Init();
+        TaskManager.Init();
     }
     public static WorldController GetWorldController()
     {
