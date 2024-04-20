@@ -7,8 +7,6 @@ public class InstalledSpriteController : MonoBehaviour
     [SerializeField]
     public List<Sprite> installedSprites = new List<Sprite>();
 
-    Dictionary<InstalledObject, GameObject> installedObjects = new Dictionary<InstalledObject, GameObject>();
-
     WorldController worldController;
 
     // Start is called before the first frame update
@@ -17,12 +15,11 @@ public class InstalledSpriteController : MonoBehaviour
         worldController = GameManager.GetWorldController();
         worldController.worldGrid.SetInstallObjectCallback(OnObjectInstalled);
     }
-
     public void OnObjectInstalled(InstalledObject _obj)
     {
         GameObject obj = new GameObject();
 
-        installedObjects.Add(_obj, obj);
+        InstalledObjectsManager.AddInstalledObject(_obj);
 
         obj.name = InstalledObjectTypes.GetObjectType((_obj.type)).ToString() + _obj.baseTile.x + "_" + _obj.baseTile.y;
         obj.transform.position = new Vector3(_obj.baseTile.x, _obj.baseTile.y);
@@ -39,7 +36,9 @@ public class InstalledSpriteController : MonoBehaviour
             case InstalledObjectType.WALL:
                 renderer.sprite = installedSprites[0];
                 break;
-
+            case InstalledObjectType.DOOR:
+                renderer.sprite = installedSprites[1];
+                break;
         }
 
         renderer.sortingLayerName = "Walls";
@@ -69,6 +68,7 @@ public class InstalledSpriteController : MonoBehaviour
 
     public void Uninstall(InstalledObject obj)
     {
-        installedObjects.Remove(obj);
+        InstalledObjectsManager.RemoveInstalledObject(obj);
+        obj.RemoveOnUpdateCallback(OnInstalledObjectChanged);
     }
 }

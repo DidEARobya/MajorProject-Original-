@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public enum TerrainType
@@ -14,16 +15,34 @@ public enum FloorType
     NONE,
     WOOD_FLOOR,
 }
-
+public enum Direction
+{
+    N,
+    NE,
+    E,
+    SE,
+    S,
+    SW, 
+    W,
+    NW
+}
+public enum Accessibility
+{
+    IMPASSABLE,
+    DELAYED,
+    ACCESSIBLE
+}
 public class Tile : INodeData
 {
+    Dictionary<Tile, Direction> neighbours = new Dictionary<Tile, Direction>();
+
     public GameObject tileObj;
     public Node pathNode;
 
     public TerrainTypes terrainType = TerrainTypes.GOOD_SOIL;
     public FloorTypes floorType = FloorTypes.NONE;
 
-    InstalledObject installedObject;
+    public InstalledObject installedObject;
     DroppedObject droppedObject;
 
     public WorldGrid world;
@@ -33,9 +52,10 @@ public class Tile : INodeData
 
     Action<Tile> tileChangedCallback;
 
+    public Accessibility accessibility = Accessibility.ACCESSIBLE;
+
     public bool isPendingTask = false;
-    public bool isPlayerWalkable = true;
-    public bool isEnemyWalkable = true;
+    public bool reservedByCharacter = false;
 
     public Tile(WorldGrid grid, int _x, int _y)
     {
@@ -45,6 +65,32 @@ public class Tile : INodeData
         y = _y;
     }
 
+    public void SetNeighbours()
+    {
+        int length = world.mapHeight;
+
+        for (int _x = -1; _x <= 1; _x++)
+        {
+            for (int _y = -1; _y <= 1; _y++)
+            {
+                if (_x == 0 && _y == 0)
+                {
+                    continue;
+                }
+
+                int checkX = x + _x;
+                int checkY = y + _y;
+
+                if (checkX >= 0 && checkX < length && checkY >= 0 && checkY < length)
+                {
+                    if (world.GetTile(checkX, checkY) != null)
+                    {
+                        neighbours.Add(world.GetTile(checkX, checkY), GetDirection(_x, _y));
+                    }
+                }
+            }
+        }
+    }
     public void SetGameObject(GameObject obj)
     {
         if(obj == null)
@@ -108,11 +154,15 @@ public class Tile : INodeData
     public void UninstallObject()
     {
         installedObject = null;
-        isPlayerWalkable = true;
-        isEnemyWalkable = true;
+        accessibility = Accessibility.ACCESSIBLE;
     }
-    public int GetCost()
+    public int GetCost(bool isPlayer)
     {
+        if(isPlayer == true && accessibility == Accessibility.IMPASSABLE)
+        {
+            return 0;
+        }
+
         int cost = 0;
 
         if(floorType == FloorTypes.NONE)
@@ -139,28 +189,76 @@ public class Tile : INodeData
     {
         pathNode = node;
     }
-    public bool IsNeighbour(Tile tile, bool includeDiagonals = false)
+    public Accessibility IsAccessible()
     {
-        int x1 = this.x;
-        int y1 = this.y;
-
-        int x2 = tile.x;
-        int y2 = tile.y;
-
-        if(Mathf.Abs(x2 - x1) + Mathf.Abs(y2 - y1) == 1)
+        if(accessibility == Accessibility.IMPASSABLE)
         {
-            return true;
+            return Accessibility.IMPASSABLE;
         }
 
-        if(includeDiagonals == true)
+        if(installedObject != null && accessibility == Accessibility.DELAYED)
         {
-            if (x1 == x2 + 1 || x1 == x2 - 1 && Mathf.Abs(x2 - x1) == 1 && Mathf.Abs(y2 - y1) == 1)
+            return InstalledObjectAction.CheckIfOpen(installedObject);
+        }
+
+        return Accessibility.ACCESSIBLE;
+    }
+    public bool IsNeighbour(Tile tile)
+    {
+        return neighbours.ContainsKey(tile);
+    }
+    public Direction GetDirection(Tile tile)
+    {
+        if(neighbours.ContainsKey(tile) == false)
+        {
+            return 0;
+        }
+
+        return neighbours[tile];
+    }
+    public Direction GetDirection(int x, int y)
+    {
+        if (x == -1)
+        {
+            switch (y)
             {
-                return true;
+                case -1:
+                    return Direction.SW;
+
+                case 0:
+                    return  Direction.W;
+
+                case 1:
+                    return Direction.NW;
+            }
+        }
+        else if (x == 0)
+        {
+            switch (y)
+            {
+                case -1:
+                    return Direction.S;
+
+                case 1:
+                    return Direction.N;
+            }
+        }
+        else
+        {
+            switch (y)
+            {
+                case -1:
+                    return Direction.SE;
+
+                case 0:
+                    return Direction.E;
+
+                case 1:
+                    return Direction.NE;
             }
         }
 
-        return false;
+        return 0;
     }
     public void SetTileChangedCallback(Action<Tile> callback)
     {

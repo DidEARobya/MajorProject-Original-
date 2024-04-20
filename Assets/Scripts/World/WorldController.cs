@@ -24,6 +24,7 @@ public class WorldController : MonoBehaviour
             for (int y = 0; y < worldGrid.mapHeight; y++)
             {
                 Tile tileData = worldGrid.GetTile(x, y);
+                tileData.SetNeighbours();
                 Vector2 tilePos = new Vector2(tileData.x, tileData.y);
 
                 GameObject tileObj = new GameObject();
@@ -40,13 +41,6 @@ public class WorldController : MonoBehaviour
                 tileSpriteController.SetTileSprite(tileObj, TerrainTypes.GetTerrainType(tileData.terrainType), FloorTypes.GetFloorType(tileData.floorType));
             }
         }
-
-        mouseController.Init(worldGrid);
-    }
-
-    void Update()
-    {
-        worldGrid.Update(Time.deltaTime);
     }
     public Vector2 GetWorldToCell(Vector2 pos)
     {

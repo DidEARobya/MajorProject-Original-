@@ -70,7 +70,7 @@ public class CharacterController
             destinationTile = activeTask.tile;
         }
 
-        if (currentTile == destinationTile)
+        if (destinationTile.IsNeighbour(currentTile) == true)
         {
             activeTask.DoWork(deltaTime);
         }
@@ -78,12 +78,6 @@ public class CharacterController
 
     void FindPath(float deltaTime)
     {
-        if (currentTile == destinationTile)
-        {
-            pathFinder = null;
-            return;
-        }
-
         if(pathFinder == null)
         {
             return;
@@ -109,6 +103,11 @@ public class CharacterController
             }
         }
 
+        if(nextTile.IsAccessible() == Accessibility.DELAYED)
+        {
+            return;
+        }
+
         float distToTravel = Mathf.Sqrt(Mathf.Pow(currentTile.x - nextTile.x, 2) + Mathf.Pow(currentTile.y - nextTile.y, 2));
 
         float distThisFrame = movementSpeed * deltaTime;
@@ -121,6 +120,12 @@ public class CharacterController
         {
             currentTile = nextTile;
             movementPercentage = 0;
+
+            if (destinationTile.IsNeighbour(currentTile) == true)
+            {
+                pathFinder = null;
+                return;
+            }
         }
 
         if (characterUpdateCallback != null)

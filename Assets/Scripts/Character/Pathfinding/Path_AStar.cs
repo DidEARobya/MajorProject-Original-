@@ -1,22 +1,26 @@
 using Priority_Queue;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Animations;
 
 public class Path_AStar
 {
     Queue<INodeData> path = new Queue<INodeData>();
-
-    public Path_AStar(Tile start, Tile end)
+    bool isPlayer;
+    public Path_AStar(Tile start, Tile end, bool _isPlayer)
     {
-        if(start == null || end == null)
+        if (start == null || end == null)
         {
             return;
         }
 
-        WorldGrid world = GameManager.GetWorldController().worldGrid;
+        isPlayer = _isPlayer;
+
+        WorldGrid world = GameManager.GetWorldGrid();
 
         if (world.pathGraph == null)
         {
@@ -33,7 +37,7 @@ public class Path_AStar
 
         Dictionary<Node, Node> cameFrom = new Dictionary<Node, Node>();
 
-        while(openSet.Count > 0)
+        while (openSet.Count > 0)
         {
             Node current = openSet.Dequeue();
             closedSet.Add(current);
@@ -44,16 +48,16 @@ public class Path_AStar
                 return;
             }
 
-            foreach(Node neighbour in current.neighbours)
+            foreach (Node neighbour in current.neighbours)
             {
-                if(closedSet.Contains(neighbour) == true)
+                if (closedSet.Contains(neighbour) == true)
                 {
                     continue;
                 }
 
                 float tentativeGScore = current.gCost + DistanceBetween(current, neighbour);
 
-                if(tentativeGScore < neighbour.gCost || openSet.Contains(neighbour) == false)
+                if (tentativeGScore < neighbour.gCost || openSet.Contains(neighbour) == false)
                 {
                     neighbour.gCost = tentativeGScore;
                     neighbour.hCost = DistanceBetween(neighbour, endNode);
@@ -74,36 +78,18 @@ public class Path_AStar
 
     void ReconstructPath(Dictionary<Node, Node> cameFrom, Node current)
     {
-        List<INodeData> totalPath = new List<INodeData>();
-        totalPath.Add(current.data);
+        Queue<INodeData> totalPath = new Queue<INodeData>();
+        totalPath.Enqueue(current.data);
 
         while (cameFrom.ContainsKey(current))
         {
             current = cameFrom[current];
-            totalPath.Add(current.data);
+            totalPath.Enqueue(current.data);
         }
 
-        path = new Queue<INodeData>(SimplifyPath(totalPath).Reverse());
+        path = new Queue<INodeData>(totalPath.Reverse());
     }
-    Queue<INodeData> SimplifyPath(List<INodeData> path)
-    {
-        Queue<INodeData> waypoints = new Queue<INodeData>();
-        Vector2 oldDir = Vector2.zero;
 
-        for(int i = 1; i < path.Count; i++)
-        {
-            Vector2 newDir = new Vector2(path[i - 1].GetTile().x - path[i].GetTile().x, path[i - 1].GetTile().y - path[i].GetTile().y);
-
-            if(newDir != oldDir)
-            {
-                waypoints.Enqueue(path[i - 1]);
-            }
-
-            oldDir = newDir;
-        }
-
-        return waypoints;
-    }
     float DistanceBetween(Node start, Node goal)
     {
         int distX = Mathf.Abs(start.x - goal.x);
@@ -120,7 +106,7 @@ public class Path_AStar
             val += 14 * distX + 10 * (distY - distX);
         }
 
-        return val + goal.movementCost;
+        return val * goal.GetCost(isPlayer);
     }
     public Tile DequeueNextTile()
     {
@@ -142,16 +128,22 @@ public class Path_AStar
     }
 }
 
-/*void ReconstructPath(Dictionary<Node, Node> cameFrom, Node current)
+/*Queue<INodeData> SimplifyPath(List<INodeData> path)
 {
-    Queue<INodeData> totalPath = new Queue<INodeData>();
-    totalPath.Enqueue(current.data);
+    Queue<INodeData> waypoints = new Queue<INodeData>();
+    Vector2 oldDir = Vector2.zero;
 
-    while(cameFrom.ContainsKey(current))
+    for(int i = 1; i < path.Count; i++)
     {
-        current = cameFrom[current];
-        totalPath.Enqueue(current.data);
+        Vector2 newDir = new Vector2(path[i - 1].GetTile().x - path[i].GetTile().x, path[i - 1].GetTile().y - path[i].GetTile().y);
+
+        if(newDir != oldDir)
+        {
+            waypoints.Enqueue(path[i - 1]);
+        }
+
+        oldDir = newDir;
     }
 
-    path = new Queue<INodeData>(totalPath.Reverse());
+    return waypoints;
 }*/
