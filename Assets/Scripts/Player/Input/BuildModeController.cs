@@ -21,9 +21,9 @@ public class BuildModeController : MonoBehaviour
 
     public void Init()
     {
-        grid = GameManager.GetWorldController().worldGrid;
+        grid = GameManager.GetWorldGrid();
     }
-    public void Build(Tile tile, BuildMode mode)
+    public void Build(Tile tile, BuildMode mode, InstalledObjectTypes toBuild = null)
     {
         switch(mode)
         {
@@ -31,9 +31,9 @@ public class BuildModeController : MonoBehaviour
 
                 if (Input.GetMouseButtonUp(0))
                 {
-                    if (tile != null && tile.GetInstalledObject() == null && tile.isPendingTask == false)
+                    if (tile != null && toBuild != null && tile.GetInstalledObject() == null && tile.isPendingTask == false)
                     {
-                        grid.InstallObject(InstalledObjectTypes.WALL, tile);
+                        grid.InstallObject(toBuild, tile);
                         InstalledObject obj = tile.GetInstalledObject();
 
                         Task task = new Task(tile, (t) => { obj.Install(); }, TaskType.CONSTRUCTION);

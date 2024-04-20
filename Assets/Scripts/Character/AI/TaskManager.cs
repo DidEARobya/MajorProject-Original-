@@ -100,7 +100,7 @@ public static class TaskManager
     }
     static Path_AStar CheckIfTaskValid(Tile start, Tile goal)
     {
-        Path_AStar pathFinder = new Path_AStar(start, goal);
+        Path_AStar pathFinder = new Path_AStar(start, goal, true);
 
         if (pathFinder.Length() == 0)
         {

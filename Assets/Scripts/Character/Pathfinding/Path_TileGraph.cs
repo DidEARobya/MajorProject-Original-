@@ -43,7 +43,7 @@ public class Path_TileGraph
 
                 if(checkX >= 0 && checkX < length && checkY >= 0 && checkY < length)
                 {
-                    if(nodes[checkX, checkY].data.GetTile().isPlayerWalkable == true && isClippingCorner(node, nodes[checkX, checkY]) == false)
+                    if(nodes[checkX, checkY].data.GetTile().IsAccessible() != Accessibility.IMPASSABLE && isClippingCorner(node, nodes[checkX, checkY]) == false)
                     {
                         neighbours.Add(nodes[checkX, checkY]);
                     }
@@ -61,12 +61,12 @@ public class Path_TileGraph
 
         if(Mathf.Abs(dirX) + Mathf.Abs(dirY) == 2)
         {
-            if(nodes[current.x - dirX, current.y].data.GetTile().isPlayerWalkable == false)
+            if(nodes[current.x - dirX, current.y].data.GetTile().IsAccessible() == Accessibility.IMPASSABLE)
             {
                 return true;
             }
 
-            if (nodes[current.x, current.y - dirY].data.GetTile().isPlayerWalkable == false)
+            if (nodes[current.x, current.y - dirY].data.GetTile().IsAccessible() == Accessibility.IMPASSABLE)
             {
                 return true;
             }
@@ -86,10 +86,6 @@ public class Node
     {
         get { return gCost + hCost; }
     }
-    public int movementCost
-    {
-        get { return Mathf.FloorToInt(data.GetCost()); }
-    }
 
     public INodeData data;
     public Node[] neighbours;
@@ -101,5 +97,9 @@ public class Node
         y = _y;
 
         data.SetNode(this);
+    }
+    public int GetCost(bool isPlayer)
+    {
+        return Mathf.FloorToInt(data.GetCost(isPlayer));
     }
 }

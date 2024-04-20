@@ -10,11 +10,10 @@ public class CharacterSpriteController : MonoBehaviour
     WorldGrid world;
     public void Init()
     {
-        world = GameManager.GetWorldController().worldGrid;
-        world.SetCharacterCreatedCallback(OnCharacterCreated);
+        world = GameManager.GetWorldGrid();
+        CharacterManager.SetCharacterCreatedCallback(OnCharacterCreated);
 
-        CharacterController test = world.CreateCharacter(world.GetTile(world.mapWidth / 2, world.mapHeight / 2));
-        CharacterController test2 = world.CreateCharacter(world.GetTile(world.mapWidth / 2 + 5, world.mapHeight / 2));
+        CharacterController test = CharacterManager.CreateCharacter(world.GetTile(world.mapWidth / 2, world.mapHeight / 2));
     }
 
     public void OnCharacterCreated(CharacterController character)

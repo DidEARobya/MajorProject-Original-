@@ -31,6 +31,7 @@ public class MouseController : MonoBehaviour
 
     public MouseMode mouseMode = MouseMode.AREA;
     public BuildMode buildMode = BuildMode.FLOOR;
+    public InstalledObjectTypes toBuild;
 
     protected Tile tileUnderMouse;
 
@@ -107,6 +108,19 @@ public class MouseController : MonoBehaviour
             buildMode = BuildMode.DESTROY;
         }
 
+        if(buildMode == BuildMode.OBJECT)
+        {
+            if(Input.GetKeyUp(KeyCode.N))
+            {
+                Debug.Log("Wall");
+                toBuild = InstalledObjectTypes.WALL;
+            }
+            if (Input.GetKeyUp(KeyCode.M))
+            {
+                Debug.Log("Door");
+                toBuild = InstalledObjectTypes.DOOR;
+            }
+        }
         UpdateMousePos();
 
         if (EventSystem.current.IsPointerOverGameObject() == false)
@@ -207,7 +221,7 @@ public class MouseController : MonoBehaviour
 
                     if (temp != null)
                     {
-                        buildModeController.Build(temp, buildMode);
+                        buildModeController.Build(temp, buildMode, toBuild);
                     }
 
                 }
@@ -223,7 +237,7 @@ public class MouseController : MonoBehaviour
 
             if (temp != null)
             {
-                buildModeController.Build(temp, buildMode);
+                buildModeController.Build(temp, buildMode, toBuild);
             }
         }
     }
