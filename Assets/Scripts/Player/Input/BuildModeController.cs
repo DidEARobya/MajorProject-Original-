@@ -33,7 +33,7 @@ public class BuildModeController : MonoBehaviour
                 {
                     if (tile != null && toBuild != null && tile.GetInstalledObject() == null && tile.isPendingTask == false)
                     {
-                        grid.InstallObject(toBuild, tile);
+                        ObjectManager.InstallObject(toBuild, tile, false);
                         InstalledObject obj = tile.GetInstalledObject();
 
                         Task task = new Task(tile, (t) => { obj.Install(); }, TaskType.CONSTRUCTION);

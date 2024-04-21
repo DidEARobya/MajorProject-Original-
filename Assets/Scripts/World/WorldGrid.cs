@@ -13,7 +13,6 @@ public class WorldGrid
 
     public Path_TileGraph pathGraph;
 
-    Action<InstalledObject> installObjectCallback;
     public WorldGrid(int width = 50, int height = 50)
     {
         mapWidth = width;
@@ -43,38 +42,9 @@ public class WorldGrid
         return tiles[x, y];
     }
 
-    public void InstallObject(InstalledObjectTypes type, Tile tile)
-    {
-        if(InstalledObjectPrototypes.GetInstalledObject(type) == null)
-        {
-            Debug.Log("No prototype of " + type);
-            return;
-        }
-
-        InstalledObject obj = InstalledObject.PlaceObject(type, tile);
-
-        if(obj == null)
-        {
-            return;
-        }
-
-        if(installObjectCallback != null)
-        {
-            installObjectCallback(obj);
-        }
-    }
-
     public void InvalidatePathGraph()
     {
         CharacterManager.ResetCharacterTaskIgnores();
         pathGraph = null;
-    }
-    public void SetInstallObjectCallback(Action<InstalledObject> callback)
-    {
-        installObjectCallback += callback;
-    }
-    public void RemoveInstallObjectCallback(Action<InstalledObject> callback)
-    {
-        installObjectCallback -= callback;
     }
 }

@@ -34,8 +34,6 @@ public class CharacterSpriteController : MonoBehaviour
 
     void OnCharacterUpdate(CharacterController character)
     {
-        GameObject charObj = character.characterObj;
-
-        charObj.transform.position = new Vector2(character.x, character.y);
+        character.characterObj.transform.position = new Vector2(character.x, character.y);
     }
 }

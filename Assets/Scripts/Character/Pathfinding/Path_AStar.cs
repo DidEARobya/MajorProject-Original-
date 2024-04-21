@@ -44,7 +44,7 @@ public class Path_AStar
 
             if (current == endNode)
             {
-                ReconstructPath(cameFrom, current);
+                RetracePath(cameFrom, current);
                 return;
             }
 
@@ -76,7 +76,7 @@ public class Path_AStar
         }
     }
 
-    void ReconstructPath(Dictionary<Node, Node> cameFrom, Node current)
+    void RetracePath(Dictionary<Node, Node> cameFrom, Node current)
     {
         Queue<INodeData> totalPath = new Queue<INodeData>();
         totalPath.Enqueue(current.data);

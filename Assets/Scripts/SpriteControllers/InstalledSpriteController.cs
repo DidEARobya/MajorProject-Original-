@@ -7,19 +7,16 @@ public class InstalledSpriteController : MonoBehaviour
     [SerializeField]
     public List<Sprite> installedSprites = new List<Sprite>();
 
-    WorldController worldController;
-
     // Start is called before the first frame update
     public void Init()
     {
-        worldController = GameManager.GetWorldController();
-        worldController.worldGrid.SetInstallObjectCallback(OnObjectInstalled);
+        ObjectManager.SetInstallObjectCallback(OnObjectInstalled);
     }
     public void OnObjectInstalled(InstalledObject _obj)
     {
         GameObject obj = new GameObject();
 
-        InstalledObjectsManager.AddInstalledObject(_obj);
+        ObjectManager.AddInstalledObject(_obj);
 
         obj.name = InstalledObjectTypes.GetObjectType((_obj.type)).ToString() + _obj.baseTile.x + "_" + _obj.baseTile.y;
         obj.transform.position = new Vector3(_obj.baseTile.x, _obj.baseTile.y);
@@ -68,7 +65,7 @@ public class InstalledSpriteController : MonoBehaviour
 
     public void Uninstall(InstalledObject obj)
     {
-        InstalledObjectsManager.RemoveInstalledObject(obj);
+        ObjectManager.RemoveInstalledObject(obj);
         obj.RemoveOnUpdateCallback(OnInstalledObjectChanged);
     }
 }

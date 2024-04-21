@@ -9,8 +9,8 @@ public class GameManager : MonoBehaviour
     public WorldController worldController;
     public TileSpriteController tileSpriteController;
     public InstalledSpriteController installedSpriteController;
+    public DroppedObjectSpriteController droppedObjectSpriteController;
     public CharacterSpriteController characterSpriteController;
-    public TaskSpriteController taskSpriteController;
     public BuildModeController buildModeController;
     public MouseController mouseController;
 
@@ -27,26 +27,24 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        InstalledObjectPrototypes.Init();
-
         worldController.Init(tileSpriteController);
         worldGrid = worldController.worldGrid;
 
         tileSpriteController.Init();
         installedSpriteController.Init();
         characterSpriteController.Init();
-        taskSpriteController.Init();
 
         mouseController.Init(worldGrid);
         buildModeController.Init();
         TaskManager.Init();
+
+        droppedObjectSpriteController.Init();
     }
 
     private void Update()
     {
-        InstalledObjectsManager.Update(Time.deltaTime);
+        ObjectManager.Update(Time.deltaTime);
         CharacterManager.Update(Time.deltaTime);
-
     }
     public static WorldController GetWorldController()
     {
@@ -67,9 +65,5 @@ public class GameManager : MonoBehaviour
     public static CharacterSpriteController GetCharacterSpriteController()
     {
         return instance.characterSpriteController;
-    }
-    public static TaskSpriteController GetTaskSpriteController()
-    {
-        return instance.taskSpriteController;
     }
 }

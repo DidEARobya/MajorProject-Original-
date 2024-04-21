@@ -15,6 +15,7 @@ public class CharacterController
     }
 
     public GameObject characterObj;
+    public DroppedObject heldObject;
 
     public Tile currentTile;
     public Tile nextTile;
