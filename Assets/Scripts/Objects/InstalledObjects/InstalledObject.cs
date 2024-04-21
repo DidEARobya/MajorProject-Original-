@@ -28,19 +28,12 @@ public class InstalledObject
     {
 
     }
-    static public InstalledObject CreatePrototype(InstalledObjectTypes _type)
-    {
-        InstalledObject obj = new InstalledObject();
-        obj.type = _type;
-
-        return obj;
-    }
-
-    static public InstalledObject PlaceObject(InstalledObjectTypes _type, Tile tile)
+    static public InstalledObject PlaceObject(InstalledObjectTypes _type, Tile tile, bool _isInstalled)
     {
         InstalledObject obj = new InstalledObject();
         obj.baseTile = tile;
         obj.type = _type;
+        obj.isInstalled = _isInstalled;
 
         if (tile.InstallObject(obj) == false)
         {
@@ -85,6 +78,8 @@ public class InstalledObject
             RemoveOnActionCallback(InstalledObjectAction.Door_UpdateAction);
         }
 
+        ObjectManager.SpawnObject(InstalledObjectTypes.GetDroppedObjectType(type), baseTile);
+        baseTile = null; 
         UnityEngine.Object.Destroy(gameObject);
     }
     public void AddOnActionCallback(Action<InstalledObject, float> callback)
@@ -104,58 +99,26 @@ public class InstalledObject
         updateObjectCallback -= callback;
     }
 }
-public static class InstalledObjectPrototypes
-{
-    static readonly Dictionary<InstalledObjectTypes, InstalledObject> installedObjects = new Dictionary<InstalledObjectTypes, InstalledObject>();
-
-    public static void Init()
-    {
-        InstalledObject prototype = InstalledObject.CreatePrototype(InstalledObjectTypes.WALL);
-        AddPrototype(prototype.type, prototype);
-
-        prototype = InstalledObject.CreatePrototype(InstalledObjectTypes.DOOR);
-        AddPrototype(prototype.type, prototype);
-    }
-    public static void AddPrototype(InstalledObjectTypes type, InstalledObject obj)
-    {
-        if (installedObjects.ContainsKey(type))
-        {
-            return;
-        }
-
-        installedObjects.Add(type, obj);
-    }
-
-    public static InstalledObject GetInstalledObject(InstalledObjectTypes type)
-    {
-        if (installedObjects.ContainsKey(type))
-        {
-            return installedObjects[type];
-        }
-
-        return null;
-    }
-
-}
-
 public class InstalledObjectTypes
 {
     protected readonly InstalledObjectType type;
     protected readonly int movementCost;
 
     protected readonly Accessibility baseAccessibility;
+    protected readonly DroppedObjectTypes droppedObject;
 
     protected readonly int width = 1;
     protected readonly int height = 1;
 
-    public static readonly InstalledObjectTypes WALL = new InstalledObjectTypes(InstalledObjectType.WALL, 100, Accessibility.IMPASSABLE);
-    public static readonly InstalledObjectTypes DOOR = new InstalledObjectTypes(InstalledObjectType.DOOR, 2, Accessibility.DELAYED);
+    public static readonly InstalledObjectTypes WALL = new InstalledObjectTypes(InstalledObjectType.WALL, 100, Accessibility.IMPASSABLE, DroppedObjectTypes.WOOD);
+    public static readonly InstalledObjectTypes DOOR = new InstalledObjectTypes(InstalledObjectType.DOOR, 4, Accessibility.DELAYED);
 
-    protected InstalledObjectTypes(InstalledObjectType _type, int _movementCost, Accessibility _baseAccessibility)
+    protected InstalledObjectTypes(InstalledObjectType _type, int _movementCost, Accessibility _baseAccessibility, DroppedObjectTypes _droppedObject = null)
     {
         type = _type;
         movementCost = _movementCost;
         baseAccessibility = _baseAccessibility;
+        droppedObject = _droppedObject;
     }
 
     public static InstalledObjectType GetObjectType(InstalledObjectTypes type)
@@ -169,5 +132,9 @@ public class InstalledObjectTypes
     public static Accessibility GetBaseAccessibility(InstalledObjectTypes type)
     {
         return type.baseAccessibility;
+    }
+    public static DroppedObjectTypes GetDroppedObjectType(InstalledObjectTypes type)
+    {
+        return type.droppedObject;
     }
 }

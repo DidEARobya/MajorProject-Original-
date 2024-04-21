@@ -43,7 +43,7 @@ public class Tile : INodeData
     public FloorTypes floorType = FloorTypes.NONE;
 
     public InstalledObject installedObject;
-    DroppedObject droppedObject;
+    public DroppedObject droppedObject;
 
     public WorldGrid world;
 
@@ -145,6 +145,23 @@ public class Tile : INodeData
         }
 
         installedObject = obj;
+        return true;
+    }
+    public bool PlaceObject(DroppedObject obj)
+    {
+        if (obj == null)
+        {
+            droppedObject = null;
+            return false;
+        }
+
+        if (droppedObject != null)
+        {
+            Debug.Log("Dropped Object Exists");
+            return false;
+        }
+
+        droppedObject = obj;
         return true;
     }
     public InstalledObject GetInstalledObject()

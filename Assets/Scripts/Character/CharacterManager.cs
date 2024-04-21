@@ -5,7 +5,7 @@ using UnityEngine;
 
 public static class CharacterManager
 {
-    static List<CharacterController> characters = new List<CharacterController>();
+    public static List<CharacterController> characters = new List<CharacterController>();
     static Action<CharacterController> characterCreatedCallback;
 
     public static void Update(float deltaTime)
