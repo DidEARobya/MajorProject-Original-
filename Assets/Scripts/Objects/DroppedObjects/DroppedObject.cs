@@ -41,6 +41,12 @@ public class DroppedObject
             return null;
         }
 
+        CharacterController character = CharacterManager.characters[0];
+
+        Task task = new Task(tile, (t) => { obj.PickUp(character); }, TaskType.CONSTRUCTION);
+
+        TaskManager.AddTask(task, task.taskType);
+
         return obj;
     }
     public void Update(float deltaTime)
@@ -68,12 +74,14 @@ public class DroppedObject
         character.heldObject = this;
         gameObject.transform.position = character.characterObj.transform.position;
         gameObject.transform.SetParent(character.characterObj.transform);
+
+        gameObject.GetComponent<SpriteRenderer>().sortingLayerName = "Held";
     }
     public void Drop(Tile tile)
     {
-        if(tile.droppedObject == null)
+        if(tile.inventory.CanBeStored(this) == false)
         {
-            tile.droppedObject = this;
+            return; 
         }
 
         if (movementCost != 0)
@@ -91,6 +99,23 @@ public class DroppedObject
 
         gameObject.transform.position = tile.tileObj.transform.position;
         gameObject.transform.SetParent(tile.tileObj.transform);
+
+        gameObject.GetComponent<SpriteRenderer>().sortingLayerName = "Item";
+
+        tile.inventory.StoreItem(this);
+    }
+    public void Destroy()
+    {
+        if (movementCost != 0 && baseTile != null)
+        {
+            GameManager.GetWorldGrid().InvalidatePathGraph();
+        }
+
+        baseTile = null;
+        ObjectManager.RemoveDroppedObject(this);
+
+        RemoveDroppedObjectUpdate(updateObjectCallback);
+        UnityEngine.Object.Destroy(gameObject);
     }
     public void AddDroppedObjectUpdate(Action<DroppedObject, CharacterController> callback)
     {
@@ -109,12 +134,15 @@ public class DroppedObjectTypes
     protected readonly int width = 1;
     protected readonly int height = 1;
 
-    public static readonly DroppedObjectTypes WOOD = new DroppedObjectTypes(DroppedObjectType.WOOD);
+    protected readonly int maxStackSize;
 
-    protected DroppedObjectTypes(DroppedObjectType _type, int _movementCost = 0)
+    public static readonly DroppedObjectTypes WOOD = new DroppedObjectTypes(DroppedObjectType.WOOD, 50);
+
+    protected DroppedObjectTypes(DroppedObjectType _type, int _maxStackSize, int _movementCost = 0)
     {
         type = _type;
         movementCost = _movementCost;
+        maxStackSize = _maxStackSize;
     }
 
     public static DroppedObjectType GetObjectType(DroppedObjectTypes type)
@@ -124,5 +152,9 @@ public class DroppedObjectTypes
     public static int GetMovementCost(DroppedObjectTypes type)
     {
         return type.movementCost;
+    }
+    public static int GetMaxStackSize(DroppedObjectTypes type)
+    {
+        return type.maxStackSize;
     }
 }

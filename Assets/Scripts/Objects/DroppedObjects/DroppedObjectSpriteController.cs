@@ -36,7 +36,7 @@ public class DroppedObjectSpriteController : MonoBehaviour
                 break;
         }
 
-        renderer.sortingLayerName = "Walls";
+        renderer.sortingLayerName = "Item";
 
         _obj.AddDroppedObjectUpdate(OnObjectUpdate);
     }

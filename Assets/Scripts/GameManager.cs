@@ -62,6 +62,10 @@ public class GameManager : MonoBehaviour
     {
         return instance.installedSpriteController;
     }
+    public static DroppedObjectSpriteController GetDroppedObjectSpriteController()
+    {
+        return instance.droppedObjectSpriteController;
+    }
     public static CharacterSpriteController GetCharacterSpriteController()
     {
         return instance.characterSpriteController;

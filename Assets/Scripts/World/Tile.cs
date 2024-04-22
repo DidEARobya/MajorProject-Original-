@@ -43,6 +43,8 @@ public class Tile : INodeData
     public FloorTypes floorType = FloorTypes.NONE;
 
     public InstalledObject installedObject;
+
+    public Inventory inventory;
     public DroppedObject droppedObject;
 
     public WorldGrid world;
@@ -63,6 +65,8 @@ public class Tile : INodeData
 
         x = _x;
         y = _y;
+
+        inventory = new Inventory();
     }
 
     public void SetNeighbours()
@@ -151,17 +155,33 @@ public class Tile : INodeData
     {
         if (obj == null)
         {
-            droppedObject = null;
             return false;
         }
 
-        if (droppedObject != null)
+        if (inventory.CanBeStored(obj) == false)
         {
-            Debug.Log("Dropped Object Exists");
+            Debug.Log("Cannot be stored");
             return false;
         }
 
-        droppedObject = obj;
+        inventory.StoreItem(obj);
+        return true;
+    }
+    public bool PlaceObject(Inventory _inventory)
+    {
+        if (_inventory == null)
+        {
+            inventory.item = null;
+            return false;
+        }
+
+        if (inventory.CanBeStored(_inventory) == false)
+        {
+            Debug.Log("Cannot be stored");
+            return false;
+        }
+
+        inventory.StoreItem(_inventory);
         return true;
     }
     public InstalledObject GetInstalledObject()

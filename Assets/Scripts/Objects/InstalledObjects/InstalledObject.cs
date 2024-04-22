@@ -79,6 +79,7 @@ public class InstalledObject
         }
 
         ObjectManager.SpawnObject(InstalledObjectTypes.GetDroppedObjectType(type), baseTile);
+
         baseTile = null; 
         UnityEngine.Object.Destroy(gameObject);
     }

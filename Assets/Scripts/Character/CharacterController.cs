@@ -44,7 +44,7 @@ public class CharacterController
         characterObj = obj;
     }
 
-    void Work(float deltaTime)
+    void FindWork(float deltaTime)
     {
         workDelay += deltaTime;
 
@@ -70,13 +70,19 @@ public class CharacterController
 
             destinationTile = activeTask.tile;
         }
+    }
+    void DoWork(float deltaTime)
+    {
+        if(activeTask == null)
+        {
+            return;
+        }
 
         if (destinationTile.IsNeighbour(currentTile) == true)
         {
             activeTask.DoWork(deltaTime);
         }
     }
-
     void FindPath(float deltaTime)
     {
         if(pathFinder == null)
@@ -136,7 +142,8 @@ public class CharacterController
     }
     public void Update(float deltaTime)
     {
-        Work(deltaTime);
+        FindWork(deltaTime);
+        DoWork(deltaTime);
         FindPath(deltaTime);
     }
     public void SetDestination(Tile tile)
