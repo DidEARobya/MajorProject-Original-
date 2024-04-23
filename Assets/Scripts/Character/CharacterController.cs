@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterController
+public class CharacterController : InventoryOwner
 {
     public float x
     {
@@ -15,7 +15,7 @@ public class CharacterController
     }
 
     public GameObject characterObj;
-    public DroppedObject heldObject;
+    public Inventory inventory;
 
     public Tile currentTile;
     public Tile nextTile;
@@ -32,11 +32,13 @@ public class CharacterController
 
     Action<CharacterController> characterUpdateCallback;
 
-    public CharacterController(Tile tile)
+    public CharacterController(Tile tile) : base (InventoryOwnerType.CHARACTER)
     {
         currentTile = tile;
         nextTile = currentTile;
         destinationTile = currentTile;
+
+        InventoryManager.CreateNewInventory(ownerType, null, this);
     }
 
     public void SetCharacterObj(GameObject obj)
@@ -83,7 +85,7 @@ public class CharacterController
             activeTask.DoWork(deltaTime);
         }
     }
-    void FindPath(float deltaTime)
+    void TraversePath(float deltaTime)
     {
         if(pathFinder == null)
         {
@@ -115,6 +117,17 @@ public class CharacterController
             return;
         }
 
+        Move(deltaTime);
+    }
+    public void Update(float deltaTime)
+    {
+        FindWork(deltaTime);
+        DoWork(deltaTime);
+        TraversePath(deltaTime);
+    }
+
+    void Move(float deltaTime)
+    {
         float distToTravel = Mathf.Sqrt(Mathf.Pow(currentTile.x - nextTile.x, 2) + Mathf.Pow(currentTile.y - nextTile.y, 2));
 
         float distThisFrame = movementSpeed * deltaTime;
@@ -139,12 +152,6 @@ public class CharacterController
         {
             characterUpdateCallback(this);
         }
-    }
-    public void Update(float deltaTime)
-    {
-        FindWork(deltaTime);
-        DoWork(deltaTime);
-        FindPath(deltaTime);
     }
     public void SetDestination(Tile tile)
     {

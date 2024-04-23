@@ -32,7 +32,7 @@ public enum Accessibility
     DELAYED,
     ACCESSIBLE
 }
-public class Tile : INodeData
+public class Tile : InventoryOwner, INodeData
 {
     Dictionary<Tile, Direction> neighbours = new Dictionary<Tile, Direction>();
 
@@ -45,12 +45,11 @@ public class Tile : INodeData
     public InstalledObject installedObject;
 
     public Inventory inventory;
-    public DroppedObject droppedObject;
 
     public WorldGrid world;
 
-    public int x;
-    public int y;
+    public new int x;
+    public new int y;
 
     Action<Tile> tileChangedCallback;
 
@@ -59,14 +58,14 @@ public class Tile : INodeData
     public bool isPendingTask = false;
     public bool reservedByCharacter = false;
 
-    public Tile(WorldGrid grid, int _x, int _y)
+    public Tile(WorldGrid grid, int _x, int _y) : base (InventoryOwnerType.TILE)
     {
         world = grid;
 
         x = _x;
         y = _y;
 
-        inventory = new Inventory();
+        InventoryManager.CreateNewInventory(InventoryOwnerType.TILE, this);
     }
 
     public void SetNeighbours()
@@ -118,7 +117,6 @@ public class Tile : INodeData
             tileChangedCallback(this);
         }
     }
-
     public void SetFloorType(FloorTypes floor)
     {
         if (floorType == floor)
@@ -133,7 +131,6 @@ public class Tile : INodeData
             tileChangedCallback(this);
         }
     }
-
     public bool InstallObject(InstalledObject obj)
     {
         if (obj == null)
@@ -149,39 +146,6 @@ public class Tile : INodeData
         }
 
         installedObject = obj;
-        return true;
-    }
-    public bool PlaceObject(DroppedObject obj)
-    {
-        if (obj == null)
-        {
-            return false;
-        }
-
-        if (inventory.CanBeStored(obj) == false)
-        {
-            Debug.Log("Cannot be stored");
-            return false;
-        }
-
-        inventory.StoreItem(obj);
-        return true;
-    }
-    public bool PlaceObject(Inventory _inventory)
-    {
-        if (_inventory == null)
-        {
-            inventory.item = null;
-            return false;
-        }
-
-        if (inventory.CanBeStored(_inventory) == false)
-        {
-            Debug.Log("Cannot be stored");
-            return false;
-        }
-
-        inventory.StoreItem(_inventory);
         return true;
     }
     public InstalledObject GetInstalledObject()

@@ -9,8 +9,8 @@ public class GameManager : MonoBehaviour
     public WorldController worldController;
     public TileSpriteController tileSpriteController;
     public InstalledSpriteController installedSpriteController;
-    public DroppedObjectSpriteController droppedObjectSpriteController;
     public CharacterSpriteController characterSpriteController;
+    public InventorySpriteController inventorySpriteController;
     public BuildModeController buildModeController;
     public MouseController mouseController;
 
@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
         worldController.Init(tileSpriteController);
         worldGrid = worldController.worldGrid;
 
+        inventorySpriteController.Init();
         tileSpriteController.Init();
         installedSpriteController.Init();
         characterSpriteController.Init();
@@ -37,8 +38,6 @@ public class GameManager : MonoBehaviour
         mouseController.Init(worldGrid);
         buildModeController.Init();
         TaskManager.Init();
-
-        droppedObjectSpriteController.Init();
     }
 
     private void Update()
@@ -61,10 +60,6 @@ public class GameManager : MonoBehaviour
     public static InstalledSpriteController GetInstalledSpriteController()
     {
         return instance.installedSpriteController;
-    }
-    public static DroppedObjectSpriteController GetDroppedObjectSpriteController()
-    {
-        return instance.droppedObjectSpriteController;
     }
     public static CharacterSpriteController GetCharacterSpriteController()
     {

@@ -298,6 +298,52 @@ MonoBehaviour:
   m_CameraActivatedEvent:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &587776641
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 587776642}
+  - component: {fileID: 587776643}
+  m_Layer: 0
+  m_Name: InventorySpriteController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &587776642
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 587776641}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 679595936}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &587776643
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 587776641}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06905bb9efde34744ad560bfe433af1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemSprites: {fileID: 100100200, guid: 7b825b793e5610b48bdadaa604dd3f48, type: 3}
+  displayPrefab: {fileID: 3358339587447089589, guid: 9a5aec8f5faed0d4f8867b7befcb782c, type: 3}
 --- !u!1 &679595934
 GameObject:
   m_ObjectHideFlags: 0
@@ -345,9 +391,8 @@ Transform:
   m_Children:
   - {fileID: 1139754326}
   - {fileID: 285080990}
-  - {fileID: 1513985304}
+  - {fileID: 587776642}
   - {fileID: 1625049322}
-  - {fileID: 951310242}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &679595937
@@ -365,54 +410,10 @@ MonoBehaviour:
   worldController: {fileID: 679595935}
   tileSpriteController: {fileID: 1139754327}
   installedSpriteController: {fileID: 285080991}
-  droppedObjectSpriteController: {fileID: 1513985305}
   characterSpriteController: {fileID: 1625049323}
+  inventorySpriteController: {fileID: 587776643}
   buildModeController: {fileID: 1249841118}
   mouseController: {fileID: 1249841115}
---- !u!1 &951310240
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 951310242}
-  - component: {fileID: 951310241}
-  m_Layer: 0
-  m_Name: TaskSpriteController
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &951310241
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 951310240}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5269abb531a58144a846fb6a9496d100, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &951310242
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 951310240}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 679595936}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1139754325
 GameObject:
   m_ObjectHideFlags: 0
@@ -537,52 +538,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0fc836d8fff322c4e9775c99e90ba61b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &1513985303
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1513985304}
-  - component: {fileID: 1513985305}
-  m_Layer: 0
-  m_Name: DroppedSpriteController
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1513985304
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1513985303}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 679595936}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1513985305
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1513985303}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd5f22cc4df59cb4c9f9b02489350717, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  droppedSprites:
-  - {fileID: 21300000, guid: 407dfeaf50e59cc4c84a0de09dc896f9, type: 3}
 --- !u!1 &1625049321
 GameObject:
   m_ObjectHideFlags: 0
