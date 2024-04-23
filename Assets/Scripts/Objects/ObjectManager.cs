@@ -7,8 +7,6 @@ public static class ObjectManager
 {
     static List<InstalledObject> installedObjects = new List<InstalledObject>();
     static Action<InstalledObject> installObjectCallback;
-
-
     public static void InstallObject(InstalledObjectTypes type, Tile tile, bool isInstalled)
     {
         InstalledObject obj = InstalledObject.PlaceObject(type, tile, isInstalled);
@@ -27,10 +25,6 @@ public static class ObjectManager
     public static void Update(float deltaTime)
     {
         foreach (InstalledObject obj in installedObjects)
-        {
-            obj.Update(deltaTime);
-        }
-        foreach (DroppedObject obj in droppedObjects)
         {
             obj.Update(deltaTime);
         }
@@ -60,49 +54,5 @@ public static class ObjectManager
     public static void RemoveInstallObjectCallback(Action<InstalledObject> callback)
     {
         installObjectCallback -= callback;
-    }
-
-    static List<DroppedObject> droppedObjects = new List<DroppedObject>();
-    static Action<DroppedObject> droppedObjectCallback;
-
-    public static void SpawnObject(DroppedObjectTypes type, Tile tile)
-    {
-        DroppedObject obj = DroppedObject.SpawnObject(type, tile);
-
-        if (obj == null)
-        {
-            return;
-        }
-
-        if (droppedObjectCallback != null)
-        {
-            droppedObjectCallback(obj);
-        }
-    }
-    public static void AddDroppedObject(DroppedObject droppedObject)
-    {
-        if (droppedObject == null || droppedObjects.Contains(droppedObject) == true)
-        {
-            return;
-        }
-
-        droppedObjects.Add(droppedObject);
-    }
-    public static void RemoveDroppedObject(DroppedObject droppedObject)
-    {
-        if (droppedObjects.Contains(droppedObject) == false)
-        {
-            return;
-        }
-
-        droppedObjects.Remove(droppedObject);
-    }
-    public static void SetDroppedObjectCallback(Action<DroppedObject> callback)
-    {
-        droppedObjectCallback += callback;
-    }
-    public static void RemoveDroppedObjectCallback(Action<DroppedObject> callback)
-    {
-        droppedObjectCallback -= callback;
     }
 }

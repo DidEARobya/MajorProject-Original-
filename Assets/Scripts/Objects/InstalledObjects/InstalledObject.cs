@@ -4,11 +4,6 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public enum InstalledObjectType
-{
-    WALL,
-    DOOR
-}
 public class InstalledObject
 {
     public Tile baseTile;
@@ -78,7 +73,8 @@ public class InstalledObject
             RemoveOnActionCallback(InstalledObjectAction.Door_UpdateAction);
         }
 
-        ObjectManager.SpawnObject(InstalledObjectTypes.GetDroppedObjectType(type), baseTile);
+        InventoryManager.AddInventory(InstalledObjectTypes.GetItemType(type), baseTile);
+
         baseTile = null; 
         UnityEngine.Object.Destroy(gameObject);
     }
@@ -97,44 +93,5 @@ public class InstalledObject
     public void RemoveOnUpdateCallback(Action<InstalledObject> callback)
     {
         updateObjectCallback -= callback;
-    }
-}
-public class InstalledObjectTypes
-{
-    protected readonly InstalledObjectType type;
-    protected readonly int movementCost;
-
-    protected readonly Accessibility baseAccessibility;
-    protected readonly DroppedObjectTypes droppedObject;
-
-    protected readonly int width = 1;
-    protected readonly int height = 1;
-
-    public static readonly InstalledObjectTypes WALL = new InstalledObjectTypes(InstalledObjectType.WALL, 100, Accessibility.IMPASSABLE, DroppedObjectTypes.WOOD);
-    public static readonly InstalledObjectTypes DOOR = new InstalledObjectTypes(InstalledObjectType.DOOR, 4, Accessibility.DELAYED);
-
-    protected InstalledObjectTypes(InstalledObjectType _type, int _movementCost, Accessibility _baseAccessibility, DroppedObjectTypes _droppedObject = null)
-    {
-        type = _type;
-        movementCost = _movementCost;
-        baseAccessibility = _baseAccessibility;
-        droppedObject = _droppedObject;
-    }
-
-    public static InstalledObjectType GetObjectType(InstalledObjectTypes type)
-    {
-        return type.type;
-    }
-    public static int GetMovementCost(InstalledObjectTypes type)
-    {
-        return type.movementCost;
-    }
-    public static Accessibility GetBaseAccessibility(InstalledObjectTypes type)
-    {
-        return type.baseAccessibility;
-    }
-    public static DroppedObjectTypes GetDroppedObjectType(InstalledObjectTypes type)
-    {
-        return type.droppedObject;
     }
 }

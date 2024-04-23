@@ -32,7 +32,7 @@ public enum Accessibility
     DELAYED,
     ACCESSIBLE
 }
-public class Tile : INodeData
+public class Tile : InventoryOwner, INodeData
 {
     Dictionary<Tile, Direction> neighbours = new Dictionary<Tile, Direction>();
 
@@ -43,12 +43,13 @@ public class Tile : INodeData
     public FloorTypes floorType = FloorTypes.NONE;
 
     public InstalledObject installedObject;
-    public DroppedObject droppedObject;
+
+    public Inventory inventory;
 
     public WorldGrid world;
 
-    public int x;
-    public int y;
+    public new int x;
+    public new int y;
 
     Action<Tile> tileChangedCallback;
 
@@ -57,12 +58,14 @@ public class Tile : INodeData
     public bool isPendingTask = false;
     public bool reservedByCharacter = false;
 
-    public Tile(WorldGrid grid, int _x, int _y)
+    public Tile(WorldGrid grid, int _x, int _y) : base (InventoryOwnerType.TILE)
     {
         world = grid;
 
         x = _x;
         y = _y;
+
+        InventoryManager.CreateNewInventory(InventoryOwnerType.TILE, this);
     }
 
     public void SetNeighbours()
@@ -114,7 +117,6 @@ public class Tile : INodeData
             tileChangedCallback(this);
         }
     }
-
     public void SetFloorType(FloorTypes floor)
     {
         if (floorType == floor)
@@ -129,7 +131,6 @@ public class Tile : INodeData
             tileChangedCallback(this);
         }
     }
-
     public bool InstallObject(InstalledObject obj)
     {
         if (obj == null)
@@ -145,23 +146,6 @@ public class Tile : INodeData
         }
 
         installedObject = obj;
-        return true;
-    }
-    public bool PlaceObject(DroppedObject obj)
-    {
-        if (obj == null)
-        {
-            droppedObject = null;
-            return false;
-        }
-
-        if (droppedObject != null)
-        {
-            Debug.Log("Dropped Object Exists");
-            return false;
-        }
-
-        droppedObject = obj;
         return true;
     }
     public InstalledObject GetInstalledObject()
