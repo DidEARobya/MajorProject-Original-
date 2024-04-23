@@ -39,7 +39,7 @@ public static class InventoryManager
                 break;
         }
     }
-    public static void AddInventory(ItemTypes type, Tile tile)
+    public static void AddToTileInventory(ItemTypes type, Tile tile)
     {
         tile.inventory.StoreItem(type);
 

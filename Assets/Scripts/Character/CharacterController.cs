@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class CharacterController : InventoryOwner
 {
-    public float x
+    public new float x
     {
         get { return Mathf.Lerp(currentTile.x, nextTile.x, movementPercentage);}
     }
-    public float y
+    public new float y
     {
         get { return Mathf.Lerp(currentTile.y, nextTile.y, movementPercentage); }
     }
@@ -44,6 +44,12 @@ public class CharacterController : InventoryOwner
     public void SetCharacterObj(GameObject obj)
     {
         characterObj = obj;
+    }
+    public void Update(float deltaTime)
+    {
+        FindWork(deltaTime);
+        DoWork(deltaTime);
+        TraversePath(deltaTime);
     }
 
     void FindWork(float deltaTime)
@@ -118,12 +124,6 @@ public class CharacterController : InventoryOwner
         }
 
         Move(deltaTime);
-    }
-    public void Update(float deltaTime)
-    {
-        FindWork(deltaTime);
-        DoWork(deltaTime);
-        TraversePath(deltaTime);
     }
 
     void Move(float deltaTime)

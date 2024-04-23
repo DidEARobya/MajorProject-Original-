@@ -49,19 +49,22 @@ public class Task
 
         if(taskTime <= 0)
         {
-            if(taskCompleteCallback != null)
+            tile.isPendingTask = false;
+
+            if (taskCompleteCallback != null)
             {
                 taskCompleteCallback(this);
             }
         }
     }
-
     public void CancelTask(bool isCancelled)
     {
         if(isCancelled == true)
         {
             TaskManager.AddTask(this, taskType);
         }
+
+        tile.isPendingTask = false;
 
         if(taskCancelledCallback != null)
         {
