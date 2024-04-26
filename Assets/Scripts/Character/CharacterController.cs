@@ -26,7 +26,9 @@ public class CharacterController : InventoryOwner
     float movementPercentage = 0f;
     float movementSpeed = 2f;
 
-    Task activeTask;
+    public Task activeTask;
+    public Queue<Task> taskQueue = new Queue<Task>();
+
     float workDelay = 0f;
     public HashSet<Task> ignoredTasks = new HashSet<Task>(); 
 
@@ -63,13 +65,21 @@ public class CharacterController : InventoryOwner
                 return;
             }
 
-            activeTask = TaskManager.GetTask(TaskType.CONSTRUCTION, this);
+            if(taskQueue.Count > 0)
+            {
+                activeTask = taskQueue.Dequeue();
+            }
+            else
+            {
+                activeTask = TaskManager.GetTask(TaskType.CONSTRUCTION, this);
+            }
 
             if (activeTask == null)
             {
                 return;
             }
 
+            pathFinder = activeTask.path;
             workDelay = 0f;
 
             activeTask.worker = this;

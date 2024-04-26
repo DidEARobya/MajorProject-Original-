@@ -1,10 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 public static class InventoryManager
 {
+    static List<Inventory> inventories = new List<Inventory>();
     static Action<Inventory> inventoryUpdateCallback;
     public static void CreateNewInventory(InventoryOwnerType type, Tile tile = null, CharacterController character = null)
     {
@@ -84,6 +87,37 @@ public static class InventoryManager
             inventoryUpdateCallback(inventory1);
             inventoryUpdateCallback(inventory2);
         }
+    }
+
+    public static Path_AStar GetClosestValidItem(Tile start, ItemTypes itemType)
+    {
+        float lowestDist = Mathf.Infinity;
+        Path_AStar path = null;
+
+        for (int i = 0; i < inventories.Count; i++)
+        {
+            if (inventories[i].item != itemType)
+            {
+                continue;
+            }
+
+            Tile goal = GameManager.GetWorldGrid().GetTile(inventories[i].owner.x, inventories[i].owner.y);
+
+            int distX = Mathf.Abs(start.x - goal.x);
+            int distY = Mathf.Abs(start.y - goal.y);
+
+            if (lowestDist > (distX + distY))
+            {
+                path = Utility.CheckIfTaskValid(start, goal);
+
+                if (path != null)
+                {
+                    lowestDist = distX + distY;
+                }
+            }
+        }
+
+        return path;
     }
     public static void SetInventoryUpdateCallback(Action<Inventory> callback)
     {
