@@ -34,7 +34,6 @@ public class Inventory
     {
         item = inventory.item;
         stackSize = inventory.stackSize;
-        inventoryObject = inventory.inventoryObject;
     }
     public void StoreItem(Inventory inventory)
     {
@@ -62,9 +61,38 @@ public class Inventory
             inventory.stackSize -= toTake;
         }
     }
+    public void StoreItem(Inventory inventory, int amount)
+    {
+        if (CanBeStored(inventory) == false)
+        {
+            return;
+        }
+
+        if (item == null)
+        {
+            stackSize = 0;
+            item = inventory.item;
+        }
+
+        if (amount >= inventory.stackSize)
+        {
+            stackSize += inventory.stackSize;
+            inventory.item = null;
+        }
+        else
+        {
+            stackSize += amount;
+            inventory.stackSize -= amount;
+        }
+    }
+    public void ClearInventory()
+    {
+        item = null;
+        stackSize = 0;
+    }
     public void StoreItem(ItemTypes _item)
     {
-        if (CanBeStored(_item) == false)
+        if (CanBeStored(_item, 1) == false)
         {
             return;
         }
@@ -75,6 +103,20 @@ public class Inventory
         }
 
         stackSize += 1;
+    }
+    public void StoreItem(ItemTypes _item, int amount)
+    {
+        if (CanBeStored(_item, amount) == false)
+        {
+            return;
+        }
+
+        if (item == null)
+        {
+            item = _item;
+        }
+
+        stackSize += amount;
     }
     public bool CanBeStored(Inventory inventory)
     {
@@ -95,7 +137,7 @@ public class Inventory
 
         return true;
     }
-    public bool CanBeStored(ItemTypes _item)
+    public bool CanBeStored(ItemTypes _item, int amount)
     {
         if(item == null)
         {
@@ -107,7 +149,7 @@ public class Inventory
             return false;
         }
 
-        if (stackSize >= maxStackSize)
+        if (stackSize + amount >= maxStackSize)
         {
             return false;
         }

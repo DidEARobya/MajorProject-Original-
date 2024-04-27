@@ -22,6 +22,12 @@ public class BuildModeController : MonoBehaviour
     public void Init()
     {
         grid = GameManager.GetWorldGrid();
+
+        InventoryManager.AddToTileInventory(ItemTypes.WOOD, grid.GetTile(10, 10), 2);
+        InventoryManager.AddToTileInventory(ItemTypes.WOOD, grid.GetTile(11, 10), 1);
+        InventoryManager.AddToTileInventory(ItemTypes.WOOD, grid.GetTile(12, 10), 3);
+        InventoryManager.AddToTileInventory(ItemTypes.WOOD, grid.GetTile(13, 10), 3);
+        InventoryManager.AddToTileInventory(ItemTypes.WOOD, grid.GetTile(14, 10), 2);
     }
     public void Build(Tile tile, BuildMode mode, InstalledObjectTypes toBuild = null)
     {
@@ -36,7 +42,7 @@ public class BuildModeController : MonoBehaviour
                         ObjectManager.InstallObject(toBuild, tile, false);
                         InstalledObject obj = tile.GetInstalledObject();
 
-                        Task task = new Task(tile, (t) => { obj.Install(); }, TaskType.CONSTRUCTION);
+                        Task task = new Task(tile, (t) => { obj.Install(); }, TaskType.CONSTRUCTION, ItemTypes.WOOD, 3);
 
                         TaskManager.AddTask(task, task.taskType);
                     }

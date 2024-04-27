@@ -49,20 +49,19 @@ public static class TaskManager
             return null;
         }
 
-        TaskPair pair = GetClosestValidTask(taskLists[type], character.currentTile, character);
+        Task task = GetClosestValidTask(taskLists[type], character.currentTile, character);
 
-        if (pair.task == null || pair.path == null)
+        if (task == null || task.path == null)
         {
             return null;
         }
 
-        character.pathFinder = pair.path;
-        taskLists[type].Remove(pair.task);
+        taskLists[type].Remove(task);
 
-        return pair.task;
+        return task;
     }
 
-    static TaskPair GetClosestValidTask(List<Task> list, Tile start, CharacterController character)
+    static Task GetClosestValidTask(List<Task> list, Tile start, CharacterController character)
     {
         float lowestDist = Mathf.Infinity;
         Task closestTask = null;
@@ -82,7 +81,7 @@ public static class TaskManager
 
             if (lowestDist > (distX + distY))
             {
-                path = CheckIfTaskValid(start, goal);
+                path = Utility.CheckIfTaskValid(start, goal);
 
                 if (path != null)
                 {
@@ -96,18 +95,14 @@ public static class TaskManager
             }
         }
 
-        return new TaskPair(closestTask, path);
-    }
-    static Path_AStar CheckIfTaskValid(Tile start, Tile goal)
-    {
-        Path_AStar pathFinder = new Path_AStar(start, goal, true);
-
-        if (pathFinder.Length() == 0)
+        if(closestTask == null || path == null)
         {
             return null;
-        }
+        }    
 
-        return pathFinder;
+        closestTask.path = path;
+
+        return closestTask;
     }
     public static int GetQueueSize(TaskType type)
     {

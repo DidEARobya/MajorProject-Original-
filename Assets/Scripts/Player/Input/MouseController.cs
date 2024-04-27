@@ -23,7 +23,7 @@ public enum BuildMode
 public class MouseController : MonoBehaviour
 {
     public new Camera camera;
-    public new CinemachineVirtualCamera vCamera;
+    public CinemachineVirtualCamera vCamera;
 
     WorldController worldController;
     public WorldGrid grid;

@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class CharacterController : InventoryOwner
 {
-    public float x
+    public new float x
     {
         get { return Mathf.Lerp(currentTile.x, nextTile.x, movementPercentage);}
     }
-    public float y
+    public new float y
     {
         get { return Mathf.Lerp(currentTile.y, nextTile.y, movementPercentage); }
     }
@@ -26,7 +26,9 @@ public class CharacterController : InventoryOwner
     float movementPercentage = 0f;
     float movementSpeed = 2f;
 
-    Task activeTask;
+    public Task activeTask;
+    public Stack<Task> taskStack = new Stack<Task>();
+
     float workDelay = 0f;
     public HashSet<Task> ignoredTasks = new HashSet<Task>(); 
 
@@ -45,6 +47,12 @@ public class CharacterController : InventoryOwner
     {
         characterObj = obj;
     }
+    public void Update(float deltaTime)
+    {
+        FindWork(deltaTime);
+        DoWork(deltaTime);
+        TraversePath(deltaTime);
+    }
 
     void FindWork(float deltaTime)
     {
@@ -57,11 +65,30 @@ public class CharacterController : InventoryOwner
                 return;
             }
 
-            activeTask = TaskManager.GetTask(TaskType.CONSTRUCTION, this);
+            if(taskStack.Count > 0)
+            {
+                activeTask = taskStack.Pop();
+
+                pathFinder = new Path_AStar(currentTile, activeTask.tile, true);
+
+                if(pathFinder == null)
+                {
+                    activeTask.CancelTask(true);
+                }
+            }
+            else
+            {
+                activeTask = TaskManager.GetTask(TaskType.CONSTRUCTION, this);
+            }
 
             if (activeTask == null)
             {
                 return;
+            }
+
+            if(pathFinder == null)
+            {
+                pathFinder = activeTask.path;
             }
 
             workDelay = 0f;
@@ -72,6 +99,19 @@ public class CharacterController : InventoryOwner
 
             destinationTile = activeTask.tile;
         }
+    }
+    public void UpdateTask(Task task)
+    {
+        activeTask = task;
+
+        pathFinder = activeTask.path;
+        workDelay = 0f;
+
+        activeTask.worker = this;
+        activeTask.AddTaskCompleteCallback(EndTask);
+        activeTask.AddTaskCancelledCallback(EndTask);
+
+        destinationTile = activeTask.tile;
     }
     void DoWork(float deltaTime)
     {
@@ -118,12 +158,6 @@ public class CharacterController : InventoryOwner
         }
 
         Move(deltaTime);
-    }
-    public void Update(float deltaTime)
-    {
-        FindWork(deltaTime);
-        DoWork(deltaTime);
-        TraversePath(deltaTime);
     }
 
     void Move(float deltaTime)

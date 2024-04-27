@@ -75,7 +75,6 @@ public class Path_AStar
             }
         }
     }
-
     void RetracePath(Dictionary<Node, Node> cameFrom, Node current)
     {
         Queue<INodeData> totalPath = new Queue<INodeData>();

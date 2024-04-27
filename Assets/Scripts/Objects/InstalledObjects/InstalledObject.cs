@@ -48,7 +48,6 @@ public class InstalledObject
     public void Install()
     {
         isInstalled = true;
-        baseTile.isPendingTask = false;
         baseTile.accessibility = InstalledObjectTypes.GetBaseAccessibility(type);
         GameManager.GetWorldGrid().InvalidatePathGraph();
 
@@ -73,7 +72,7 @@ public class InstalledObject
             RemoveOnActionCallback(InstalledObjectAction.Door_UpdateAction);
         }
 
-        InventoryManager.AddInventory(InstalledObjectTypes.GetItemType(type), baseTile);
+        InventoryManager.AddToTileInventory(InstalledObjectTypes.GetItemType(type), baseTile, 1);
 
         baseTile = null; 
         UnityEngine.Object.Destroy(gameObject);

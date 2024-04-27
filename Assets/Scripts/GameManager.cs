@@ -39,7 +39,6 @@ public class GameManager : MonoBehaviour
         buildModeController.Init();
         TaskManager.Init();
     }
-
     private void Update()
     {
         ObjectManager.Update(Time.deltaTime);
