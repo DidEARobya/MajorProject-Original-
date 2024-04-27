@@ -41,18 +41,26 @@ public static class InventoryManager
                 character.inventory.owner = character;
                 break;
         }
+
+        inventories.Add(inventory);
     }
-    public static void AddToTileInventory(ItemTypes type, Tile tile)
+    public static void AddToTileInventory(ItemTypes type, Tile tile, int amount)
     {
-        tile.inventory.StoreItem(type);
-
-        CharacterController character = CharacterManager.characters[0];
-        Task task = new Task(tile, (t) => { PickUp(character, tile); }, TaskType.CONSTRUCTION);
-
-        TaskManager.AddTask(task, task.taskType);
+        tile.inventory.StoreItem(type, amount);
+        CharacterManager.ResetCharacterTaskIgnores();
 
         if (inventoryUpdateCallback != null)
         {
+            inventoryUpdateCallback(tile.inventory);
+        }
+    }
+    public static void PickUp(CharacterController character, Tile tile, int amount)
+    {
+        character.inventory.StoreItem(tile.inventory, amount);
+
+        if (inventoryUpdateCallback != null)
+        {
+            inventoryUpdateCallback(character.inventory);
             inventoryUpdateCallback(tile.inventory);
         }
     }
@@ -88,11 +96,20 @@ public static class InventoryManager
             inventoryUpdateCallback(inventory2);
         }
     }
+    public static void ClearInventory(Inventory inventory)
+    {
+        inventory.ClearInventory();
 
-    public static Path_AStar GetClosestValidItem(Tile start, ItemTypes itemType)
+        if (inventoryUpdateCallback != null)
+        {
+            inventoryUpdateCallback(inventory);
+        }
+    }
+    public static TilePathPair GetClosestValidItem(Tile start, ItemTypes itemType)
     {
         float lowestDist = Mathf.Infinity;
         Path_AStar path = null;
+        Tile goal = null;
 
         for (int i = 0; i < inventories.Count; i++)
         {
@@ -101,23 +118,28 @@ public static class InventoryManager
                 continue;
             }
 
-            Tile goal = GameManager.GetWorldGrid().GetTile(inventories[i].owner.x, inventories[i].owner.y);
+            Tile temp = GameManager.GetWorldGrid().GetTile(inventories[i].owner.x, inventories[i].owner.y);
 
-            int distX = Mathf.Abs(start.x - goal.x);
-            int distY = Mathf.Abs(start.y - goal.y);
+            int distX = Mathf.Abs(start.x - temp.x);
+            int distY = Mathf.Abs(start.y - temp.y);
 
+            if ((distX == 0 && distY == 0))
+            {
+                
+            }
             if (lowestDist > (distX + distY))
             {
-                path = Utility.CheckIfTaskValid(start, goal);
+                path = Utility.CheckIfTaskValid(start, temp);
 
                 if (path != null)
                 {
                     lowestDist = distX + distY;
+                    goal = temp;
                 }
             }
         }
 
-        return path;
+        return new TilePathPair(goal, path);
     }
     public static void SetInventoryUpdateCallback(Action<Inventory> callback)
     {
@@ -126,5 +148,17 @@ public static class InventoryManager
     public static void RemoveInventoryUpdateCallback(Action<Inventory> callback)
     {
         inventoryUpdateCallback -= callback;
+    }
+}
+
+public struct TilePathPair
+{
+    public Tile tile;
+    public Path_AStar path;
+
+    public TilePathPair(Tile _tile, Path_AStar _path)
+    {
+        tile = _tile;
+        path = _path;
     }
 }

@@ -95,6 +95,11 @@ public static class TaskManager
             }
         }
 
+        if(closestTask == null || path == null)
+        {
+            return null;
+        }    
+
         closestTask.path = path;
 
         return closestTask;

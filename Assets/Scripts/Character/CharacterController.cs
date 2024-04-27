@@ -27,7 +27,7 @@ public class CharacterController : InventoryOwner
     float movementSpeed = 2f;
 
     public Task activeTask;
-    public Queue<Task> taskQueue = new Queue<Task>();
+    public Stack<Task> taskStack = new Stack<Task>();
 
     float workDelay = 0f;
     public HashSet<Task> ignoredTasks = new HashSet<Task>(); 
@@ -65,9 +65,16 @@ public class CharacterController : InventoryOwner
                 return;
             }
 
-            if(taskQueue.Count > 0)
+            if(taskStack.Count > 0)
             {
-                activeTask = taskQueue.Dequeue();
+                activeTask = taskStack.Pop();
+
+                pathFinder = new Path_AStar(currentTile, activeTask.tile, true);
+
+                if(pathFinder == null)
+                {
+                    activeTask.CancelTask(true);
+                }
             }
             else
             {
@@ -79,7 +86,11 @@ public class CharacterController : InventoryOwner
                 return;
             }
 
-            pathFinder = activeTask.path;
+            if(pathFinder == null)
+            {
+                pathFinder = activeTask.path;
+            }
+
             workDelay = 0f;
 
             activeTask.worker = this;
@@ -88,6 +99,19 @@ public class CharacterController : InventoryOwner
 
             destinationTile = activeTask.tile;
         }
+    }
+    public void UpdateTask(Task task)
+    {
+        activeTask = task;
+
+        pathFinder = activeTask.path;
+        workDelay = 0f;
+
+        activeTask.worker = this;
+        activeTask.AddTaskCompleteCallback(EndTask);
+        activeTask.AddTaskCancelledCallback(EndTask);
+
+        destinationTile = activeTask.tile;
     }
     void DoWork(float deltaTime)
     {

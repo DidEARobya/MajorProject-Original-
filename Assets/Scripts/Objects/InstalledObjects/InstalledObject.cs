@@ -72,7 +72,7 @@ public class InstalledObject
             RemoveOnActionCallback(InstalledObjectAction.Door_UpdateAction);
         }
 
-        InventoryManager.AddToTileInventory(InstalledObjectTypes.GetItemType(type), baseTile);
+        InventoryManager.AddToTileInventory(InstalledObjectTypes.GetItemType(type), baseTile, 1);
 
         baseTile = null; 
         UnityEngine.Object.Destroy(gameObject);

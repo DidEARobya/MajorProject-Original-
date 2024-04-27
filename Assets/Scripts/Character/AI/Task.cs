@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public enum TaskType
 {
@@ -38,7 +39,24 @@ public class Task
 
         taskCompleteCallback += _taskCompleteCallback;
     }
+    public Task(Tile _tile, Action<Task> _taskCompleteCallback, TaskType type, ItemTypes requiredType, int requiredAmount, float _taskTime = 1)
+    {
+        tile = _tile;
+        taskTime = _taskTime;
+        taskType = type;
 
+        requirements = new Dictionary<ItemTypes, int>();
+        requirements.Add(requiredType, requiredAmount);
+
+        storedRequirements = new Dictionary<ItemTypes, int>();
+
+        if (tile != null)
+        {
+            tile.isPendingTask = true;
+        }
+
+        taskCompleteCallback += _taskCompleteCallback;
+    }
     public void AddTaskCompleteCallback(Action<Task> _taskCompleteCallback)
     {
         taskCompleteCallback += _taskCompleteCallback;
@@ -51,40 +69,10 @@ public class Task
 
     public void DoWork(float workTime)
     {
-        if(storedRequirements != requirements)
+        if(requirements != null && CheckIfRequirementsFulfilled() == false)
         {
-            ItemTypes type = null;
-
-            if (requirements.ContainsKey(worker.inventory.item))
+            if(CheckIfWorkable() == false)
             {
-                storedRequirements.Add(worker.inventory.item, worker.inventory.stackSize);
-            }
-
-            if (storedRequirements[worker.inventory.item] < requirements[worker.inventory.item])
-            {
-                type = worker.inventory.item;
-            }
-            else
-            {
-                for (int i = 0; i < requirements.Count; i++)
-                {
-                    if (storedRequirements.ElementAt(i).Value != requirements.ElementAt(i).Value)
-                    {
-                        type = requirements.ElementAt(i).Key;
-                        break;
-                    }
-                }
-            }
-
-            if (type != null)
-            {
-                Path_AStar path = InventoryManager.GetClosestValidItem(tile, type);
-                Task task = new Task(tile, (t) => { InventoryManager.PickUp(worker, tile); }, TaskType.CONSTRUCTION);
-
-                Task currentTask = worker.activeTask;
-                worker.taskQueue.Enqueue(currentTask);
-                worker.activeTask = task;
-
                 return;
             }
         }
@@ -101,6 +89,86 @@ public class Task
             }
         }
     }
+    bool CheckIfWorkable()
+    {
+        if (worker.inventory.item != null && requirements.ContainsKey(worker.inventory.item))
+        {
+            if (storedRequirements.ContainsKey(worker.inventory.item))
+            {
+                storedRequirements[worker.inventory.item] += worker.inventory.stackSize;
+            }
+            else
+            {
+                storedRequirements.Add(worker.inventory.item, worker.inventory.stackSize);
+            }
+
+            if (storedRequirements[worker.inventory.item] > requirements[worker.inventory.item])
+            {
+                int diff = storedRequirements[worker.inventory.item] - requirements[worker.inventory.item];
+                storedRequirements[worker.inventory.item] -= diff;
+
+                InventoryManager.AddToTileInventory(worker.inventory.item, worker.currentTile, diff);
+            }
+
+            InventoryManager.ClearInventory(worker.inventory);
+        }
+
+        if (CheckIfRequirementsFulfilled() == true)
+        {
+            return true;
+        }
+
+        QueueHaulTask();
+
+        return false;
+    }
+    void QueueHaulTask()
+    {
+        ItemTypes type = null;
+        int toTake = 0;
+
+        for (int i = 0; i < requirements.Count; i++)
+        {
+            int stored = 0;
+
+            if (storedRequirements.Count != 0 && storedRequirements.Count >= i)
+            {
+                stored = storedRequirements.ElementAt(i).Value;
+            }
+
+            int required = requirements.ElementAt(i).Value;
+
+            if (stored < required)
+            {
+                type = requirements.ElementAt(i).Key;
+                toTake = required - stored;
+                break;
+            }
+        }
+
+        if (type != null)
+        {
+            TilePathPair pair = InventoryManager.GetClosestValidItem(worker.currentTile, type);
+
+            if (pair.path == null)
+            {
+                Debug.Log("No Item Available");
+                worker.ignoredTasks.Add(this);
+                worker.CancelTask();
+                return;
+            }
+
+            Path_AStar path = pair.path;
+
+            Task task = new Task(pair.tile, (t) => { InventoryManager.PickUp(worker, pair.tile); }, TaskType.CONSTRUCTION);
+            task.path = path;
+
+            Task currentTask = worker.activeTask;
+            worker.taskStack.Push(currentTask);
+
+            worker.UpdateTask(task);
+        }
+    }
     public void CancelTask(bool isCancelled)
     {
         if(isCancelled == true)
@@ -115,5 +183,10 @@ public class Task
         {
             taskCancelledCallback(this);
         }
+    }
+
+    bool CheckIfRequirementsFulfilled()
+    {
+        return storedRequirements.Keys.Count == requirements.Keys.Count && storedRequirements.Keys.All(k => requirements.ContainsKey(k) && object.Equals(requirements[k], storedRequirements[k]));
     }
 }

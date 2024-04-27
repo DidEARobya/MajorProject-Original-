@@ -35,7 +35,6 @@ public class WorldGrid
 
         if (x > mapWidth - 1 || x < 0 || y > mapHeight - 1 || y < 0)
         {
-            Debug.Log("Tile is out of range");
             return null;
         }
 
