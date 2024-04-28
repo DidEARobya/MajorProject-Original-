@@ -6,6 +6,9 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
+    public float terrainScale;
+    public int terrainOffset;
+
     public WorldController worldController;
     public TileSpriteController tileSpriteController;
     public InstalledSpriteController installedSpriteController;

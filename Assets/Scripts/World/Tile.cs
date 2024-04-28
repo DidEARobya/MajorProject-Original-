@@ -65,6 +65,17 @@ public class Tile : InventoryOwner, INodeData
         x = _x;
         y = _y;
 
+        float noise = Utility.Get2DPerlin(x, y, GameManager.instance.terrainScale, GameManager.instance.terrainOffset);
+
+        if(noise > 0.4 && noise < 0.6)
+        {
+            terrainType = TerrainTypes.GOOD_SOIL;
+        }
+        else
+        {
+            terrainType = TerrainTypes.POOR_SOIL;
+        }
+
         InventoryManager.CreateNewInventory(InventoryOwnerType.TILE, this);
     }
 

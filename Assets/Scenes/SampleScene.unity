@@ -407,6 +407,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6bd3734c5dbb694e8f119bc113377cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  terrainScale: 0.15
+  terrainOffset: 300
   worldController: {fileID: 679595935}
   tileSpriteController: {fileID: 1139754327}
   installedSpriteController: {fileID: 285080991}
