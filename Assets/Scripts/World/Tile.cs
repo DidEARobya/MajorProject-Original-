@@ -204,6 +204,34 @@ public class Tile : InventoryOwner, INodeData
 
         return Accessibility.ACCESSIBLE;
     }
+    public Tile GetNearestAvailableInventory(ItemTypes type, int amount)
+    {
+        if(inventory.item == null || inventory.CanBeStored(type, amount) != 0)
+        {
+            return this;
+        }
+        
+        foreach(Tile tile in neighbours.Keys)
+        {
+            if(tile.inventory.item == null || tile.inventory.CanBeStored(type, amount) != 0)
+            {
+                return tile;
+            }
+        }
+
+        foreach (Tile tile in neighbours.Keys)
+        {
+            foreach(Tile _tile in tile.neighbours.Keys)
+            {
+                if (_tile.inventory.item == null || _tile.inventory.CanBeStored(type, amount) != 0)
+                {
+                    return _tile;
+                }
+            }
+        }
+
+        return null;
+    }
     public bool IsNeighbour(Tile tile)
     {
         return neighbours.ContainsKey(tile);

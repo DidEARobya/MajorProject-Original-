@@ -120,7 +120,7 @@ public class CharacterController : InventoryOwner
             return;
         }
 
-        if (destinationTile.IsNeighbour(currentTile) == true)
+        if (destinationTile.IsNeighbour(currentTile) == true || destinationTile == currentTile)
         {
             activeTask.DoWork(deltaTime);
         }
@@ -175,7 +175,7 @@ public class CharacterController : InventoryOwner
             currentTile = nextTile;
             movementPercentage = 0;
 
-            if (destinationTile.IsNeighbour(currentTile) == true)
+            if (destinationTile.IsNeighbour(currentTile) == true || destinationTile == currentTile)
             {
                 pathFinder = null;
                 return;

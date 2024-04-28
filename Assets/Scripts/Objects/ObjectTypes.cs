@@ -20,20 +20,20 @@ public class InstalledObjectTypes
     protected readonly int movementCost;
 
     protected readonly Accessibility baseAccessibility;
-    protected readonly ItemTypes itemType;
+    protected readonly ConstructionRequirements requirements;
 
     protected readonly int width = 1;
     protected readonly int height = 1;
 
-    public static readonly InstalledObjectTypes WALL = new InstalledObjectTypes(InstalledObjectType.WALL, 100, Accessibility.IMPASSABLE, ItemTypes.WOOD);
-    public static readonly InstalledObjectTypes DOOR = new InstalledObjectTypes(InstalledObjectType.DOOR, 4, Accessibility.DELAYED, ItemTypes.STONE);
+    public static readonly InstalledObjectTypes WALL = new InstalledObjectTypes(InstalledObjectType.WALL, 100, Accessibility.IMPASSABLE, ConstructionRequirements.WALL);
+    public static readonly InstalledObjectTypes DOOR = new InstalledObjectTypes(InstalledObjectType.DOOR, 4, Accessibility.DELAYED, ConstructionRequirements.DOOR);
 
-    protected InstalledObjectTypes(InstalledObjectType _type, int _movementCost, Accessibility _baseAccessibility, ItemTypes _itemType)
+    protected InstalledObjectTypes(InstalledObjectType _type, int _movementCost, Accessibility _baseAccessibility, ConstructionRequirements _requirements)
     {
         type = _type;
         movementCost = _movementCost;
         baseAccessibility = _baseAccessibility;
-        itemType = _itemType;
+        requirements = _requirements;
     }
 
     public static InstalledObjectType GetObjectType(InstalledObjectTypes type)
@@ -48,9 +48,9 @@ public class InstalledObjectTypes
     {
         return type.baseAccessibility;
     }
-    public static ItemTypes GetItemType(InstalledObjectTypes type)
+    public static Dictionary<ItemTypes, int> GetRequirements(InstalledObjectTypes type)
     {
-        return type.itemType;
+        return ConstructionRequirements.GetRequirements(type.requirements);
     }
 }
 
