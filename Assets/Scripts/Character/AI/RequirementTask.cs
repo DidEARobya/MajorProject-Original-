@@ -9,22 +9,19 @@ public class RequirementTask : Task
     public Dictionary<ItemTypes, int> requirements;
     public Dictionary<ItemTypes, int> storedRequirements;
 
-    public RequirementTask(Tile _tile, Action<Task> _taskCompleteCallback, TaskType type, Dictionary<ItemTypes, int> _requirements, float _taskTime = 1) : base(_tile, _taskCompleteCallback, type, _taskTime)
-    {
-        tile = _tile;
-        taskTime = _taskTime;
-        taskType = type;
+    FloorTypes floorType;
 
+    public RequirementTask(Tile _tile, Action<Task> _taskCompleteCallback, TaskType type, Dictionary<ItemTypes, int> _requirements, bool _isFloor, float _taskTime = 1) : base(_tile, _taskCompleteCallback, type, _isFloor, _taskTime)
+    {
         requirements = _requirements;
 
         storedRequirements = new Dictionary<ItemTypes, int>();
 
-        if (tile != null)
+        if(isFloor == true)
         {
-            tile.isPendingTask = true;
+            floorType = tile.floorType;
+            tile.SetFloorType(FloorTypes.TASK);
         }
-
-        taskCompleteCallback += _taskCompleteCallback;
     }
 
     public override void DoWork(float workTime)
@@ -37,17 +34,7 @@ public class RequirementTask : Task
             }
         }
 
-        taskTime -= workTime;
-
-        if (taskTime <= 0)
-        {
-            tile.isPendingTask = false;
-
-            if (taskCompleteCallback != null)
-            {
-                taskCompleteCallback(this);
-            }
-        }
+        base.DoWork(workTime);
     }
     bool CheckIfWorkable()
     {
@@ -114,13 +101,13 @@ public class RequirementTask : Task
             {
                 Debug.Log("No Item Available");
                 worker.ignoredTasks.Add(this);
-                worker.CancelTask();
+                worker.CancelTask(true);
                 return;
             }
 
             Path_AStar path = pair.path;
 
-            Task task = new Task(pair.tile, (t) => { InventoryManager.PickUp(worker, pair.tile); }, TaskType.CONSTRUCTION);
+            Task task = new Task(pair.tile, (t) => { InventoryManager.PickUp(worker, pair.tile); }, TaskType.CONSTRUCTION, false);
             task.path = path;
 
             Task currentTask = worker.activeTask;
@@ -132,5 +119,21 @@ public class RequirementTask : Task
     bool CheckIfRequirementsFulfilled()
     {
         return storedRequirements.Keys.Count == requirements.Keys.Count && storedRequirements.Keys.All(k => requirements.ContainsKey(k) && object.Equals(requirements[k], storedRequirements[k]));
+    }
+    public override void CancelTask(bool isCancelled)
+    {
+        if (isCancelled == false)
+        {
+            if (isFloor == true)
+            {
+                tile.SetFloorType(floorType);
+            }
+            else if (tile.installedObject != null)
+            {
+                tile.UninstallObject();
+            }
+        }
+
+        base.CancelTask(isCancelled);
     }
 }

@@ -33,7 +33,18 @@ public static class TaskManager
             taskCreatedCallback(task);
         }
     }
+    public static void RemoveTask(Task task, TaskType type)
+    {
+        if (task == null)
+        {
+            return;
+        }
 
+        if (taskLists[type].Contains(task) == true)
+        {
+            taskLists[type].Remove(task);
+        }
+    }
     public static void AddTaskCallback(Action<Task> task)
     {
         taskCreatedCallback += task;
@@ -76,6 +87,9 @@ public static class TaskManager
 
             Tile goal = list[i].tile;
 
+            Accessibility temp = goal.accessibility;
+            goal.accessibility = Accessibility.ACCESSIBLE;
+
             int distX = Mathf.Abs(start.x - goal.x);
             int distY = Mathf.Abs(start.y - goal.y);
 
@@ -93,6 +107,8 @@ public static class TaskManager
                     character.ignoredTasks.Add(list[i]);
                 }
             }
+
+            goal.accessibility = temp;
         }
 
         if(closestTask == null || path == null)

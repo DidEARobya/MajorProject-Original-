@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -13,6 +14,7 @@ public enum TerrainType
 public enum FloorType
 {
     NONE,
+    TASK_FLOOR,
     WOOD_FLOOR,
 }
 public enum Direction
@@ -54,6 +56,8 @@ public class Tile : InventoryOwner, INodeData
     Action<Tile> tileChangedCallback;
 
     public Accessibility accessibility = Accessibility.ACCESSIBLE;
+
+    public Task task;
 
     public bool isPendingTask = false;
     public bool reservedByCharacter = false;
@@ -135,6 +139,18 @@ public class Tile : InventoryOwner, INodeData
             return;
         }
 
+        FloorType oldType = FloorTypes.GetFloorType(floorType);
+        FloorType newType = FloorTypes.GetFloorType(floor);
+
+
+        if (oldType != FloorType.NONE || oldType != FloorType.TASK_FLOOR)
+        {
+            if(newType != FloorType.TASK_FLOOR)
+            {
+                InventoryManager.AddToTileInventory(this, FloorTypes.GetRequirements(floorType));
+            }
+        }
+
         floorType = floor;
 
         if (tileChangedCallback != null)
@@ -165,6 +181,19 @@ public class Tile : InventoryOwner, INodeData
     }
     public void UninstallObject()
     {
+        if(installedObject == null)
+        {
+            return;
+        }
+
+        installedObject.UnInstall();
+
+        if (installedObject.isInstalled == true)
+        {
+            InventoryManager.AddToTileInventory(this, InstalledObjectTypes.GetRequirements(installedObject.type));
+            GameManager.GetWorldGrid().InvalidatePathGraph();
+        }
+
         installedObject = null;
         accessibility = Accessibility.ACCESSIBLE;
     }
@@ -338,13 +367,17 @@ public class FloorTypes
     protected readonly FloorType type;
     protected readonly int movementCost;
 
-    public static readonly FloorTypes NONE = new FloorTypes(FloorType.NONE, 0);
-    public static readonly FloorTypes WOOD = new FloorTypes(FloorType.WOOD_FLOOR, 1);
+    protected readonly FloorRequirements requirements;
 
-    protected FloorTypes(FloorType _type, int _movementCost)
+    public static readonly FloorTypes NONE = new FloorTypes(FloorType.NONE, 0, null);
+    public static readonly FloorTypes TASK = new FloorTypes(FloorType.TASK_FLOOR, 0, null);
+    public static readonly FloorTypes WOOD = new FloorTypes(FloorType.WOOD_FLOOR, 1, FloorRequirements.WOOD);
+
+    protected FloorTypes(FloorType _type, int _movementCost, FloorRequirements _requirements)
     {
         type = _type;
         movementCost = _movementCost;
+        requirements = _requirements;
     }
 
     public static FloorType GetFloorType(FloorTypes type)
@@ -354,5 +387,14 @@ public class FloorTypes
     public static int GetMovementCost(FloorTypes type)
     {
         return type.movementCost;
+    }
+    public static Dictionary<ItemTypes, int> GetRequirements(FloorTypes type)
+    {
+        if(type.requirements == null)
+        {
+            return null;
+        }
+
+        return FloorRequirements.GetRequirements(type.requirements);
     }
 }

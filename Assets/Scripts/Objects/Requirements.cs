@@ -20,3 +20,21 @@ public class ConstructionRequirements
         return type.requirements;
     }
 }
+public class FloorRequirements
+{
+    protected readonly FloorTypes type;
+    protected readonly Dictionary<ItemTypes, int> requirements;
+
+    public static readonly FloorRequirements WOOD = new FloorRequirements(FloorTypes.WOOD, new Dictionary<ItemTypes, int>() { { ItemTypes.WOOD, 1 } });
+
+    protected FloorRequirements(FloorTypes _type, Dictionary<ItemTypes, int> _requirements)
+    {
+        type = _type;
+        requirements = _requirements;
+    }
+
+    public static Dictionary<ItemTypes, int> GetRequirements(FloorRequirements type)
+    {
+        return type.requirements;
+    }
+}

@@ -10,6 +10,7 @@ using UnityEngine.UIElements;
 public enum TaskType
 {
     CONSTRUCTION,
+    DECONSTRUCTION
 }
 public class Task
 {
@@ -23,11 +24,15 @@ public class Task
     protected Action<Task> taskCompleteCallback;
     protected Action<Task> taskCancelledCallback;
 
-    public Task (Tile _tile, Action<Task> _taskCompleteCallback, TaskType type, float _taskTime = 1)
+    protected bool isFloor;
+
+    public Task (Tile _tile, Action<Task> _taskCompleteCallback, TaskType type, bool _isFloor, float _taskTime = 1)
     {
         tile = _tile;
+        tile.task = this;
         taskTime = _taskTime;
         taskType = type;
+        isFloor = _isFloor;
 
         if(tile != null)
         {
@@ -60,17 +65,26 @@ public class Task
             }
         }
     }
-    public void CancelTask(bool isCancelled)
+    public virtual void CancelTask(bool isCancelled)
     {
         if(isCancelled == true)
         {
             TaskManager.AddTask(this, taskType);
         }
+        else
+        {
+            TaskManager.RemoveTask(this, taskType);
+            tile.isPendingTask = false;
+            tile.task = null;
+        }
 
-        tile.isPendingTask = false;
-        worker = null;
+        if (worker != null)
+        {
+            worker.pathFinder = null;
+            worker = null;
+        }
 
-        if(taskCancelledCallback != null)
+        if (taskCancelledCallback != null)
         {
             taskCancelledCallback(this);
         }

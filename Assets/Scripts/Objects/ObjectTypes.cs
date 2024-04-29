@@ -18,6 +18,7 @@ public class InstalledObjectTypes
 {
     protected readonly InstalledObjectType type;
     protected readonly int movementCost;
+    protected readonly int durability;
 
     protected readonly Accessibility baseAccessibility;
     protected readonly ConstructionRequirements requirements;
@@ -25,13 +26,14 @@ public class InstalledObjectTypes
     protected readonly int width = 1;
     protected readonly int height = 1;
 
-    public static readonly InstalledObjectTypes WALL = new InstalledObjectTypes(InstalledObjectType.WALL, 100, Accessibility.IMPASSABLE, ConstructionRequirements.WALL);
-    public static readonly InstalledObjectTypes DOOR = new InstalledObjectTypes(InstalledObjectType.DOOR, 4, Accessibility.DELAYED, ConstructionRequirements.DOOR);
+    public static readonly InstalledObjectTypes WALL = new InstalledObjectTypes(InstalledObjectType.WALL, 100, 200, Accessibility.IMPASSABLE, ConstructionRequirements.WALL);
+    public static readonly InstalledObjectTypes DOOR = new InstalledObjectTypes(InstalledObjectType.DOOR, 4, 200, Accessibility.DELAYED, ConstructionRequirements.DOOR);
 
-    protected InstalledObjectTypes(InstalledObjectType _type, int _movementCost, Accessibility _baseAccessibility, ConstructionRequirements _requirements)
+    protected InstalledObjectTypes(InstalledObjectType _type, int _movementCost, int _durability, Accessibility _baseAccessibility, ConstructionRequirements _requirements)
     {
         type = _type;
         movementCost = _movementCost;
+        durability = _durability;
         baseAccessibility = _baseAccessibility;
         requirements = _requirements;
     }
@@ -43,6 +45,10 @@ public class InstalledObjectTypes
     public static int GetMovementCost(InstalledObjectTypes type)
     {
         return type.movementCost;
+    }
+    public static int GetDurability(InstalledObjectTypes type)
+    {
+        return type.durability;
     }
     public static Accessibility GetBaseAccessibility(InstalledObjectTypes type)
     {

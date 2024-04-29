@@ -60,6 +60,11 @@ public static class InventoryManager
     }
     public static void AddToTileInventory(Tile tile, Dictionary<ItemTypes, int> toDrop)
     {
+        if(toDrop == null)
+        {
+            return;
+        }
+
         foreach (ItemTypes type in toDrop.Keys)
         {
             AddToTileInventory(type, tile, toDrop[type]);

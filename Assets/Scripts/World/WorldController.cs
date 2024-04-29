@@ -15,7 +15,7 @@ public class WorldController : MonoBehaviour
     }
     public void Init(TileSpriteController tileSpriteController)
     {
-        worldGrid = new WorldGrid(100, 100);
+        worldGrid = new WorldGrid(50, 50);
 
         camera.transform.position = new Vector3(worldGrid.mapWidth / 2, worldGrid.mapHeight / 2, -10);
 

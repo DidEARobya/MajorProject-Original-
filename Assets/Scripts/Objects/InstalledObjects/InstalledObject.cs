@@ -15,6 +15,7 @@ public class InstalledObject
     public float openVal = 0.0f;
     public bool isOpening = false;
 
+    public float durability;
     public bool isInstalled = false;
 
     Action<InstalledObject> updateObjectCallback;
@@ -29,6 +30,7 @@ public class InstalledObject
         obj.baseTile = tile;
         obj.type = _type;
         obj.isInstalled = _isInstalled;
+        obj.durability = InstalledObjectTypes.GetDurability(_type);
 
         if (tile.InstallObject(obj) == false)
         {
@@ -40,7 +42,7 @@ public class InstalledObject
 
     public void Update(float deltaTime)
     {
-        if ((updateActionCallback != null))
+        if (updateActionCallback != null)
         {
             updateActionCallback(this, deltaTime);
         }
@@ -63,18 +65,13 @@ public class InstalledObject
     }
     public void UnInstall()
     {
-        GameManager.GetWorldGrid().InvalidatePathGraph();
-        GameManager.GetInstalledSpriteController().Uninstall(this);
-        baseTile.UninstallObject();
-
         if (InstalledObjectTypes.GetBaseAccessibility(type) == Accessibility.DELAYED)
         {
             RemoveOnActionCallback(InstalledObjectAction.Door_UpdateAction);
         }
 
-        InventoryManager.AddToTileInventory(baseTile, InstalledObjectTypes.GetRequirements(type));
+        GameManager.GetInstalledSpriteController().Uninstall(this);
 
-        baseTile = null; 
         UnityEngine.Object.Destroy(gameObject);
     }
     public void AddOnActionCallback(Action<InstalledObject, float> callback)
