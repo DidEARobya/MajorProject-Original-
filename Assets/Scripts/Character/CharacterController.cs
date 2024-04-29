@@ -26,6 +26,8 @@ public class CharacterController : InventoryOwner
     float movementPercentage = 0f;
     float movementSpeed = 2f;
 
+    public float workSpeed = 20f;
+
     public Task activeTask;
     public Stack<Task> taskStack = new Stack<Task>();
 
@@ -60,7 +62,7 @@ public class CharacterController : InventoryOwner
 
         if (activeTask == null)
         {
-            if(workDelay < 0.5f)
+            if(workDelay < 0.1f)
             {
                 return;
             }
@@ -120,15 +122,21 @@ public class CharacterController : InventoryOwner
             return;
         }
 
-        if (destinationTile.IsNeighbour(currentTile) == true)
+        if(destinationTile.IsNeighbour(currentTile) == true || destinationTile == currentTile)
         {
             activeTask.DoWork(deltaTime);
         }
+        
     }
     void TraversePath(float deltaTime)
     {
         if(pathFinder == null)
         {
+            if(currentTile != nextTile)
+            {
+                Move(deltaTime);
+            }
+
             return;
         }
 
@@ -136,12 +144,9 @@ public class CharacterController : InventoryOwner
         {
             if (pathFinder == null || pathFinder.Length() == 0)
             {
-                if (pathFinder.Length() == 0)
-                {
-                    CancelTask();
-                    pathFinder = null;
-                    return;
-                }
+                CancelTask(true);
+                pathFinder = null;
+                return;
             }
 
             nextTile = pathFinder.DequeueNextTile();
@@ -175,11 +180,12 @@ public class CharacterController : InventoryOwner
             currentTile = nextTile;
             movementPercentage = 0;
 
-            if (destinationTile.IsNeighbour(currentTile) == true)
+            if (destinationTile.IsNeighbour(currentTile) == true || destinationTile == currentTile)
             {
                 pathFinder = null;
                 return;
             }
+            
         }
 
         if (characterUpdateCallback != null)
@@ -201,14 +207,14 @@ public class CharacterController : InventoryOwner
         characterUpdateCallback -= callback;
     }
 
-    public void CancelTask()
+    public void CancelTask(bool reQueue)
     {
         if(activeTask == null)
         {
             return;
         }
 
-        activeTask.CancelTask(true);
+        activeTask.CancelTask(reQueue);
         activeTask = null;
     }
     public void EndTask(Task task)

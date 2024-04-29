@@ -17,24 +17,12 @@ public static class InventoryManager
         {
             case InventoryOwnerType.TILE:
 
-                if(tile == null)
-                {
-                    Debug.Log("Invalid Tile Inventory creation");
-                    return;
-                }
-
                 tile.inventory = inventory;
                 tile.ownerTile = tile;
                 tile.inventory.owner = tile;
                 break;
 
             case InventoryOwnerType.CHARACTER:
-
-                if (character == null)
-                {
-                    Debug.Log("Invalid Character Inventory creation");
-                    return;
-                }
 
                 character.inventory = inventory;
                 character.ownerCharacter = character;
@@ -46,12 +34,40 @@ public static class InventoryManager
     }
     public static void AddToTileInventory(ItemTypes type, Tile tile, int amount)
     {
-        tile.inventory.StoreItem(type, amount);
-        CharacterManager.ResetCharacterTaskIgnores();
+        int excess = tile.inventory.StoreItem(type, amount);
+
+        if(excess != 0)
+        {
+            Tile temp = tile.GetNearestAvailableInventory(type, excess);
+
+            if (temp != null)
+            {
+                temp.inventory.StoreItem(type, excess);
+
+                if (inventoryUpdateCallback != null)
+                {
+                    inventoryUpdateCallback(temp.inventory);
+                }
+            }
+        }
 
         if (inventoryUpdateCallback != null)
         {
             inventoryUpdateCallback(tile.inventory);
+        }
+
+        CharacterManager.ResetCharacterTaskIgnores();
+    }
+    public static void AddToTileInventory(Tile tile, Dictionary<ItemTypes, int> toDrop)
+    {
+        if(toDrop == null)
+        {
+            return;
+        }
+
+        foreach (ItemTypes type in toDrop.Keys)
+        {
+            AddToTileInventory(type, tile, toDrop[type]);
         }
     }
     public static void PickUp(CharacterController character, Tile tile, int amount)

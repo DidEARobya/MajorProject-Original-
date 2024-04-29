@@ -1,17 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public class Inventory
 {
     public ItemTypes item;
     public InventoryOwner owner;
     public GameObject inventoryObject;
-
-    public int maxStackSize
-    {
-        get { return ItemTypes.GetMaxStackSize(item); }
-    }
 
     public int stackSize;
 
@@ -48,7 +44,7 @@ public class Inventory
             item = inventory.item;
         }
 
-        int toTake = maxStackSize - stackSize;
+        int toTake = ItemTypes.GetMaxStackSize(item) - stackSize;
 
         if(toTake >= inventory.stackSize)
         {
@@ -90,33 +86,29 @@ public class Inventory
         item = null;
         stackSize = 0;
     }
-    public void StoreItem(ItemTypes _item)
+    public int StoreItem(ItemTypes _item, int amount)
     {
-        if (CanBeStored(_item, 1) == false)
+        if(amount == 60)
         {
-            return;
+
         }
+
+        int toStore = CanBeStored(_item, amount);
+
+        if(toStore == 0)
+        {
+            return amount;
+        }
+
+        int toReturn = amount - toStore;
 
         if (item == null)
         {
             item = _item;
         }
 
-        stackSize += 1;
-    }
-    public void StoreItem(ItemTypes _item, int amount)
-    {
-        if (CanBeStored(_item, amount) == false)
-        {
-            return;
-        }
-
-        if (item == null)
-        {
-            item = _item;
-        }
-
-        stackSize += amount;
+        stackSize += toStore;
+        return toReturn;
     }
     public bool CanBeStored(Inventory inventory)
     {
@@ -127,33 +119,28 @@ public class Inventory
 
         if (item != inventory.item)
         {
-            return false;   
+            return false;
         }
 
-        if(stackSize + inventory.stackSize > maxStackSize)
+        if(stackSize + inventory.stackSize > ItemTypes.GetMaxStackSize(inventory.item))
         {
             return false;
         }
 
         return true;
     }
-    public bool CanBeStored(ItemTypes _item, int amount)
+    public int CanBeStored(ItemTypes _item, int amount)
     {
-        if(item == null)
+        if (item != null && item != _item)
         {
-            return true;
+            return 0;
         }
 
-        if (item != _item)
+        if (stackSize + amount >= ItemTypes.GetMaxStackSize(_item))
         {
-            return false;
+            return ItemTypes.GetMaxStackSize(_item) - stackSize;
         }
 
-        if (stackSize + amount >= maxStackSize)
-        {
-            return false;
-        }
-
-        return true;
+        return amount;
     }
 }

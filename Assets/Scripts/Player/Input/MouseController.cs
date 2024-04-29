@@ -18,7 +18,8 @@ public enum BuildMode
     FLOOR,
     OBJECT,
     CLEAR,
-    DESTROY
+    DESTROY,
+    CANCEL
 }
 public class MouseController : MonoBehaviour
 {
@@ -107,8 +108,13 @@ public class MouseController : MonoBehaviour
             Debug.Log("DestroyMode");
             buildMode = BuildMode.DESTROY;
         }
+        if (Input.GetKeyUp(KeyCode.Alpha4))
+        {
+            Debug.Log("CancelMode");
+            buildMode = BuildMode.CANCEL;
+        }
 
-        if(buildMode == BuildMode.OBJECT)
+        if (buildMode == BuildMode.OBJECT)
         {
             if(Input.GetKeyUp(KeyCode.N))
             {

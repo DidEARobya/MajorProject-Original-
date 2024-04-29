@@ -74,6 +74,8 @@ public class Path_AStar
                 }
             }
         }
+
+        return;
     }
     void RetracePath(Dictionary<Node, Node> cameFrom, Node current)
     {
