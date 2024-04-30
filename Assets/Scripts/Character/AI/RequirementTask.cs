@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
 
 public class RequirementTask : Task
@@ -101,7 +102,7 @@ public class RequirementTask : Task
             {
                 Debug.Log("No Item Available");
                 worker.ignoredTasks.Add(this);
-                worker.CancelTask(true);
+                worker.CancelTask(true, this);
                 return;
             }
 
@@ -111,7 +112,7 @@ public class RequirementTask : Task
             task.path = path;
 
             Task currentTask = worker.activeTask;
-            worker.taskStack.Push(currentTask);
+            worker.taskList.Add(currentTask);
 
             worker.UpdateTask(task);
         }
@@ -122,18 +123,25 @@ public class RequirementTask : Task
     }
     public override void CancelTask(bool isCancelled)
     {
-        if (isCancelled == false)
+        base.CancelTask(isCancelled);
+
+        if (storedRequirements.Count > 0)
         {
-            if (isFloor == true)
-            {
-                tile.SetFloorType(floorType);
-            }
-            else if (tile.installedObject != null)
-            {
-                tile.UninstallObject();
-            }
+            InventoryManager.AddToTileInventory(tile, storedRequirements);
         }
 
-        base.CancelTask(isCancelled);
+        if (isCancelled == true)
+        {
+            return;
+        }
+
+        if (isFloor == true)
+        {
+            tile.SetFloorType(floorType);
+        }
+        else if (tile.installedObject != null)
+        {
+            tile.UninstallObject();
+        }
     }
 }

@@ -4,9 +4,9 @@ using UnityEngine;
 
 public static class Utility
 {
-    public static Path_AStar CheckIfTaskValid(Tile start, Tile goal)
+    public static Path_AStar CheckIfTaskValid(Tile start, Tile goal, bool refreshPathGraph)
     {
-        Path_AStar pathFinder = new Path_AStar(start, goal, true);
+        Path_AStar pathFinder = new Path_AStar(start, goal, true, refreshPathGraph);
 
         if (pathFinder.Length() == 0)
         {

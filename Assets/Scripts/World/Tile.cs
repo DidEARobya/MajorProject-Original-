@@ -188,12 +188,6 @@ public class Tile : InventoryOwner, INodeData
 
         installedObject.UnInstall();
 
-        if (installedObject.isInstalled == true)
-        {
-            InventoryManager.AddToTileInventory(this, InstalledObjectTypes.GetRequirements(installedObject.type));
-            GameManager.GetWorldGrid().InvalidatePathGraph();
-        }
-
         installedObject = null;
         accessibility = Accessibility.ACCESSIBLE;
     }
@@ -217,7 +211,7 @@ public class Tile : InventoryOwner, INodeData
 
         if(installedObject != null && installedObject.isInstalled)
         {
-            cost += InstalledObjectTypes.GetMovementCost(installedObject.type);
+            cost += installedObject.GetMovementCost();
         }
 
         return cost;

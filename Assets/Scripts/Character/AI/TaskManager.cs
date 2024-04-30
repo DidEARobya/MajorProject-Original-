@@ -4,6 +4,11 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
+public enum TaskType
+{
+    CONSTRUCTION,
+    MINING
+}
 public static class TaskManager
 {
     static Dictionary<TaskType, List<Task>> taskLists = new Dictionary<TaskType, List<Task>>();
@@ -13,6 +18,7 @@ public static class TaskManager
     public static void Init()
     {
         taskLists.Add(TaskType.CONSTRUCTION, new List<Task>());
+        taskLists.Add(TaskType.MINING, new List<Task>());
     }
     public static void AddTask(Task task, TaskType type)
     {
@@ -74,6 +80,7 @@ public static class TaskManager
 
     static Task GetClosestValidTask(List<Task> list, Tile start, CharacterController character)
     {
+        bool refreshPathGraph = false;
         float lowestDist = Mathf.Infinity;
         Task closestTask = null;
         Path_AStar path = null;
@@ -88,14 +95,19 @@ public static class TaskManager
             Tile goal = list[i].tile;
 
             Accessibility temp = goal.accessibility;
-            goal.accessibility = Accessibility.ACCESSIBLE;
+
+            if(temp != Accessibility.ACCESSIBLE || temp != Accessibility.DELAYED)
+            {
+                refreshPathGraph = true;
+                goal.accessibility = Accessibility.ACCESSIBLE;
+            }
 
             int distX = Mathf.Abs(start.x - goal.x);
             int distY = Mathf.Abs(start.y - goal.y);
 
             if (lowestDist > (distX + distY))
             {
-                path = Utility.CheckIfTaskValid(start, goal);
+                path = Utility.CheckIfTaskValid(start, goal, refreshPathGraph);
 
                 if (path != null)
                 {

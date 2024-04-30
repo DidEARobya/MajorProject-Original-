@@ -15,26 +15,19 @@ public class DestroyTask : Task
         {
             spriteRenderer = tile.installedObject.gameObject.GetComponent<SpriteRenderer>();
             colour = spriteRenderer.color;
-
-            Color _colour = colour;
-            _colour.r = 1f;
-            _colour.g = 0f;
-            _colour.b = 0f;
-
-            spriteRenderer.color = _colour;
         }
         else
         {
             spriteRenderer = tile.tileObj.GetComponent<SpriteRenderer>();
             colour = spriteRenderer.color;
-
-            Color _colour = colour;
-            _colour.r = 1f;
-            _colour.g = 0f;
-            _colour.b = 0f;
-
-            spriteRenderer.color = _colour;
         }
+
+        Color _colour = colour;
+        _colour.r = 1f;
+        _colour.g = 0f;
+        _colour.b = 0f;
+
+        spriteRenderer.color = _colour;
     }
     public override void DoWork(float workTime)
     {

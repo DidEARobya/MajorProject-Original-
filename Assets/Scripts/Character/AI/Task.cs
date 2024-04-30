@@ -7,11 +7,6 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public enum TaskType
-{
-    CONSTRUCTION,
-    DECONSTRUCTION
-}
 public class Task
 {
     public Tile tile;
@@ -53,9 +48,9 @@ public class Task
 
     public virtual void DoWork(float workTime)
     {
-        taskTime -= workTime;
+        taskTime -= workTime * worker.workSpeed;
 
-        if(taskTime <= 0)
+        if (taskTime <= 0)
         {
             tile.isPendingTask = false;
 

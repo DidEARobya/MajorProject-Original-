@@ -167,9 +167,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a61080634426d2e4a896c175590dffdd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  installedSprites:
-  - {fileID: 21300000, guid: dbc9a55b37c47b746abeee22e0187e95, type: 3}
-  - {fileID: 21300000, guid: eb45b1269a0cdcc47a640f6e7caca2f5, type: 3}
+  objSprites: {fileID: 100100200, guid: 9c2d035d71f8e704aa6f3f9b135b89e3, type: 3}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0

@@ -139,13 +139,9 @@ public static class InventoryManager
             int distX = Mathf.Abs(start.x - temp.x);
             int distY = Mathf.Abs(start.y - temp.y);
 
-            if ((distX == 0 && distY == 0))
-            {
-                
-            }
             if (lowestDist > (distX + distY))
             {
-                path = Utility.CheckIfTaskValid(start, temp);
+                path = Utility.CheckIfTaskValid(start, temp, false);
 
                 if (path != null)
                 {

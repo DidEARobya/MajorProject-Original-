@@ -33,6 +33,8 @@ public class GameManager : MonoBehaviour
         worldController.Init(tileSpriteController);
         worldGrid = worldController.worldGrid;
 
+        TaskManager.Init();
+
         inventorySpriteController.Init();
         tileSpriteController.Init();
         installedSpriteController.Init();
@@ -40,7 +42,6 @@ public class GameManager : MonoBehaviour
 
         mouseController.Init(worldGrid);
         buildModeController.Init();
-        TaskManager.Init();
     }
     private void Update()
     {

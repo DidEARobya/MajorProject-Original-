@@ -29,7 +29,7 @@ public class CharacterController : InventoryOwner
     public float workSpeed = 20f;
 
     public Task activeTask;
-    public Stack<Task> taskStack = new Stack<Task>();
+    public List<Task> taskList = new List<Task>();
 
     float workDelay = 0f;
     public HashSet<Task> ignoredTasks = new HashSet<Task>(); 
@@ -60,18 +60,19 @@ public class CharacterController : InventoryOwner
     {
         workDelay += deltaTime;
 
-        if (activeTask == null)
+        if (workDelay < 0.1f)
         {
-            if(workDelay < 0.1f)
-            {
-                return;
-            }
+            return;
+        }
 
-            if(taskStack.Count > 0)
+        if (activeTask == null)
+        { 
+            if(taskList.Count > 0)
             {
-                activeTask = taskStack.Pop();
+                activeTask = taskList[0];
+                taskList.RemoveAt(0);
 
-                pathFinder = new Path_AStar(currentTile, activeTask.tile, true);
+                pathFinder = new Path_AStar(currentTile, activeTask.tile, true, false);
 
                 if(pathFinder == null)
                 {
@@ -81,6 +82,11 @@ public class CharacterController : InventoryOwner
             else
             {
                 activeTask = TaskManager.GetTask(TaskType.CONSTRUCTION, this);
+
+                if (activeTask == null)
+                {
+                    activeTask = TaskManager.GetTask(TaskType.MINING, this);
+                }
             }
 
             if (activeTask == null)
@@ -144,7 +150,7 @@ public class CharacterController : InventoryOwner
         {
             if (pathFinder == null || pathFinder.Length() == 0)
             {
-                CancelTask(true);
+                CancelTask(true, activeTask);
                 pathFinder = null;
                 return;
             }
@@ -207,11 +213,20 @@ public class CharacterController : InventoryOwner
         characterUpdateCallback -= callback;
     }
 
-    public void CancelTask(bool reQueue)
+    public void CancelTask(bool reQueue, Task task)
     {
         if(activeTask == null)
         {
             return;
+        }
+
+        if(task != activeTask)
+        {
+            if(taskList.Contains(task))
+            {
+                taskList.Remove(task);
+                task.CancelTask(reQueue);
+            }
         }
 
         activeTask.CancelTask(reQueue);

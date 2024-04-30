@@ -11,7 +11,7 @@ public class Path_AStar
 {
     Queue<INodeData> path = new Queue<INodeData>();
     bool isPlayer;
-    public Path_AStar(Tile start, Tile end, bool _isPlayer)
+    public Path_AStar(Tile start, Tile end, bool _isPlayer, bool refreshPathGraph)
     {
         if (start == null || end == null)
         {
@@ -22,7 +22,7 @@ public class Path_AStar
 
         WorldGrid world = GameManager.GetWorldGrid();
 
-        if (world.pathGraph == null)
+        if (world.pathGraph == null || refreshPathGraph == true)
         {
             world.pathGraph = new Path_TileGraph(world);
         }
