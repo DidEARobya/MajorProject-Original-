@@ -51,7 +51,6 @@ public class InstalledSpriteController : MonoBehaviour
             renderer.color = colour;
         }
 
-        Debug.Log(name);
         _obj.AddOnUpdateCallback(OnInstalledObjectChanged);
     }
     public void OnInstalledObjectChanged(InstalledObject obj)

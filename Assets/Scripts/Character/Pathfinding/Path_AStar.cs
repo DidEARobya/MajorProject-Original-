@@ -3,13 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using UnityEditorInternal;
 using UnityEngine;
-using UnityEngine.Animations;
 
 public class Path_AStar
 {
     Queue<INodeData> path = new Queue<INodeData>();
+
     bool isPlayer;
     public Path_AStar(Tile start, Tile end, bool _isPlayer, bool refreshPathGraph)
     {
@@ -25,6 +24,11 @@ public class Path_AStar
         if (world.pathGraph == null || refreshPathGraph == true)
         {
             world.pathGraph = new Path_TileGraph(world);
+        }
+
+        if (end.accessibility == Accessibility.IMPASSABLE)
+        {
+            world.pathGraph.RefreshNeighboursAroundTile(end);
         }
 
         Node startNode = start.pathNode;
@@ -88,6 +92,7 @@ public class Path_AStar
             totalPath.Enqueue(current.data);
         }
 
+        totalPath.Dequeue();
         path = new Queue<INodeData>(totalPath.Reverse());
     }
 

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 
 public class CharacterSpriteController : MonoBehaviour
@@ -7,15 +8,22 @@ public class CharacterSpriteController : MonoBehaviour
     [SerializeField]
     public Sprite characterSprite;
 
-    WorldGrid world;
+    WorldGrid grid;
     public void Init()
     {
-        world = GameManager.GetWorldGrid();
+        grid = GameManager.GetWorldGrid();
         CharacterManager.SetCharacterCreatedCallback(OnCharacterCreated);
 
-        CharacterController test = CharacterManager.CreateCharacter(world.GetTile(world.mapWidth / 2, world.mapHeight / 2));
-    }
+        int length = grid.mapWidth;
+        int halfLength = grid.worldCentre.x;
 
+        CharacterController test = CharacterManager.CreateCharacter(grid.GetTile(halfLength, halfLength));
+        CharacterController test2 = CharacterManager.CreateCharacter(grid.GetTile(halfLength + 1, halfLength + 1));
+        CharacterController test3 = CharacterManager.CreateCharacter(grid.GetTile(halfLength + 2, halfLength - 1));
+        CharacterController test4 = CharacterManager.CreateCharacter(grid.GetTile(halfLength + 2, halfLength - 4));
+        CharacterController test5 = CharacterManager.CreateCharacter(grid.GetTile(halfLength + 5, halfLength - 1));
+
+    }
     public void OnCharacterCreated(CharacterController character)
     {
         GameObject obj = new GameObject();

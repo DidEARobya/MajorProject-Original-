@@ -31,20 +31,13 @@ public class DestroyTask : Task
     }
     public override void DoWork(float workTime)
     {
-        taskTime -= workTime * worker.workSpeed;
+        base.DoWork(workTime);
 
         if (taskTime <= 0)
         {
-            tile.isPendingTask = false;
-
-            if (taskCompleteCallback != null)
+            if (isFloor == true)
             {
-                if(isFloor == true)
-                {
-                    spriteRenderer.color = colour;
-                }
-
-                taskCompleteCallback(this);
+                spriteRenderer.color = colour;
             }
         }
     }

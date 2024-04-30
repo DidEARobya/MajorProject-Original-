@@ -24,7 +24,6 @@ public class RequirementTask : Task
             tile.SetFloorType(FloorTypes.TASK);
         }
     }
-
     public override void DoWork(float workTime)
     {
         if (requirements != null && CheckIfRequirementsFulfilled() == false)
@@ -39,26 +38,33 @@ public class RequirementTask : Task
     }
     bool CheckIfWorkable()
     {
-        if (worker.inventory.item != null && requirements.ContainsKey(worker.inventory.item))
+        if (worker.inventory.item != null)
         {
-            if (storedRequirements.ContainsKey(worker.inventory.item))
+            if(requirements.ContainsKey(worker.inventory.item))
             {
-                storedRequirements[worker.inventory.item] += worker.inventory.stackSize;
+                if (storedRequirements.ContainsKey(worker.inventory.item))
+                {
+                    storedRequirements[worker.inventory.item] += worker.inventory.stackSize;
+                }
+                else
+                {
+                    storedRequirements.Add(worker.inventory.item, worker.inventory.stackSize);
+                }
+
+                if (storedRequirements[worker.inventory.item] > requirements[worker.inventory.item])
+                {
+                    int diff = storedRequirements[worker.inventory.item] - requirements[worker.inventory.item];
+                    storedRequirements[worker.inventory.item] -= diff;
+
+                    InventoryManager.AddToTileInventory(worker.inventory.item, worker.currentTile, diff);
+                }
+
+                InventoryManager.ClearInventory(worker.inventory);
             }
             else
             {
-                storedRequirements.Add(worker.inventory.item, worker.inventory.stackSize);
+                worker.DropInventory();
             }
-
-            if (storedRequirements[worker.inventory.item] > requirements[worker.inventory.item])
-            {
-                int diff = storedRequirements[worker.inventory.item] - requirements[worker.inventory.item];
-                storedRequirements[worker.inventory.item] -= diff;
-
-                InventoryManager.AddToTileInventory(worker.inventory.item, worker.currentTile, diff);
-            }
-
-            InventoryManager.ClearInventory(worker.inventory);
         }
 
         if (CheckIfRequirementsFulfilled() == true)
@@ -90,15 +96,17 @@ public class RequirementTask : Task
             {
                 type = requirements.ElementAt(i).Key;
                 toTake = required - stored;
+
                 break;
             }
         }
 
         if (type != null)
         {
-            TilePathPair pair = InventoryManager.GetClosestValidItem(worker.currentTile, type);
+            TilePathPair pair = InventoryManager.GetClosestValidItem(worker.currentTile, type, toTake);
+            Path_AStar path = pair.path;
 
-            if (pair.path == null)
+            if (path == null)
             {
                 Debug.Log("No Item Available");
                 worker.ignoredTasks.Add(this);
@@ -106,15 +114,10 @@ public class RequirementTask : Task
                 return;
             }
 
-            Path_AStar path = pair.path;
-
-            Task task = new Task(pair.tile, (t) => { InventoryManager.PickUp(worker, pair.tile); }, TaskType.CONSTRUCTION, false);
+            Task task = new Task(pair.tile, (t) => { InventoryManager.PickUp(worker, pair.tile, toTake); }, TaskType.CONSTRUCTION, false);
             task.path = path;
 
-            Task currentTask = worker.activeTask;
-            worker.taskList.Add(currentTask);
-
-            worker.UpdateTask(task);
+            worker.ForcePrioritiseTask(task);
         }
     }
     bool CheckIfRequirementsFulfilled()
@@ -128,6 +131,7 @@ public class RequirementTask : Task
         if (storedRequirements.Count > 0)
         {
             InventoryManager.AddToTileInventory(tile, storedRequirements);
+            storedRequirements.Clear();
         }
 
         if (isCancelled == true)

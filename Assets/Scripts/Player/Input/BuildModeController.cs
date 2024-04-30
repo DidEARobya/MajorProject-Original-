@@ -27,43 +27,35 @@ public class BuildModeController : MonoBehaviour
     {
         grid = GameManager.GetWorldGrid();
 
-        int length = grid.mapHeight;
+        int length = grid.mapWidth;
+        int halfLength = grid.worldCentre.x;
+        int offset = 5;
 
-        int x = 10;
-        int y = 10;
+        int spawnX = halfLength;
+        int spawnY = halfLength;
+
 
         for (int _x = -1; _x <= 1; _x++)
         {
             for (int _y = -1; _y <= 1; _y++)
             {
-                if (_x == 0 && _y == 0)
-                {
-                    continue;
-                }
-                int checkX = x + _x;
-                int checkY = y + _y;
+                int checkX = spawnX + _x;
+                int checkY = spawnY + _y;
 
                 if (checkX >= 0 && checkX < length && checkY >= 0 && checkY < length)
                 {
                     if (grid.GetTile(checkX, checkY) != null)
                     {
-                        InventoryManager.AddToTileInventory(ItemTypes.WOOD, grid.GetTile(checkX, checkY), 50);
+                        InventoryManager.AddToTileInventory(ItemTypes.WOOD, grid.GetTile(checkX - offset, checkY), 50);
+                        InventoryManager.AddToTileInventory(ItemTypes.STONE, grid.GetTile(checkX + offset, checkY), 50);
+                        InventoryManager.AddToTileInventory(ItemTypes.IRON, grid.GetTile(checkX, checkY + offset), 50);
+
+                        ObjectManager.SpawnOre(OreTypes.STONE_ORE, grid.GetTile(checkX - offset, checkY - offset));
+                        ObjectManager.SpawnOre(OreTypes.IRON_ORE, grid.GetTile(checkX + offset, checkY + offset));
                     }
                 }
             }
         }
-
-        InventoryManager.AddToTileInventory(ItemTypes.WOOD, grid.GetTile(x, y), 60);
-
-        ObjectManager.InstallFurniture(FurnitureTypes.WOOD_WALL, grid.GetTile(15, 15), true);
-        ObjectManager.SpawnOre(OreTypes.STONE_ORE, grid.GetTile(16, 16));
-        ObjectManager.SpawnOre(OreTypes.IRON_ORE, grid.GetTile(16, 18));
-
-        InventoryManager.AddToTileInventory(ItemTypes.STONE, grid.GetTile(20, 10), 2);
-        InventoryManager.AddToTileInventory(ItemTypes.STONE, grid.GetTile(21, 10), 1);
-        InventoryManager.AddToTileInventory(ItemTypes.STONE, grid.GetTile(22, 10), 3);
-        InventoryManager.AddToTileInventory(ItemTypes.STONE, grid.GetTile(23, 10), 3);
-        InventoryManager.AddToTileInventory(ItemTypes.STONE, grid.GetTile(24, 10), 2);
     }
     public void Build(Tile tile, BuildMode mode, FurnitureTypes toBuild = null)
     {

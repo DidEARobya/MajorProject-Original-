@@ -147,6 +147,11 @@ public class ItemTypes
     }
     public static int GetMaxStackSize(ItemTypes type)
     {
+        if(type == null)
+        {
+            return 0;
+        }
+
         return type.maxStackSize;
     }
 }

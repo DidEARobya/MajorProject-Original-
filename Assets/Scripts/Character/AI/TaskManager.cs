@@ -94,14 +94,6 @@ public static class TaskManager
 
             Tile goal = list[i].tile;
 
-            Accessibility temp = goal.accessibility;
-
-            if(temp != Accessibility.ACCESSIBLE || temp != Accessibility.DELAYED)
-            {
-                refreshPathGraph = true;
-                goal.accessibility = Accessibility.ACCESSIBLE;
-            }
-
             int distX = Mathf.Abs(start.x - goal.x);
             int distY = Mathf.Abs(start.y - goal.y);
 
@@ -119,8 +111,6 @@ public static class TaskManager
                     character.ignoredTasks.Add(list[i]);
                 }
             }
-
-            goal.accessibility = temp;
         }
 
         if(closestTask == null || path == null)

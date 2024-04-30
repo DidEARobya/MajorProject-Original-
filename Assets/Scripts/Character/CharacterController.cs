@@ -108,8 +108,9 @@ public class CharacterController : InventoryOwner
             destinationTile = activeTask.tile;
         }
     }
-    public void UpdateTask(Task task)
+    public void ForcePrioritiseTask(Task task)
     {
+        taskList.Add(activeTask);
         activeTask = task;
 
         pathFinder = activeTask.path;
@@ -163,6 +164,14 @@ public class CharacterController : InventoryOwner
             }
         }
 
+        if(nextTile.IsAccessible() == Accessibility.IMPASSABLE)
+        {
+            pathFinder = null;
+            nextTile = currentTile;
+            destinationTile = currentTile;
+            activeTask.CancelTask(true);
+        }
+
         if(nextTile.IsAccessible() == Accessibility.DELAYED)
         {
             return;
@@ -198,6 +207,10 @@ public class CharacterController : InventoryOwner
         {
             characterUpdateCallback(this);
         }
+    }
+    public void DropInventory()
+    {
+        InventoryManager.DropInventory(inventory, currentTile);
     }
     public void SetDestination(Tile tile)
     {

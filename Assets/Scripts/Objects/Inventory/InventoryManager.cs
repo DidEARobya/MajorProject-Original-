@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
@@ -31,6 +32,12 @@ public static class InventoryManager
         }
 
         inventories.Add(inventory);
+    }
+    public static void DropInventory(Inventory inventory, Tile tile)
+    {
+        AddToTileInventory(inventory.item, tile, inventory.stackSize);
+
+        inventory.ClearInventory();
     }
     public static void AddToTileInventory(ItemTypes type, Tile tile, int amount)
     {
@@ -72,6 +79,13 @@ public static class InventoryManager
     }
     public static void PickUp(CharacterController character, Tile tile, int amount)
     {
+        if(amount == 0)
+        {
+            Debug.Log("Amount is 0");
+            PickUp(character, tile);
+            return;
+        }
+
         character.inventory.StoreItem(tile.inventory, amount);
 
         if (inventoryUpdateCallback != null)
@@ -79,8 +93,10 @@ public static class InventoryManager
             inventoryUpdateCallback(character.inventory);
             inventoryUpdateCallback(tile.inventory);
         }
+
+        tile.inventory.isQueried = false;
     }
-    public static void PickUp(CharacterController character, Tile tile)
+    static void PickUp(CharacterController character, Tile tile)
     {
         if(character.inventory.item != tile.inventory.item)
         {
@@ -97,6 +113,8 @@ public static class InventoryManager
                 inventoryUpdateCallback(tile.inventory);
             }
         }
+
+        tile.inventory.isQueried = false;
     }
     public static void SwitchInventories(Inventory inventory1, Inventory inventory2)
     {
@@ -111,6 +129,9 @@ public static class InventoryManager
             inventoryUpdateCallback(inventory1);
             inventoryUpdateCallback(inventory2);
         }
+
+        inventory1.isQueried = false;
+        inventory2.isQueried = false;
     }
     public static void ClearInventory(Inventory inventory)
     {
@@ -120,8 +141,10 @@ public static class InventoryManager
         {
             inventoryUpdateCallback(inventory);
         }
+
+        inventory.isQueried = false;
     }
-    public static TilePathPair GetClosestValidItem(Tile start, ItemTypes itemType)
+    public static TilePathPair GetClosestValidItem(Tile start, ItemTypes itemType, int amount = 0)
     {
         float lowestDist = Mathf.Infinity;
         Path_AStar path = null;
@@ -136,6 +159,11 @@ public static class InventoryManager
 
             Tile temp = GameManager.GetWorldGrid().GetTile(inventories[i].owner.x, inventories[i].owner.y);
 
+            if(temp == null || temp.inventory.isQueried == true)
+            {
+                continue;
+            }
+
             int distX = Mathf.Abs(start.x - temp.x);
             int distY = Mathf.Abs(start.y - temp.y);
 
@@ -148,6 +176,14 @@ public static class InventoryManager
                     lowestDist = distX + distY;
                     goal = temp;
                 }
+            }
+        }
+
+        if(path != null && goal != null && amount != 0)
+        {
+            if(goal.inventory.stackSize - amount <= 0)
+            {
+                goal.inventory.isQueried = true;
             }
         }
 

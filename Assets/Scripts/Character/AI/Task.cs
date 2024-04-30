@@ -45,7 +45,10 @@ public class Task
     {
         taskCancelledCallback += _taskCancelledCallback;
     }
-
+    public virtual Task CheckTaskRequirements()
+    {
+        return null;
+    }
     public virtual void DoWork(float workTime)
     {
         taskTime -= workTime * worker.workSpeed;

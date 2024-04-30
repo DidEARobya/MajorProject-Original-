@@ -11,6 +11,7 @@ public class Inventory
 
     public int stackSize;
 
+    public bool isQueried = false;
     public Inventory()
     {
 
@@ -40,7 +41,6 @@ public class Inventory
 
         if(item == null)
         {
-            stackSize = 0;
             item = inventory.item;
         }
 
@@ -49,7 +49,7 @@ public class Inventory
         if(toTake >= inventory.stackSize)
         {
             stackSize += inventory.stackSize;
-            inventory.item = null;
+            inventory.ClearInventory();
         }
         else
         {
@@ -66,19 +66,18 @@ public class Inventory
 
         if (item == null)
         {
-            stackSize = 0;
             item = inventory.item;
         }
 
         if (amount >= inventory.stackSize)
         {
             stackSize += inventory.stackSize;
-            inventory.item = null;
+            inventory.ClearInventory();
         }
         else
         {
-            stackSize += amount;
             inventory.stackSize -= amount;
+            stackSize += amount;
         }
     }
     public void ClearInventory()
@@ -131,6 +130,11 @@ public class Inventory
     }
     public int CanBeStored(ItemTypes _item, int amount)
     {
+        if(_item == null)
+        {
+            return 0;
+        }
+
         if (item != null && item != _item)
         {
             return 0;

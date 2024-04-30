@@ -60,7 +60,6 @@ public class Tile : InventoryOwner, INodeData
     public Task task;
 
     public bool isPendingTask = false;
-    public bool reservedByCharacter = false;
 
     public Tile(WorldGrid grid, int _x, int _y) : base (InventoryOwnerType.TILE)
     {

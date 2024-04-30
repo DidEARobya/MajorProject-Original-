@@ -11,12 +11,16 @@ public class WorldGrid
     public int mapWidth;
     public int mapHeight;
 
+    public Vector2Int worldCentre;
+
     public Path_TileGraph pathGraph;
 
     public WorldGrid(int width = 50, int height = 50)
     {
         mapWidth = width;
         mapHeight = height;
+
+        worldCentre = new Vector2Int(Mathf.FloorToInt(width / 2), Mathf.FloorToInt(height / 2));
 
         tiles = new Tile[mapWidth, mapHeight];
 
