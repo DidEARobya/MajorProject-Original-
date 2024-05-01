@@ -36,6 +36,13 @@ public class Task
 
         taskCompleteCallback += _taskCompleteCallback;
     }
+    public virtual void InitTask(CharacterController character)
+    {
+        worker = character;
+        worker.pathFinder = path;
+
+        return;
+    }
     public void AddTaskCompleteCallback(Action<Task> _taskCompleteCallback)
     {
         taskCompleteCallback += _taskCompleteCallback;
@@ -45,6 +52,7 @@ public class Task
     {
         taskCancelledCallback += _taskCancelledCallback;
     }
+
     public virtual Task CheckTaskRequirements()
     {
         return null;

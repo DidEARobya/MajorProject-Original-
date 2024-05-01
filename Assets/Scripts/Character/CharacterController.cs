@@ -94,33 +94,35 @@ public class CharacterController : InventoryOwner
                 return;
             }
 
-            if(pathFinder == null)
-            {
-                pathFinder = activeTask.path;
-            }
-
-            workDelay = 0f;
-
-            activeTask.worker = this;
             activeTask.AddTaskCompleteCallback(EndTask);
             activeTask.AddTaskCancelledCallback(EndTask);
 
-            destinationTile = activeTask.tile;
+            workDelay = 0;
+            activeTask.InitTask(this);
+
+            SetDestination(activeTask.tile);
         }
     }
     public void ForcePrioritiseTask(Task task)
     {
         taskList.Add(activeTask);
+
         activeTask = task;
 
-        pathFinder = activeTask.path;
-        workDelay = 0f;
+        if(activeTask == null)
+        {
+            Debug.Log("Forcing null task");
+            return;
+        }
 
-        activeTask.worker = this;
+        activeTask.InitTask(this);
+
         activeTask.AddTaskCompleteCallback(EndTask);
         activeTask.AddTaskCancelledCallback(EndTask);
 
-        destinationTile = activeTask.tile;
+        workDelay = 0;
+
+        SetDestination(activeTask.tile);
     }
     void DoWork(float deltaTime)
     {
@@ -133,11 +135,15 @@ public class CharacterController : InventoryOwner
         {
             activeTask.DoWork(deltaTime);
         }
-        
     }
     void TraversePath(float deltaTime)
     {
-        if(pathFinder == null)
+        if (currentTile.accessibility == Accessibility.IMPASSABLE)
+        {
+            UnStuck();
+        }
+
+        if (pathFinder == null)
         {
             if(currentTile != nextTile)
             {
@@ -168,11 +174,13 @@ public class CharacterController : InventoryOwner
         {
             pathFinder = null;
             nextTile = currentTile;
-            destinationTile = currentTile;
+
+            SetDestination(currentTile);
+
             activeTask.CancelTask(true);
         }
 
-        if(nextTile.IsAccessible() == Accessibility.DELAYED)
+        if (nextTile.IsAccessible() == Accessibility.DELAYED)
         {
             return;
         }
@@ -200,7 +208,6 @@ public class CharacterController : InventoryOwner
                 pathFinder = null;
                 return;
             }
-            
         }
 
         if (characterUpdateCallback != null)
@@ -214,9 +221,17 @@ public class CharacterController : InventoryOwner
     }
     public void SetDestination(Tile tile)
     {
+        destinationTile.reservedBy = null;
         destinationTile = tile;
+        destinationTile.reservedBy = this;
     }
+    public void UnStuck()
+    {
+        pathFinder = null;
 
+        nextTile = currentTile.GetNearestAvailableTile();
+        destinationTile = nextTile;
+    }
     public void AddCharacterUpdate(Action<CharacterController> callback)
     {
         characterUpdateCallback += callback;

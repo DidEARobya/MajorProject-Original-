@@ -20,8 +20,8 @@ public class CharacterSpriteController : MonoBehaviour
         CharacterController test = CharacterManager.CreateCharacter(grid.GetTile(halfLength, halfLength));
         CharacterController test2 = CharacterManager.CreateCharacter(grid.GetTile(halfLength + 1, halfLength + 1));
         CharacterController test3 = CharacterManager.CreateCharacter(grid.GetTile(halfLength + 2, halfLength - 1));
-        CharacterController test4 = CharacterManager.CreateCharacter(grid.GetTile(halfLength + 2, halfLength - 4));
-        CharacterController test5 = CharacterManager.CreateCharacter(grid.GetTile(halfLength + 5, halfLength - 1));
+        //CharacterController test4 = CharacterManager.CreateCharacter(grid.GetTile(halfLength + 2, halfLength - 4));
+        //CharacterController test5 = CharacterManager.CreateCharacter(grid.GetTile(halfLength + 5, halfLength - 1));
 
     }
     public void OnCharacterCreated(CharacterController character)

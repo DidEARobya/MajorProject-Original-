@@ -3,11 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 public enum TaskType
 {
     CONSTRUCTION,
-    MINING
+    MINING,
+    HAULING
 }
 public static class TaskManager
 {
@@ -19,6 +21,7 @@ public static class TaskManager
     {
         taskLists.Add(TaskType.CONSTRUCTION, new List<Task>());
         taskLists.Add(TaskType.MINING, new List<Task>());
+        taskLists.Add(TaskType.HAULING, new List<Task>());
     }
     public static void AddTask(Task task, TaskType type)
     {
@@ -126,8 +129,29 @@ public static class TaskManager
     {
         return taskLists[type].Count;
     }
-}
 
+    public static void CreateHaulToStorageTask(CharacterController character, ItemTypes type, Tile toStoreAt, int amount = 0)
+    {
+        Tile tile = InventoryManager.GetClosestValidItem(character.currentTile, type);
+
+        Task task = new HaulTask(tile, (t) => { InventoryManager.DropInventory(character.inventory, toStoreAt); }, toStoreAt, (t) => { InventoryManager.PickUp(character, tile, amount); }, TaskType.CONSTRUCTION);
+        TaskManager.AddTask(task, TaskType.CONSTRUCTION);
+    }
+    public static HaulTask CreateHaulToJobSiteTask(RequirementTask jobSite, CharacterController character, ItemTypes type, Tile toStoreAt, int amount = 0)
+    {
+        Tile tile = InventoryManager.GetClosestValidItem(character.currentTile, type);
+
+        HaulTask task = new HaulTask(tile, (t) => { jobSite.StoreComponent(character.inventory, amount); }, toStoreAt, (t) => { InventoryManager.PickUp(character, tile, amount); }, TaskType.CONSTRUCTION);
+        task.path = new Path_AStar(character.currentTile, tile, true, false);
+
+        if(task.path == null)
+        {
+            Debug.Log("No Path");
+        }
+
+        return task;
+    }
+}
 public struct TaskPair
 {
     public Task task;

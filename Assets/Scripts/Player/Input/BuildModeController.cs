@@ -8,6 +8,7 @@ using UnityEngine.EventSystems;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 using UnityEngine.UIElements;
 using UnityEngine.Rendering;
+using System.IO;
 
 public class BuildModeController : MonoBehaviour
 {
@@ -50,8 +51,8 @@ public class BuildModeController : MonoBehaviour
                         InventoryManager.AddToTileInventory(ItemTypes.STONE, grid.GetTile(checkX + offset, checkY), 50);
                         InventoryManager.AddToTileInventory(ItemTypes.IRON, grid.GetTile(checkX, checkY + offset), 50);
 
-                        ObjectManager.SpawnOre(OreTypes.STONE_ORE, grid.GetTile(checkX - offset, checkY - offset));
-                        ObjectManager.SpawnOre(OreTypes.IRON_ORE, grid.GetTile(checkX + offset, checkY + offset));
+                        //ObjectManager.SpawnOre(OreTypes.STONE_ORE, grid.GetTile(checkX - offset, checkY - offset));
+                        //ObjectManager.SpawnOre(OreTypes.IRON_ORE, grid.GetTile(checkX + offset, checkY + offset));
                     }
                 }
             }

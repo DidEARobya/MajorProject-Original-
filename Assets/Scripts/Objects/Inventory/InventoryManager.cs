@@ -38,6 +38,11 @@ public static class InventoryManager
         AddToTileInventory(inventory.item, tile, inventory.stackSize);
 
         inventory.ClearInventory();
+
+        if (inventoryUpdateCallback != null)
+        {
+            inventoryUpdateCallback(inventory);
+        }
     }
     public static void AddToTileInventory(ItemTypes type, Tile tile, int amount)
     {
@@ -77,7 +82,7 @@ public static class InventoryManager
             AddToTileInventory(type, tile, toDrop[type]);
         }
     }
-    public static void PickUp(CharacterController character, Tile tile, int amount)
+    public static void PickUp(CharacterController character, Tile tile, int amount = 0)
     {
         if(amount == 0)
         {
@@ -144,10 +149,9 @@ public static class InventoryManager
 
         inventory.isQueried = false;
     }
-    public static TilePathPair GetClosestValidItem(Tile start, ItemTypes itemType, int amount = 0)
+    public static Tile GetClosestValidItem(Tile start, ItemTypes itemType, int amount = 0)
     {
         float lowestDist = Mathf.Infinity;
-        Path_AStar path = null;
         Tile goal = null;
 
         for (int i = 0; i < inventories.Count; i++)
@@ -169,9 +173,9 @@ public static class InventoryManager
 
             if (lowestDist > (distX + distY))
             {
-                path = Utility.CheckIfTaskValid(start, temp, false);
+                Path_AStar tempPath = Utility.CheckIfTaskValid(start, temp, false);
 
-                if (path != null)
+                if (tempPath != null)
                 {
                     lowestDist = distX + distY;
                     goal = temp;
@@ -179,7 +183,7 @@ public static class InventoryManager
             }
         }
 
-        if(path != null && goal != null && amount != 0)
+        if(goal != null && amount != 0)
         {
             if(goal.inventory.stackSize - amount <= 0)
             {
@@ -187,7 +191,7 @@ public static class InventoryManager
             }
         }
 
-        return new TilePathPair(goal, path);
+        return goal;
     }
     public static void SetInventoryUpdateCallback(Action<Inventory> callback)
     {
