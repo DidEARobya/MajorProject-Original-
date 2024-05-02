@@ -32,7 +32,7 @@ public class MouseController : MonoBehaviour
 
     public MouseMode mouseMode = MouseMode.AREA;
     public BuildMode buildMode = BuildMode.FLOOR;
-    public InstalledObjectTypes toBuild;
+    public FurnitureTypes toBuild;
 
     protected Tile tileUnderMouse;
 
@@ -119,12 +119,12 @@ public class MouseController : MonoBehaviour
             if(Input.GetKeyUp(KeyCode.N))
             {
                 Debug.Log("Wall");
-                toBuild = InstalledObjectTypes.WALL;
+                toBuild = FurnitureTypes.WOOD_WALL;
             }
             if (Input.GetKeyUp(KeyCode.M))
             {
                 Debug.Log("Door");
-                toBuild = InstalledObjectTypes.DOOR;
+                toBuild = FurnitureTypes.DOOR;
             }
         }
         UpdateMousePos();

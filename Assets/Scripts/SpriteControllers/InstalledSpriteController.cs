@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.U2D;
 
 public class InstalledSpriteController : MonoBehaviour
 {
     [SerializeField]
-    public List<Sprite> installedSprites = new List<Sprite>();
+    public SpriteAtlas objSprites;
 
     // Start is called before the first frame update
     public void Init()
@@ -18,7 +19,6 @@ public class InstalledSpriteController : MonoBehaviour
 
         ObjectManager.AddInstalledObject(_obj);
 
-        obj.name = InstalledObjectTypes.GetObjectType((_obj.type)).ToString() + _obj.baseTile.x + "_" + _obj.baseTile.y;
         obj.transform.position = new Vector3(_obj.baseTile.x, _obj.baseTile.y);
         obj.transform.SetParent(this.transform, true);
 
@@ -26,17 +26,20 @@ public class InstalledSpriteController : MonoBehaviour
 
         SpriteRenderer renderer = obj.AddComponent<SpriteRenderer>();
 
-        InstalledObjectType type = InstalledObjectTypes.GetObjectType(_obj.type);
+        string name = " ";
 
-        switch (type)
+        if (_obj.type == InstalledObjectType.FURNITURE)
         {
-            case InstalledObjectType.WALL:
-                renderer.sprite = installedSprites[0];
-                break;
-            case InstalledObjectType.DOOR:
-                renderer.sprite = installedSprites[1];
-                break;
+            name = FurnitureTypes.GetObjectType(((_obj as Furniture).furnitureType)).ToString();
         }
+        else if (_obj.type == InstalledObjectType.ORE)
+        {
+            name = OreTypes.GetObjectType(((_obj as Ore).oreType)).ToString();
+            (_obj as Ore).QueueMiningTask();
+        }
+
+        obj.name = name + _obj.baseTile.x + "_" + _obj.baseTile.y;
+        renderer.sprite = objSprites.GetSprite(name);
 
         renderer.sortingLayerName = "Walls";
 

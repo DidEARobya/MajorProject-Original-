@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Timeline.Actions;
 using UnityEngine;
 
 public class CharacterController : InventoryOwner
@@ -29,13 +30,15 @@ public class CharacterController : InventoryOwner
     public float workSpeed = 20f;
 
     public Task activeTask;
-    public Stack<Task> taskStack = new Stack<Task>();
+    public List<Task> taskList = new List<Task>();
 
     float workDelay = 0f;
     public HashSet<Task> ignoredTasks = new HashSet<Task>(); 
 
     Action<CharacterController> characterUpdateCallback;
 
+    public bool requestedTask;
+    public bool isWorking;
     public CharacterController(Tile tile) : base (InventoryOwnerType.CHARACTER)
     {
         currentTile = tile;
@@ -51,69 +54,55 @@ public class CharacterController : InventoryOwner
     }
     public void Update(float deltaTime)
     {
-        FindWork(deltaTime);
-        DoWork(deltaTime);
-        TraversePath(deltaTime);
-    }
-
-    void FindWork(float deltaTime)
-    {
-        workDelay += deltaTime;
-
-        if (activeTask == null)
+        if (pathFinder != null || currentTile != nextTile)
         {
-            if(workDelay < 0.1f)
-            {
-                return;
-            }
-
-            if(taskStack.Count > 0)
-            {
-                activeTask = taskStack.Pop();
-
-                pathFinder = new Path_AStar(currentTile, activeTask.tile, true);
-
-                if(pathFinder == null)
-                {
-                    activeTask.CancelTask(true);
-                }
-            }
-            else
-            {
-                activeTask = TaskManager.GetTask(TaskType.CONSTRUCTION, this);
-            }
-
-            if (activeTask == null)
-            {
-                return;
-            }
-
-            if(pathFinder == null)
-            {
-                pathFinder = activeTask.path;
-            }
-
-            workDelay = 0f;
-
-            activeTask.worker = this;
-            activeTask.AddTaskCompleteCallback(EndTask);
-            activeTask.AddTaskCancelledCallback(EndTask);
-
-            destinationTile = activeTask.tile;
+            TraversePath(deltaTime);
         }
+
+        if (activeTask == null && taskList.Count == 0)
+        {
+            workDelay += deltaTime;
+
+            if(workDelay >= 0.5f)
+            {
+                TaskRequestHandler.RequestTask(new TaskRequest(this, TaskType.CONSTRUCTION));
+                workDelay = 0f;
+            }
+
+            return;
+        }
+
+        if(activeTask == null)
+        {
+            if (taskList.Count == 0)
+            {
+                return;
+            }
+
+            SetActiveTask(taskList[0]);
+        }
+
+        DoWork(deltaTime);
     }
-    public void UpdateTask(Task task)
+    public void ForcePrioritiseTask(Task task)
     {
+        taskList.Add(activeTask);
+        SetActiveTask(task);
+    }
+    void SetActiveTask(Task task)
+    {
+        if(taskList.Contains(task))
+        {
+            taskList.Remove(task);
+        }
+
         activeTask = task;
 
-        pathFinder = activeTask.path;
-        workDelay = 0f;
-
-        activeTask.worker = this;
         activeTask.AddTaskCompleteCallback(EndTask);
         activeTask.AddTaskCancelledCallback(EndTask);
 
-        destinationTile = activeTask.tile;
+        activeTask.InitTask(this);
+        SetDestination(activeTask.tile);
     }
     void DoWork(float deltaTime)
     {
@@ -126,11 +115,10 @@ public class CharacterController : InventoryOwner
         {
             activeTask.DoWork(deltaTime);
         }
-        
     }
     void TraversePath(float deltaTime)
     {
-        if(pathFinder == null)
+        if (pathFinder == null)
         {
             if(currentTile != nextTile)
             {
@@ -142,13 +130,6 @@ public class CharacterController : InventoryOwner
 
         if (nextTile == null || nextTile == currentTile)
         {
-            if (pathFinder == null || pathFinder.Length() == 0)
-            {
-                CancelTask(true);
-                pathFinder = null;
-                return;
-            }
-
             nextTile = pathFinder.DequeueNextTile();
 
             if (nextTile == null)
@@ -157,7 +138,7 @@ public class CharacterController : InventoryOwner
             }
         }
 
-        if(nextTile.IsAccessible() == Accessibility.DELAYED)
+        if (nextTile.IsAccessible() == Accessibility.DELAYED)
         {
             return;
         }
@@ -185,7 +166,6 @@ public class CharacterController : InventoryOwner
                 pathFinder = null;
                 return;
             }
-            
         }
 
         if (characterUpdateCallback != null)
@@ -193,11 +173,23 @@ public class CharacterController : InventoryOwner
             characterUpdateCallback(this);
         }
     }
+    public void DropInventory()
+    {
+        InventoryManager.DropInventory(inventory, currentTile);
+    }
     public void SetDestination(Tile tile)
     {
+        destinationTile.reservedBy = null;
         destinationTile = tile;
+        destinationTile.reservedBy = this;
     }
+    public void UnStuck()
+    {
+        pathFinder = null;
 
+        nextTile = currentTile.GetNearestAvailableTile();
+        destinationTile = nextTile;
+    }
     public void AddCharacterUpdate(Action<CharacterController> callback)
     {
         characterUpdateCallback += callback;
@@ -207,15 +199,12 @@ public class CharacterController : InventoryOwner
         characterUpdateCallback -= callback;
     }
 
-    public void CancelTask(bool reQueue)
+    public void CancelTask(Task task)
     {
-        if(activeTask == null)
+        if(taskList.Contains(task))
         {
-            return;
+            taskList.Remove(task);
         }
-
-        activeTask.CancelTask(reQueue);
-        activeTask = null;
     }
     public void EndTask(Task task)
     {

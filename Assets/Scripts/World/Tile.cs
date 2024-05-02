@@ -60,7 +60,7 @@ public class Tile : InventoryOwner, INodeData
     public Task task;
 
     public bool isPendingTask = false;
-    public bool reservedByCharacter = false;
+    public CharacterController reservedBy = null;
 
     public Tile(WorldGrid grid, int _x, int _y) : base (InventoryOwnerType.TILE)
     {
@@ -188,12 +188,6 @@ public class Tile : InventoryOwner, INodeData
 
         installedObject.UnInstall();
 
-        if (installedObject.isInstalled == true)
-        {
-            InventoryManager.AddToTileInventory(this, InstalledObjectTypes.GetRequirements(installedObject.type));
-            GameManager.GetWorldGrid().InvalidatePathGraph();
-        }
-
         installedObject = null;
         accessibility = Accessibility.ACCESSIBLE;
     }
@@ -217,7 +211,12 @@ public class Tile : InventoryOwner, INodeData
 
         if(installedObject != null && installedObject.isInstalled)
         {
-            cost += InstalledObjectTypes.GetMovementCost(installedObject.type);
+            cost += installedObject.GetMovementCost();
+        }
+
+        if(isPendingTask == true)
+        {
+            cost += 100;
         }
 
         return cost;
@@ -267,6 +266,18 @@ public class Tile : InventoryOwner, INodeData
                 {
                     return _tile;
                 }
+            }
+        }
+
+        return null;
+    }
+    public Tile GetNearestAvailableTile()
+    {
+        foreach (Tile tile in neighbours.Keys)
+        {
+            if (tile.accessibility != Accessibility.IMPASSABLE)
+            {
+                return tile;
             }
         }
 

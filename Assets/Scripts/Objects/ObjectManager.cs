@@ -7,9 +7,9 @@ public static class ObjectManager
 {
     static List<InstalledObject> installedObjects = new List<InstalledObject>();
     static Action<InstalledObject> installObjectCallback;
-    public static void InstallObject(InstalledObjectTypes type, Tile tile, bool isInstalled)
+    public static void InstallFurniture(FurnitureTypes type, Tile tile, bool isInstalled)
     {
-        InstalledObject obj = InstalledObject.PlaceObject(type, tile, isInstalled);
+        InstalledObject obj = Furniture.PlaceObject(type, tile, isInstalled);
 
         if (obj == null)
         {
@@ -21,7 +21,20 @@ public static class ObjectManager
             installObjectCallback(obj);
         }
     }
+    public static void SpawnOre(OreTypes type, Tile tile)
+    {
+        InstalledObject obj = Ore.PlaceObject(type, tile);
 
+        if (obj == null)
+        {
+            return;
+        }
+
+        if (installObjectCallback != null)
+        {
+            installObjectCallback(obj);
+        }
+    }
     public static void Update(float deltaTime)
     {
         foreach (InstalledObject obj in installedObjects)

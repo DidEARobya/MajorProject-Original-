@@ -15,6 +15,10 @@ public static class Utility
 
         return pathFinder;
     }
+    public static int GetRandomNumber(int min, int max)
+    {
+        return Random.Range(min, max);
+    }
     public static float Get2DPerlin(int x, int y, float scale, int offset)
     {
         float seedVal = GenerateSeedValue(5, offset);

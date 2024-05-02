@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.RuleTile.TilingRuleOutput;
+using UnityEngine.UIElements;
+using System.Linq;
 
 public class Path_TileGraph
 {
     public Node[,] nodes;
-    public Path_TileGraph(WorldGrid grid)
+    public Path_TileGraph(WorldGrid grid, Tile goal)
     {
         nodes = new Node[grid.mapWidth, grid.mapHeight];
 
@@ -17,13 +20,18 @@ public class Path_TileGraph
             }
         }
 
+        Accessibility temp = goal.accessibility;
+        goal.accessibility = Accessibility.ACCESSIBLE;
+
         foreach (Node node in nodes)
         {
             node.neighbours = GetNeighbourNodes(node).ToArray();
         }
+
+        goal.accessibility = temp;
     }
 
-    List<Node> GetNeighbourNodes(Node node)
+    List<Node> GetNeighbourNodes(Node node, Node ignore = null)
     {
         List<Node> neighbours = new List<Node>();
 
@@ -53,7 +61,6 @@ public class Path_TileGraph
 
         return neighbours;
     }
-
     bool isClippingCorner(Node current, Node neighbour)
     {
         int dirX = current.x - neighbour.x;
@@ -86,6 +93,8 @@ public class Node
     {
         get { return gCost + hCost; }
     }
+
+    public Node cameFrom;
 
     public INodeData data;
     public Node[] neighbours;

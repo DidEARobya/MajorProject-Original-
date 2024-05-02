@@ -8,6 +8,7 @@ using UnityEngine.EventSystems;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 using UnityEngine.UIElements;
 using UnityEngine.Rendering;
+using System.IO;
 
 public class BuildModeController : MonoBehaviour
 {
@@ -27,43 +28,37 @@ public class BuildModeController : MonoBehaviour
     {
         grid = GameManager.GetWorldGrid();
 
-        int length = grid.mapHeight;
+        int length = grid.mapWidth;
+        int halfLength = grid.worldCentre.x;
+        int offset = 5;
 
-        int x = 10;
-        int y = 10;
+        int spawnX = halfLength;
+        int spawnY = halfLength;
+
 
         for (int _x = -1; _x <= 1; _x++)
         {
             for (int _y = -1; _y <= 1; _y++)
             {
-                if (_x == 0 && _y == 0)
-                {
-                    continue;
-                }
-                int checkX = x + _x;
-                int checkY = y + _y;
+                int checkX = spawnX + _x;
+                int checkY = spawnY + _y;
 
                 if (checkX >= 0 && checkX < length && checkY >= 0 && checkY < length)
                 {
                     if (grid.GetTile(checkX, checkY) != null)
                     {
-                        InventoryManager.AddToTileInventory(ItemTypes.WOOD, grid.GetTile(checkX, checkY), 50);
+                        InventoryManager.AddToTileInventory(ItemTypes.WOOD, grid.GetTile(checkX - offset, checkY), 50);
+                        InventoryManager.AddToTileInventory(ItemTypes.STONE, grid.GetTile(checkX + offset, checkY), 50);
+                        InventoryManager.AddToTileInventory(ItemTypes.IRON, grid.GetTile(checkX, checkY + offset), 50);
+
+                        //ObjectManager.SpawnOre(OreTypes.STONE_ORE, grid.GetTile(checkX - offset, checkY - offset));
+                        //ObjectManager.SpawnOre(OreTypes.IRON_ORE, grid.GetTile(checkX + offset, checkY + offset));
                     }
                 }
             }
         }
-
-        InventoryManager.AddToTileInventory(ItemTypes.WOOD, grid.GetTile(x, y), 60);
-
-        ObjectManager.InstallObject(InstalledObjectTypes.WALL, grid.GetTile(15, 15), true);
-
-        InventoryManager.AddToTileInventory(ItemTypes.STONE, grid.GetTile(20, 10), 2);
-        InventoryManager.AddToTileInventory(ItemTypes.STONE, grid.GetTile(21, 10), 1);
-        InventoryManager.AddToTileInventory(ItemTypes.STONE, grid.GetTile(22, 10), 3);
-        InventoryManager.AddToTileInventory(ItemTypes.STONE, grid.GetTile(23, 10), 3);
-        InventoryManager.AddToTileInventory(ItemTypes.STONE, grid.GetTile(24, 10), 2);
     }
-    public void Build(Tile tile, BuildMode mode, InstalledObjectTypes toBuild = null)
+    public void Build(Tile tile, BuildMode mode, FurnitureTypes toBuild = null)
     {
         Task task;
 
@@ -75,10 +70,10 @@ public class BuildModeController : MonoBehaviour
                 {
                     if (tile != null && toBuild != null && tile.GetInstalledObject() == null && tile.isPendingTask == false)
                     {
-                        ObjectManager.InstallObject(toBuild, tile, false);
+                        ObjectManager.InstallFurniture(toBuild, tile, false);
                         InstalledObject obj = tile.GetInstalledObject();
 
-                        task = new RequirementTask(tile, (t) => { obj.Install(); }, TaskType.CONSTRUCTION, InstalledObjectTypes.GetRequirements(toBuild), false);
+                        task = new RequirementTask(tile, (t) => { obj.Install(); }, TaskType.CONSTRUCTION, FurnitureTypes.GetRequirements(toBuild), false, FurnitureTypes.GetConstructionTime(toBuild));
                         TaskManager.AddTask(task, task.taskType);
                     }
                 }
@@ -108,8 +103,11 @@ public class BuildModeController : MonoBehaviour
 
                 if(tile.GetInstalledObject() != null && tile.GetInstalledObject().isInstalled == true)
                 {
-                    task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.CONSTRUCTION, false, tile.GetInstalledObject().durability);
-                    TaskManager.AddTask(task, task.taskType);
+                    if(tile.GetInstalledObject().type == InstalledObjectType.FURNITURE)
+                    {
+                        task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.CONSTRUCTION, false, tile.GetInstalledObject().durability);
+                        TaskManager.AddTask(task, task.taskType);
+                    }
                 }
 
                 break;
@@ -118,14 +116,7 @@ public class BuildModeController : MonoBehaviour
 
                 if(tile.task != null)
                 {
-                    if(tile.task.worker == null)
-                    {
-                        tile.task.CancelTask(false);
-                    }
-                    else
-                    {
-                        tile.task.worker.CancelTask(false);
-                    }
+                    tile.task.CancelTask(false);
                 }
 
                 break;
