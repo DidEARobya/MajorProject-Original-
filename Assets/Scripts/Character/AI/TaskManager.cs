@@ -83,10 +83,8 @@ public static class TaskManager
 
     static Task GetClosestValidTask(List<Task> list, Tile start, CharacterController character)
     {
-        bool refreshPathGraph = false;
         float lowestDist = Mathf.Infinity;
-        Task closestTask = null;
-        Path_AStar path = null;
+        Stack<Task> taskStack = new Stack<Task>();
 
         for (int i = 0; i < list.Count; i++)
         {
@@ -102,28 +100,34 @@ public static class TaskManager
 
             if (lowestDist > (distX + distY))
             {
-                path = Utility.CheckIfTaskValid(start, goal, refreshPathGraph);
-
-                if (path != null)
-                {
-                    lowestDist = distX + distY;
-                    closestTask = list[i];
-                }
-                else
-                {
-                    character.ignoredTasks.Add(list[i]);
-                }
+                taskStack.Push(list[i]);
+                lowestDist = distX + distY;
             }
         }
 
-        if(closestTask == null || path == null)
+        if(taskStack.Count == 0)
         {
             return null;
-        }    
+        }
 
-        closestTask.path = path;
+        while(taskStack.Count > 0)
+        {
+            Task task = taskStack.Pop();
 
-        return closestTask;
+            Path_AStar path = new Path_AStar(start, task.tile, true);
+
+            if(path == null)
+            {
+                character.ignoredTasks.Add(task);
+                continue;
+            }
+
+            task.path = path;
+
+            return task;
+        }
+
+        return null;
     }
     public static int GetQueueSize(TaskType type)
     {
@@ -132,22 +136,31 @@ public static class TaskManager
 
     public static void CreateHaulToStorageTask(CharacterController character, ItemTypes type, Tile toStoreAt, int amount = 0)
     {
-        Tile tile = InventoryManager.GetClosestValidItem(character.currentTile, type);
+        TilePathPair pair = InventoryManager.GetClosestValidItem(character.currentTile, type);
+
+        if(pair.tile == null || pair.path == null)
+        {
+            return;
+        }
+
+        Tile tile = pair.tile;
 
         Task task = new HaulTask(tile, (t) => { InventoryManager.DropInventory(character.inventory, toStoreAt); }, toStoreAt, (t) => { InventoryManager.PickUp(character, tile, amount); }, TaskType.CONSTRUCTION);
         TaskManager.AddTask(task, TaskType.CONSTRUCTION);
     }
     public static HaulTask CreateHaulToJobSiteTask(RequirementTask jobSite, CharacterController character, ItemTypes type, Tile toStoreAt, int amount = 0)
     {
-        Tile tile = InventoryManager.GetClosestValidItem(character.currentTile, type);
+        TilePathPair pair = InventoryManager.GetClosestValidItem(character.currentTile, type);
+
+        if (pair.tile == null || pair.path == null)
+        {
+            return null;
+        }
+
+        Tile tile = pair.tile;
 
         HaulTask task = new HaulTask(tile, (t) => { jobSite.StoreComponent(character.inventory, amount); }, toStoreAt, (t) => { InventoryManager.PickUp(character, tile, amount); }, TaskType.CONSTRUCTION);
-        task.path = new Path_AStar(character.currentTile, tile, true, false);
-
-        if(task.path == null)
-        {
-            Debug.Log("No Path");
-        }
+        task.path = pair.path;
 
         return task;
     }

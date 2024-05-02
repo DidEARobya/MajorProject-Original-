@@ -47,6 +47,7 @@ public class GameManager : MonoBehaviour
     {
         ObjectManager.Update(Time.deltaTime);
         CharacterManager.Update(Time.deltaTime);
+        TaskRequestHandler.Update();
     }
     public static WorldController GetWorldController()
     {

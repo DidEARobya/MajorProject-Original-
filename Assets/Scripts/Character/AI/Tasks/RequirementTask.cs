@@ -32,8 +32,6 @@ public class RequirementTask : Task
     {
         if (isInitialised == true)
         {
-            path = new Path_AStar(character.currentTile, tile, true, false);
-            worker.pathFinder = path;
             return;
         }
 
@@ -47,12 +45,6 @@ public class RequirementTask : Task
         if(CheckIfRequirementsFulfilled() == false)
         {
             CreateHaulTask();
-            return;
-        }
-
-        if(tile.reservedBy != null && tile.reservedBy != worker)
-        {
-            Debug.Log("Waiting");
             return;
         }
 
@@ -102,6 +94,7 @@ public class RequirementTask : Task
             if (storedRequirements.ContainsKey(item) == false)
             {
                 task = TaskManager.CreateHaulToJobSiteTask(this, worker, item, tile, requirements[item]);
+                break;
             }
         }
 

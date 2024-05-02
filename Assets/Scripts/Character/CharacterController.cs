@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Timeline.Actions;
 using UnityEngine;
 
 public class CharacterController : InventoryOwner
@@ -36,6 +37,8 @@ public class CharacterController : InventoryOwner
 
     Action<CharacterController> characterUpdateCallback;
 
+    public bool requestedTask;
+
     public CharacterController(Tile tile) : base (InventoryOwnerType.CHARACTER)
     {
         currentTile = tile;
@@ -51,56 +54,33 @@ public class CharacterController : InventoryOwner
     }
     public void Update(float deltaTime)
     {
-        FindWork(deltaTime);
-        DoWork(deltaTime);
-        TraversePath(deltaTime);
-    }
-
-    void FindWork(float deltaTime)
-    {
-        workDelay += deltaTime;
-
-        if (workDelay < 0.1f)
+        if (activeTask == null && taskList.Count == 0 && requestedTask == false)
         {
+            TaskRequestHandler.RequestTask(this, TaskType.CONSTRUCTION);
             return;
         }
 
-        if (activeTask == null)
-        { 
-            if(taskList.Count > 0)
-            {
-                activeTask = taskList[0];
-                taskList.RemoveAt(0);
-
-                pathFinder = new Path_AStar(currentTile, activeTask.tile, true, false);
-
-                if(pathFinder == null)
-                {
-                    activeTask.CancelTask(true);
-                }
-            }
-            else
-            {
-                activeTask = TaskManager.GetTask(TaskType.CONSTRUCTION, this);
-
-                if (activeTask == null)
-                {
-                    activeTask = TaskManager.GetTask(TaskType.MINING, this);
-                }
-            }
-
-            if (activeTask == null)
+        if(activeTask == null)
+        {
+            if (taskList.Count == 0)
             {
                 return;
             }
 
+            activeTask = taskList[0];
+            taskList.RemoveAt(0);
+
             activeTask.AddTaskCompleteCallback(EndTask);
             activeTask.AddTaskCancelledCallback(EndTask);
 
-            workDelay = 0;
             activeTask.InitTask(this);
+        }
 
-            SetDestination(activeTask.tile);
+        TraversePath(deltaTime);
+
+        if(pathFinder == null)
+        {
+            DoWork(deltaTime);
         }
     }
     public void ForcePrioritiseTask(Task task)
@@ -138,11 +118,6 @@ public class CharacterController : InventoryOwner
     }
     void TraversePath(float deltaTime)
     {
-        if (currentTile.accessibility == Accessibility.IMPASSABLE)
-        {
-            UnStuck();
-        }
-
         if (pathFinder == null)
         {
             if(currentTile != nextTile)
@@ -155,29 +130,12 @@ public class CharacterController : InventoryOwner
 
         if (nextTile == null || nextTile == currentTile)
         {
-            if (pathFinder == null || pathFinder.Length() == 0)
-            {
-                CancelTask(true, activeTask);
-                pathFinder = null;
-                return;
-            }
-
             nextTile = pathFinder.DequeueNextTile();
 
             if (nextTile == null)
             {
                 return;
             }
-        }
-
-        if(nextTile.IsAccessible() == Accessibility.IMPASSABLE)
-        {
-            pathFinder = null;
-            nextTile = currentTile;
-
-            SetDestination(currentTile);
-
-            activeTask.CancelTask(true);
         }
 
         if (nextTile.IsAccessible() == Accessibility.DELAYED)

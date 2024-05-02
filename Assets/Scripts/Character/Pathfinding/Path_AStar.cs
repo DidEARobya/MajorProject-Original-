@@ -2,6 +2,7 @@ using Priority_Queue;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using System.Linq;
 using UnityEngine;
 
@@ -10,7 +11,8 @@ public class Path_AStar
     Queue<INodeData> path = new Queue<INodeData>();
 
     bool isPlayer;
-    public Path_AStar(Tile start, Tile end, bool _isPlayer, bool refreshPathGraph)
+
+    public Path_AStar(Tile start, Tile end, bool _isPlayer)
     {
         if (start == null || end == null)
         {
@@ -21,25 +23,18 @@ public class Path_AStar
 
         WorldGrid world = GameManager.GetWorldGrid();
 
-        if (world.pathGraph == null || refreshPathGraph == true)
+        if (world.pathGraph == null)
         {
-            world.pathGraph = new Path_TileGraph(world);
-        }
-
-        if (end.accessibility == Accessibility.IMPASSABLE)
-        {
-            world.pathGraph.RefreshNeighboursAroundTile(end);
+            world.pathGraph = new Path_TileGraph(world, end);
         }
 
         Node startNode = start.pathNode;
         Node endNode = end.pathNode;
 
-        List<Node> closedSet = new List<Node>();
+        HashSet<Node> closedSet = new HashSet<Node>();
 
         SimplePriorityQueue<Node> openSet = new SimplePriorityQueue<Node>();
         openSet.Enqueue(startNode, 0);
-
-        Dictionary<Node, Node> cameFrom = new Dictionary<Node, Node>();
 
         while (openSet.Count > 0)
         {
@@ -48,7 +43,7 @@ public class Path_AStar
 
             if (current == endNode)
             {
-                RetracePath(cameFrom, current);
+                path = RetracePath(startNode, current);
                 return;
             }
 
@@ -65,7 +60,7 @@ public class Path_AStar
                 {
                     neighbour.gCost = tentativeGScore;
                     neighbour.hCost = DistanceBetween(neighbour, endNode);
-                    cameFrom[neighbour] = current;
+                    neighbour.cameFrom = current;
 
                     if (openSet.Contains(neighbour) == false)
                     {
@@ -81,19 +76,23 @@ public class Path_AStar
 
         return;
     }
-    void RetracePath(Dictionary<Node, Node> cameFrom, Node current)
+    Queue<INodeData> RetracePath(Node start, Node end)
     {
         Queue<INodeData> totalPath = new Queue<INodeData>();
-        totalPath.Enqueue(current.data);
+        Node current = end;
 
-        while (cameFrom.ContainsKey(current))
+        while (current != start)
         {
-            current = cameFrom[current];
             totalPath.Enqueue(current.data);
+            current = current.cameFrom;
         }
 
-        totalPath.Dequeue();
-        path = new Queue<INodeData>(totalPath.Reverse());
+        if(totalPath.Count != 0)
+        {
+            totalPath.Dequeue();
+        }
+ 
+        return new Queue<INodeData>(totalPath.Reverse());
     }
 
     float DistanceBetween(Node start, Node goal)

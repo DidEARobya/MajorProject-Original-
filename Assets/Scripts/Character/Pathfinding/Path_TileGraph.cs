@@ -8,7 +8,7 @@ using System.Linq;
 public class Path_TileGraph
 {
     public Node[,] nodes;
-    public Path_TileGraph(WorldGrid grid)
+    public Path_TileGraph(WorldGrid grid, Tile goal)
     {
         nodes = new Node[grid.mapWidth, grid.mapHeight];
 
@@ -20,10 +20,15 @@ public class Path_TileGraph
             }
         }
 
+        Accessibility temp = goal.accessibility;
+        goal.accessibility = Accessibility.ACCESSIBLE;
+
         foreach (Node node in nodes)
         {
             node.neighbours = GetNeighbourNodes(node).ToArray();
         }
+
+        goal.accessibility = temp;
     }
 
     List<Node> GetNeighbourNodes(Node node, Node ignore = null)
@@ -55,35 +60,6 @@ public class Path_TileGraph
         }
 
         return neighbours;
-    }
-    public void RefreshNeighboursAroundTile(Tile tile)
-    {
-        Accessibility temp = tile.accessibility;
-
-        if (temp != Accessibility.ACCESSIBLE || temp != Accessibility.DELAYED)
-        {
-            tile.accessibility = Accessibility.ACCESSIBLE;
-        }
-
-        Node node = tile.pathNode;
-
-        int length = nodes.GetLength(0);
-
-        for (int x = -1; x <= 1; x++)
-        {
-            for (int y = -1; y <= 1; y++)
-            {
-                int checkX = node.x + x;
-                int checkY = node.y + y;
-
-                if (checkX >= 0 && checkX < length && checkY >= 0 && checkY < length)
-                {
-                    nodes[checkX, checkY].neighbours = GetNeighbourNodes(nodes[checkX, checkY]).ToArray();
-                }
-            }
-        }
-
-        tile.accessibility = temp;
     }
     bool isClippingCorner(Node current, Node neighbour)
     {
@@ -117,6 +93,8 @@ public class Node
     {
         get { return gCost + hCost; }
     }
+
+    public Node cameFrom;
 
     public INodeData data;
     public Node[] neighbours;

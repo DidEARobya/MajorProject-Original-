@@ -38,13 +38,13 @@ public class HaulTask : Task
                     taskTime = 1;
                     worker.pathFinder = storagePath;
 
-                    storagePath = new Path_AStar(worker.currentTile, storageTile, true, false);
+                    storagePath = new Path_AStar(worker.currentTile, storageTile, true);
 
                     if (storagePath == null)
                     {
                         Debug.Log("Cannot Haul");
                         worker.ignoredTasks.Add(this);
-                        worker.CancelTask(true, this);
+                        worker.CancelTask(false, this);
 
                         return;
                     }
