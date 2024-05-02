@@ -38,7 +38,7 @@ public class CharacterController : InventoryOwner
     Action<CharacterController> characterUpdateCallback;
 
     public bool requestedTask;
-
+    public bool isWorking;
     public CharacterController(Tile tile) : base (InventoryOwnerType.CHARACTER)
     {
         currentTile = tile;
@@ -54,9 +54,21 @@ public class CharacterController : InventoryOwner
     }
     public void Update(float deltaTime)
     {
-        if (activeTask == null && taskList.Count == 0 && requestedTask == false)
+        if (pathFinder != null || currentTile != nextTile)
         {
-            TaskRequestHandler.RequestTask(this, TaskType.CONSTRUCTION);
+            TraversePath(deltaTime);
+        }
+
+        if (activeTask == null && taskList.Count == 0)
+        {
+            workDelay += deltaTime;
+
+            if(workDelay >= 0.5f)
+            {
+                TaskRequestHandler.RequestTask(new TaskRequest(this, TaskType.CONSTRUCTION));
+                workDelay = 0f;
+            }
+
             return;
         }
 
@@ -67,41 +79,29 @@ public class CharacterController : InventoryOwner
                 return;
             }
 
-            activeTask = taskList[0];
-            taskList.RemoveAt(0);
-
-            activeTask.AddTaskCompleteCallback(EndTask);
-            activeTask.AddTaskCancelledCallback(EndTask);
-
-            activeTask.InitTask(this);
+            SetActiveTask(taskList[0]);
         }
 
-        TraversePath(deltaTime);
-
-        if(pathFinder == null)
-        {
-            DoWork(deltaTime);
-        }
+        DoWork(deltaTime);
     }
     public void ForcePrioritiseTask(Task task)
     {
         taskList.Add(activeTask);
-
-        activeTask = task;
-
-        if(activeTask == null)
+        SetActiveTask(task);
+    }
+    void SetActiveTask(Task task)
+    {
+        if(taskList.Contains(task))
         {
-            Debug.Log("Forcing null task");
-            return;
+            taskList.Remove(task);
         }
 
-        activeTask.InitTask(this);
+        activeTask = task;
 
         activeTask.AddTaskCompleteCallback(EndTask);
         activeTask.AddTaskCancelledCallback(EndTask);
 
-        workDelay = 0;
-
+        activeTask.InitTask(this);
         SetDestination(activeTask.tile);
     }
     void DoWork(float deltaTime)
@@ -199,24 +199,12 @@ public class CharacterController : InventoryOwner
         characterUpdateCallback -= callback;
     }
 
-    public void CancelTask(bool reQueue, Task task)
+    public void CancelTask(Task task)
     {
-        if(activeTask == null)
+        if(taskList.Contains(task))
         {
-            return;
+            taskList.Remove(task);
         }
-
-        if(task != activeTask)
-        {
-            if(taskList.Contains(task))
-            {
-                taskList.Remove(task);
-                task.CancelTask(reQueue);
-            }
-        }
-
-        activeTask.CancelTask(reQueue);
-        activeTask = null;
     }
     public void EndTask(Task task)
     {

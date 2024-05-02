@@ -116,14 +116,7 @@ public class BuildModeController : MonoBehaviour
 
                 if(tile.task != null)
                 {
-                    if(tile.task.worker == null)
-                    {
-                        tile.task.CancelTask(false);
-                    }
-                    else
-                    {
-                        tile.task.worker.CancelTask(false, tile.task);
-                    }
+                    tile.task.CancelTask(false);
                 }
 
                 break;

@@ -39,9 +39,8 @@ public class Task
     public virtual void InitTask(CharacterController character)
     {
         worker = character;
+        worker.isWorking = false;
         worker.pathFinder = path;
-
-        return;
     }
     public void AddTaskCompleteCallback(Action<Task> _taskCompleteCallback)
     {
@@ -59,6 +58,10 @@ public class Task
     }
     public virtual void DoWork(float workTime)
     {
+        if (worker.isWorking == false)
+        {
+            worker.isWorking = true;
+        }
         taskTime -= workTime * worker.workSpeed;
 
         if (taskTime <= 0)
@@ -86,6 +89,8 @@ public class Task
 
         if (worker != null)
         {
+            worker.CancelTask(this);
+            worker.activeTask = null;
             worker.pathFinder = null;
             worker = null;
         }

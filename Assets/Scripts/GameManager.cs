@@ -42,6 +42,8 @@ public class GameManager : MonoBehaviour
 
         mouseController.Init(worldGrid);
         buildModeController.Init();
+
+        TaskRequestHandler.Init();
     }
     private void Update()
     {

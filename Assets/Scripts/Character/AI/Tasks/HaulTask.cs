@@ -24,6 +24,10 @@ public class HaulTask : Task
     }
     public override void DoWork(float workTime)
     {
+        if (worker.isWorking == false)
+        {
+            worker.isWorking = true;
+        }
         taskTime -= workTime * worker.workSpeed;
 
         if (taskTime <= 0)
@@ -44,7 +48,7 @@ public class HaulTask : Task
                     {
                         Debug.Log("Cannot Haul");
                         worker.ignoredTasks.Add(this);
-                        worker.CancelTask(false, this);
+                        CancelTask(false);
 
                         return;
                     }

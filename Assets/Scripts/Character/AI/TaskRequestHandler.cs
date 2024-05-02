@@ -1,46 +1,66 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 public static class TaskRequestHandler
 {
     static Queue<TaskRequest> requests = new Queue<TaskRequest>();
 
-    static bool handlingRequest;
-    public static void RequestTask(CharacterController character, TaskType taskType)
+    static Thread requestCompleteThread;
+    static Object requestCompleteLock = new Object();
+
+    static bool isHandlingRequest = false;
+
+    public static void Init()
     {
-        requests.Enqueue(new TaskRequest(character, taskType));
-        character.requestedTask = true;
+        requestCompleteThread = new Thread(ThreadedCompleteRequest);
+    }
+    public static void RequestTask(TaskRequest request)
+    {
+        if(requests.Contains(request))
+        {
+            return;
+        }
+
+        requests.Enqueue(request);
     }
     public static void Update()
     {
-        if(requests.Count == 0)
+        if (requests.Count > 0 && isHandlingRequest == false)
         {
-            return;
+            ThreadPool.QueueUserWorkItem(delegate { ThreadedCompleteRequest(); });
         }
-
-        if(handlingRequest == true)
-        {
-            return;
-        }
-
-        CompleteRequest();
     }
-    static void CompleteRequest()
+    static void ThreadedCompleteRequest()
     {
-        handlingRequest = true;
-
-        TaskRequest request = requests.Dequeue();
-        Task task = TaskManager.GetTask(request.taskType, request.character);
-
-        if(task != null)
+        lock (requestCompleteLock)
         {
-            request.character.taskList.Add(task);
+            if (requests.Count == 0)
+            {
+                return;
+            }
+
+            isHandlingRequest = true;
+
+            TaskRequest request = requests.Dequeue();
+
+            if (request.character == null)
+            {
+                isHandlingRequest = false;
+                return;
+            }
+
+            request.character.requestedTask = false;
+            Task task = TaskManager.GetTask(request.taskType, request.character);
+
+            if (task != null)
+            {
+                request.character.taskList.Add(task);
+            }
+
+            isHandlingRequest = false;
         }
-
-        request.character.requestedTask = false;
-
-        handlingRequest = false;
     }
 }
 public struct TaskRequest
