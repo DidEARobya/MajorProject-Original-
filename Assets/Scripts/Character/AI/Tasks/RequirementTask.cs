@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using Unity.VisualScripting;
 using Unity.VisualScripting.Antlr3.Runtime.Tree;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 
@@ -32,20 +34,13 @@ public class RequirementTask : Task
     }
     public override void InitTask(CharacterController character)
     {
-        if (isInitialised == true)
+        if (character.inventory.item != null)
         {
-            return;
+            InventoryManager.DropInventory(character.inventory, character.currentTile);
         }
 
         base.InitTask(character);
-
-        if(worker.inventory.item != null)
-        {
-            InventoryManager.DropInventory(worker.inventory, worker.currentTile);
-        }
-
         CreateHaulTask();
-        isInitialised = true;
     }
     public override void DoWork(float workTime)
     {
@@ -57,12 +52,14 @@ public class RequirementTask : Task
 
         base.DoWork(workTime);
     }
-    public void StoreComponent(Inventory inventory, int amount)
+    public void StoreComponent(Inventory inventory)
     {
         if(inventory.item == null)
         {
             return;
         }
+
+        int amount = inventory.stackSize;
 
         if(requirements.ContainsKey(inventory.item) == false)
         {
@@ -100,28 +97,49 @@ public class RequirementTask : Task
         {
             if (storedRequirements.ContainsKey(item) == false)
             {
-                task = TaskManager.CreateHaulToJobSiteTask(this, worker, item, tile, requirements[item]);
+                storedRequirements.Add(item, 0);
+            }
+
+            if (storedRequirements[item] != requirements[item])
+            {
+                int remaining = Mathf.Abs(storedRequirements[item] - requirements[item]);
+
+                task = TaskManager.CreateHaulToJobSiteTask(this, worker, item, tile, remaining);
                 break;
             }
         }
 
         if (task == null)
         {
+            if(CheckIfRequirementsFulfilled() == true)
+            {
+                path = new Path_AStar(worker.currentTile, tile, true);
+
+                if(path == null)
+                {
+                    CancelTask(true, true);
+                }
+
+                worker.pathFinder = path;
+                return;
+            }
+
+            CancelTask(true, true);
             return;
         }
 
         haulTasks.Add(task);
-        worker.ForcePrioritiseTask(task);
+        worker.SetActiveTask(task, true);
     }
     bool CheckIfRequirementsFulfilled()
     {
         return storedRequirements.Keys.Count == requirements.Keys.Count && storedRequirements.Keys.All(k => requirements.ContainsKey(k) && object.Equals(requirements[k], storedRequirements[k]));
     }
-    public override void CancelTask(bool isCancelled)
+    public override void CancelTask(bool isCancelled, bool toIgnore = false)
     {
-        base.CancelTask(isCancelled);
+        isInitialised = false;
 
-        if(haulTasks.Count > 0)
+        if (haulTasks.Count > 0)
         {
             foreach(HaulTask haulTask in haulTasks)
             {
@@ -129,24 +147,24 @@ public class RequirementTask : Task
             }
         }
 
-        if (storedRequirements.Count > 0)
+        if(isCancelled == false)
         {
-            InventoryManager.AddToTileInventory(tile, storedRequirements);
-            storedRequirements.Clear();
+            if (storedRequirements.Count > 0)
+            {
+                InventoryManager.AddToTileInventory(tile, storedRequirements);
+                storedRequirements.Clear();
+            }
+
+            if (isFloor == true)
+            {
+                tile.SetFloorType(floorType);
+            }
+            else if (tile.installedObject != null)
+            {
+                tile.UninstallObject();
+            }
         }
 
-        if (isCancelled == true)
-        {
-            isInitialised = false;
-        }
-
-        if (isFloor == true)
-        {
-            tile.SetFloorType(floorType);
-        }
-        else if (tile.installedObject != null)
-        {
-            tile.UninstallObject();
-        }
+        base.CancelTask(isCancelled, toIgnore);
     }
 }

@@ -40,7 +40,6 @@ public class Task
     {
         worker = character;
         worker.isWorking = false;
-        worker.pathFinder = path;
     }
     public void AddTaskCompleteCallback(Action<Task> _taskCompleteCallback)
     {
@@ -74,30 +73,35 @@ public class Task
             }
         }
     }
-    public virtual void CancelTask(bool isCancelled)
+    public virtual void CancelTask(bool isCancelled, bool toIgnore = false)
     {
-        if(isCancelled == true)
-        {
-            TaskManager.AddTask(this, taskType);
-        }
-        else
-        {
-            TaskManager.RemoveTask(this, taskType);
-            tile.isPendingTask = false;
-            tile.task = null;
-        }
-
         if (worker != null)
         {
+            if(isCancelled == true && toIgnore == true)
+            {
+                worker.ignoredTasks.Add(this);
+            }
+
             worker.CancelTask(this);
             worker.activeTask = null;
             worker.pathFinder = null;
             worker = null;
         }
 
+        if (isCancelled == true)
+        {
+            TaskManager.AddTask(this, taskType);
+            return;
+        }
+
+        TaskManager.RemoveTask(this, taskType);
+
         if (taskCancelledCallback != null)
         {
             taskCancelledCallback(this);
         }
+
+        tile.isPendingTask = false;
+        tile.task = null;
     }
 }

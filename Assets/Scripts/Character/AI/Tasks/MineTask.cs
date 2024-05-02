@@ -12,9 +12,9 @@ public class MineTask : Task
     {
         base.DoWork(workTime);
     }
-    public override void CancelTask(bool isCancelled)
+    public override void CancelTask(bool isCancelled, bool toIgnore = false)
     {
-        base.CancelTask(isCancelled);
+        base.CancelTask(isCancelled, toIgnore);
     }
 }
 

@@ -150,7 +150,7 @@ public static class TaskManager
     }
     public static HaulTask CreateHaulToJobSiteTask(RequirementTask jobSite, CharacterController character, ItemTypes type, Tile toStoreAt, int amount = 0)
     {
-        TilePathPair pair = InventoryManager.GetClosestValidItem(character.currentTile, type);
+        TilePathPair pair = InventoryManager.GetClosestValidItem(character.currentTile, type, amount);
 
         if (pair.tile == null || pair.path == null)
         {
@@ -159,7 +159,7 @@ public static class TaskManager
 
         Tile tile = pair.tile;
 
-        HaulTask task = new HaulTask(tile, (t) => { jobSite.StoreComponent(character.inventory, amount); }, toStoreAt, (t) => { InventoryManager.PickUp(character, tile, amount); }, TaskType.CONSTRUCTION);
+        HaulTask task = new HaulTask(tile, (t) => { jobSite.StoreComponent(character.inventory); }, toStoreAt, (t) => { InventoryManager.PickUp(character, tile, amount); }, TaskType.CONSTRUCTION);
         task.path = pair.path;
 
         return task;

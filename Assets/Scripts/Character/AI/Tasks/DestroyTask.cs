@@ -41,13 +41,13 @@ public class DestroyTask : Task
             }
         }
     }
-    public override void CancelTask(bool isCancelled)
+    public override void CancelTask(bool isCancelled, bool toIgnore = false)
     {
         if (isCancelled == false)
         {
             spriteRenderer.color = colour;
         }
 
-        base.CancelTask(isCancelled);
+        base.CancelTask(isCancelled, toIgnore);
     }
 }

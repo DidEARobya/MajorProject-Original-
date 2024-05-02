@@ -46,7 +46,6 @@ public class WorldController : MonoBehaviour
     }
     public void GenerateTerrain()
     {
-        bool isSpawned = false;
         int xCentre = worldGrid.mapWidth / 2;
         int yCentre = worldGrid.mapHeight / 2;
 
@@ -67,15 +66,6 @@ public class WorldController : MonoBehaviour
                     else
                     {
                         ObjectManager.SpawnOre(OreTypes.IRON_ORE, worldGrid.GetTile(x, y));
-                    }
-                }
-
-                if(isSpawned == false)
-                {
-                    if(x >= xCentre - 5 && x <= xCentre + 5 && y >= yCentre - y && y <= xCentre + y)
-                    {
-                        CharacterManager.CreateCharacter(worldGrid.GetTile(x, y));
-                        isSpawned = true;
                     }
                 }
             }

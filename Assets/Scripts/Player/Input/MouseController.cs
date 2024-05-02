@@ -19,6 +19,9 @@ public enum BuildMode
     OBJECT,
     CLEAR,
     DESTROY,
+    ORE,
+    GENERATE,
+    SPAWNCHARACTER,
     CANCEL
 }
 public class MouseController : MonoBehaviour
@@ -33,6 +36,8 @@ public class MouseController : MonoBehaviour
     public MouseMode mouseMode = MouseMode.AREA;
     public BuildMode buildMode = BuildMode.FLOOR;
     public FurnitureTypes toBuild;
+    public OreTypes toSpawn;
+    public ItemTypes toGenerate;
 
     protected Tile tileUnderMouse;
 
@@ -113,9 +118,27 @@ public class MouseController : MonoBehaviour
             Debug.Log("CancelMode");
             buildMode = BuildMode.CANCEL;
         }
+        if (Input.GetKeyUp(KeyCode.Alpha5))
+        {
+            Debug.Log("OreMode");
+            buildMode = BuildMode.ORE;
+        }
+        if (Input.GetKeyUp(KeyCode.Alpha6))
+        {
+            Debug.Log("GenerateMode");
+            buildMode = BuildMode.GENERATE;
+        }
+        if (Input.GetKeyUp(KeyCode.Alpha7))
+        {
+            Debug.Log("SpawnCharacter");
+            buildMode = BuildMode.SPAWNCHARACTER;
+        }
 
         if (buildMode == BuildMode.OBJECT)
         {
+            toSpawn = null;
+            toGenerate = null;
+
             if(Input.GetKeyUp(KeyCode.N))
             {
                 Debug.Log("Wall");
@@ -125,6 +148,43 @@ public class MouseController : MonoBehaviour
             {
                 Debug.Log("Door");
                 toBuild = FurnitureTypes.DOOR;
+            }
+        }
+        if (buildMode == BuildMode.ORE)
+        {
+            toBuild = null;
+            toGenerate = null;
+
+            if (Input.GetKeyUp(KeyCode.N))
+            {
+                Debug.Log("Stone");
+                toSpawn= OreTypes.STONE_ORE;
+            }
+            if (Input.GetKeyUp(KeyCode.M))
+            {
+                Debug.Log("Iron");
+                toSpawn = OreTypes.IRON_ORE;
+            }
+        }
+        if (buildMode == BuildMode.GENERATE)
+        {
+            toSpawn = null;
+            toBuild = null;
+
+            if (Input.GetKeyUp(KeyCode.B))
+            {
+                Debug.Log("Wood");
+                toGenerate = ItemTypes.WOOD;
+            }
+            if (Input.GetKeyUp(KeyCode.N))
+            {
+                Debug.Log("Stone");
+                toGenerate = ItemTypes.STONE;
+            }
+            if (Input.GetKeyUp(KeyCode.M))
+            {
+                Debug.Log("Iron");
+                toGenerate = ItemTypes.IRON;
             }
         }
         UpdateMousePos();
@@ -227,7 +287,7 @@ public class MouseController : MonoBehaviour
 
                     if (temp != null)
                     {
-                        buildModeController.Build(temp, buildMode, toBuild);
+                        buildModeController.Build(temp, buildMode, toBuild, toSpawn, toGenerate);
                     }
 
                 }
@@ -243,7 +303,7 @@ public class MouseController : MonoBehaviour
 
             if (temp != null)
             {
-                buildModeController.Build(temp, buildMode, toBuild);
+                buildModeController.Build(temp, buildMode, toBuild, toSpawn, toGenerate);
             }
         }
     }

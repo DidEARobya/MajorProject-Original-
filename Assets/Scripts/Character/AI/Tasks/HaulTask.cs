@@ -21,6 +21,7 @@ public class HaulTask : Task
     public override void InitTask(CharacterController character)
     {
         base.InitTask(character);
+        worker.pathFinder = path;
     }
     public override void DoWork(float workTime)
     {
@@ -69,7 +70,7 @@ public class HaulTask : Task
             }
         }
     }
-    public override void CancelTask(bool isCancelled)
+    public override void CancelTask(bool isCancelled, bool toIgnore = false)
     {
         if (isCancelled == false)
         {
@@ -77,6 +78,6 @@ public class HaulTask : Task
             storageTile.task = null;
         }
 
-        base.CancelTask(isCancelled);
+        base.CancelTask(isCancelled, toIgnore);
     }
 }
