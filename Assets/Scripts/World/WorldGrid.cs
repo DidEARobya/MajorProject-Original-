@@ -8,6 +8,9 @@ public class WorldGrid
 {
     protected Tile[,] tiles;
 
+    protected float[,] noiseValues;
+    public int[,] cellularAutomataValues;
+
     public int mapWidth;
     public int mapHeight;
 
@@ -15,12 +18,18 @@ public class WorldGrid
 
     public Path_TileGraph pathGraph;
 
-    public WorldGrid(int width = 50, int height = 50)
+    public WorldGrid()
     {
-        mapWidth = width;
-        mapHeight = height;
+        mapWidth = GameManager.instance.mapWidth;
+        mapHeight = GameManager.instance.mapHeight;
 
-        worldCentre = new Vector2Int(Mathf.FloorToInt(width / 2), Mathf.FloorToInt(height / 2));
+        worldCentre = new Vector2Int(Mathf.FloorToInt(mapWidth / 2), Mathf.FloorToInt(mapHeight / 2));
+
+        CellularAutomata ca = new CellularAutomata(mapWidth, mapHeight);
+        cellularAutomataValues = ca.RandomFillMap();
+
+        PerlinNoise noise = new PerlinNoise(mapWidth, mapHeight);
+        noiseValues = noise.GenerateTerrainNoise();
 
         tiles = new Tile[mapWidth, mapHeight];
 
@@ -28,7 +37,7 @@ public class WorldGrid
         {
             for (int y = 0; y < mapHeight; y++)
             {
-                tiles[x, y] = new Tile(this, x, y);
+                tiles[x, y] = new Tile(this, x, y, noiseValues[x,y]);
             }
         }
     }

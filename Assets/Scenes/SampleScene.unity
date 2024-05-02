@@ -405,8 +405,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6bd3734c5dbb694e8f119bc113377cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  terrainScale: 0.15
+  mapWidth: 100
+  mapHeight: 100
+  octaves: 4
+  terrainScale: 0.1
   terrainOffset: 300
+  persistence: 0.5
+  lacunarity: 0.2
+  caIterations: 8
+  noiseDensity: 45
+  seed: 170
   worldController: {fileID: 679595935}
   tileSpriteController: {fileID: 1139754327}
   installedSpriteController: {fileID: 285080991}

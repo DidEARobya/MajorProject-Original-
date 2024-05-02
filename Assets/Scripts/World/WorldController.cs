@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -16,8 +17,7 @@ public class WorldController : MonoBehaviour
     }
     public void Init(TileSpriteController tileSpriteController)
     {
-        worldGrid = new WorldGrid(50, 50);
-
+        worldGrid = new WorldGrid();
         camera.transform.position = new Vector3(worldGrid.mapWidth / 2, worldGrid.mapHeight / 2, -10);
 
         for (int x = 0; x < worldGrid.mapWidth; x++)
@@ -40,8 +40,47 @@ public class WorldController : MonoBehaviour
                 tileData.SetTileChangedCallback((tile) => { tileSpriteController.OnTileTypeChange(tile, tileObj); });
 
                 tileSpriteController.SetTileSprite(tileObj, TerrainTypes.GetTerrainType(tileData.terrainType), FloorTypes.GetFloorType(tileData.floorType));
+
             }
         }
+    }
+    public void GenerateTerrain()
+    {
+        bool isSpawned = false;
+        int xCentre = worldGrid.mapWidth / 2;
+        int yCentre = worldGrid.mapHeight / 2;
+
+        int[,] caValues = worldGrid.cellularAutomataValues;
+
+        for (int x = 0; x < worldGrid.mapWidth; x++)
+        {
+            for (int y = 0; y < worldGrid.mapHeight; y++)
+            {
+                if (caValues[x, y] == 0)
+                {
+                    int rand = Utility.GetRandomNumber(0, 100);
+
+                    if(rand < 70)
+                    {
+                        ObjectManager.SpawnOre(OreTypes.STONE_ORE, worldGrid.GetTile(x, y));
+                    }
+                    else
+                    {
+                        ObjectManager.SpawnOre(OreTypes.IRON_ORE, worldGrid.GetTile(x, y));
+                    }
+                }
+
+                if(isSpawned == false)
+                {
+                    if(x >= xCentre - 5 && x <= xCentre + 5 && y >= yCentre - y && y <= xCentre + y)
+                    {
+                        CharacterManager.CreateCharacter(worldGrid.GetTile(x, y));
+                        isSpawned = true;
+                    }
+                }
+            }
+        }
+ 
     }
     public Vector2 GetWorldToCell(Vector2 pos)
     {
