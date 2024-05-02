@@ -35,7 +35,7 @@ public class InstalledSpriteController : MonoBehaviour
         else if (_obj.type == InstalledObjectType.ORE)
         {
             name = OreTypes.GetObjectType(((_obj as Ore).oreType)).ToString();
-            (_obj as Ore).QueueMiningTask();
+            //(_obj as Ore).QueueMiningTask();
         }
 
         obj.name = name + _obj.baseTile.x + "_" + _obj.baseTile.y;

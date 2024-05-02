@@ -27,36 +27,6 @@ public class BuildModeController : MonoBehaviour
     public void Init()
     {
         grid = GameManager.GetWorldGrid();
-
-        int length = grid.mapWidth;
-        int halfLength = grid.worldCentre.x;
-        int offset = 5;
-
-        int spawnX = halfLength;
-        int spawnY = halfLength;
-
-
-        for (int _x = -1; _x <= 1; _x++)
-        {
-            for (int _y = -1; _y <= 1; _y++)
-            {
-                int checkX = spawnX + _x;
-                int checkY = spawnY + _y;
-
-                if (checkX >= 0 && checkX < length && checkY >= 0 && checkY < length)
-                {
-                    if (grid.GetTile(checkX, checkY) != null)
-                    {
-                        InventoryManager.AddToTileInventory(ItemTypes.WOOD, grid.GetTile(checkX - offset, checkY), 50);
-                        InventoryManager.AddToTileInventory(ItemTypes.STONE, grid.GetTile(checkX + offset, checkY), 50);
-                        InventoryManager.AddToTileInventory(ItemTypes.IRON, grid.GetTile(checkX, checkY + offset), 50);
-
-                        //ObjectManager.SpawnOre(OreTypes.STONE_ORE, grid.GetTile(checkX - offset, checkY - offset));
-                        //ObjectManager.SpawnOre(OreTypes.IRON_ORE, grid.GetTile(checkX + offset, checkY + offset));
-                    }
-                }
-            }
-        }
     }
     public void Build(Tile tile, BuildMode mode, FurnitureTypes toBuild = null)
     {

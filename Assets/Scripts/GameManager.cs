@@ -6,8 +6,20 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
+    public int mapWidth;
+    public int mapHeight;
+
+    public int octaves;
     public float terrainScale;
     public int terrainOffset;
+    public float persistence;
+    public float lacunarity;
+
+    public int caIterations;
+    public int noiseDensity;
+    public int seed;
+
+    public System.Random random;
 
     public WorldController worldController;
     public TileSpriteController tileSpriteController;
@@ -30,6 +42,8 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        random = new System.Random(seed);
+
         worldController.Init(tileSpriteController);
         worldGrid = worldController.worldGrid;
 
@@ -44,6 +58,8 @@ public class GameManager : MonoBehaviour
         buildModeController.Init();
 
         TaskRequestHandler.Init();
+
+        worldController.GenerateTerrain();
     }
     private void Update()
     {

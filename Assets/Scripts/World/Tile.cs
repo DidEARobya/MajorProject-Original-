@@ -62,22 +62,20 @@ public class Tile : InventoryOwner, INodeData
     public bool isPendingTask = false;
     public CharacterController reservedBy = null;
 
-    public Tile(WorldGrid grid, int _x, int _y) : base (InventoryOwnerType.TILE)
+    public Tile(WorldGrid grid, int _x, int _y, float noiseVal = 0) : base (InventoryOwnerType.TILE)
     {
         world = grid;
 
         x = _x;
         y = _y;
 
-        float noise = Utility.Get2DPerlin(x, y, GameManager.instance.terrainScale, GameManager.instance.terrainOffset);
-
-        if(noise > 0.4 && noise < 0.6)
+        if(noiseVal < 0)
         {
-            terrainType = TerrainTypes.GOOD_SOIL;
+            SetTerrainType(TerrainTypes.GOOD_SOIL);
         }
         else
         {
-            terrainType = TerrainTypes.POOR_SOIL;
+            SetTerrainType(TerrainTypes.POOR_SOIL);
         }
 
         InventoryManager.CreateNewInventory(InventoryOwnerType.TILE, this);
