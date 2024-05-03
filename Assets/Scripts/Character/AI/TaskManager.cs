@@ -71,7 +71,7 @@ public static class TaskManager
 
         Task task = GetClosestValidTask(taskLists[type], character.currentTile, character);
 
-        if (task == null || task.path == null)
+        if (task == null)
         {
             return null;
         }
@@ -122,8 +122,6 @@ public static class TaskManager
                 continue;
             }
 
-            task.path = path;
-
             return task;
         }
 
@@ -160,7 +158,6 @@ public static class TaskManager
         Tile tile = pair.tile;
 
         HaulTask task = new HaulTask(tile, (t) => { jobSite.StoreComponent(character.inventory); }, toStoreAt, (t) => { InventoryManager.PickUp(character, tile, amount); }, TaskType.CONSTRUCTION);
-        task.path = pair.path;
 
         return task;
     }

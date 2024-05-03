@@ -40,11 +40,18 @@ public class RequirementTask : Task
         }
 
         base.InitTask(character);
+
+        if (isInitialised == true)
+        {
+            return;
+        }
+
         CreateHaulTask();
+        isInitialised = true;
     }
     public override void DoWork(float workTime)
     {
-        if(CheckIfRequirementsFulfilled() == false)
+        if (CheckIfRequirementsFulfilled() == false)
         {
             CreateHaulTask();
             return;
@@ -113,14 +120,7 @@ public class RequirementTask : Task
         {
             if(CheckIfRequirementsFulfilled() == true)
             {
-                path = new Path_AStar(worker.currentTile, tile, true);
-
-                if(path == null)
-                {
-                    CancelTask(true, true);
-                }
-
-                worker.pathFinder = path;
+                PathRequestHandler.RequestPath(worker, tile);
                 return;
             }
 

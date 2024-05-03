@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.PackageManager.Requests;
 using UnityEditor.Timeline.Actions;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 using UnityEngine.UIElements;
 
 public class CharacterController : InventoryOwner
@@ -41,7 +43,7 @@ public class CharacterController : InventoryOwner
     public List<TaskType> priorityList = new List<TaskType>(); 
 
     public bool requestedTask;
-    public bool isWorking;
+    public bool requestedPath;
     public CharacterController(Tile tile) : base (InventoryOwnerType.CHARACTER)
     {
         currentTile = tile;
@@ -60,6 +62,11 @@ public class CharacterController : InventoryOwner
     }
     public void Update(float deltaTime)
     {
+        if(requestedPath == true)
+        {
+            return;
+        }
+
         if (pathFinder != null || currentTile != nextTile)
         {
             TraversePath(deltaTime);
@@ -89,7 +96,22 @@ public class CharacterController : InventoryOwner
             SetActiveTask(taskList[0], false);
         }
 
-        DoWork(deltaTime);
+        if(DoWork(deltaTime) == true)
+        {
+            return;
+        }
+
+        if (requestedPath == false && pathFinder == null && activeTask != null)
+        {
+            if (activeTask.taskType == TaskType.HAULING)
+            {
+                activeTask.CancelTask(false);
+            }
+            else
+            {
+                activeTask.CancelTask(true, true);
+            }
+        }
     }
     public void SetActiveTask(Task task, bool requeue)
     {
@@ -100,6 +122,8 @@ public class CharacterController : InventoryOwner
 
         if(requeue == true)
         {
+            activeTask.RemoveTaskCompleteCallback(EndTask);
+            activeTask.RemoveTaskCancelledCallback(EndTask);
             taskList.Add(activeTask);
         }
 
@@ -108,26 +132,23 @@ public class CharacterController : InventoryOwner
         activeTask.AddTaskCompleteCallback(EndTask);
         activeTask.AddTaskCancelledCallback(EndTask);
 
-        activeTask.InitTask(this);
-
-        if(activeTask == null)
-        {
-            return;
-        }
-
         SetDestination(activeTask.tile);
+        activeTask.InitTask(this);
     }
-    void DoWork(float deltaTime)
+    bool DoWork(float deltaTime)
     {
         if(activeTask == null)
         {
-            return;
+            return false;
         }
 
         if(destinationTile.IsNeighbour(currentTile) == true || destinationTile == currentTile)
         {
             activeTask.DoWork(deltaTime);
+            return true;
         }
+
+        return false;
     }
     void TraversePath(float deltaTime)
     {
@@ -231,5 +252,7 @@ public class CharacterController : InventoryOwner
             activeTask = null;
             return;
         }
+
+        Debug.Log("Ending Wrong Task");
     }
 }

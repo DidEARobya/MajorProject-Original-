@@ -29,6 +29,11 @@ public class DestroyTask : Task
 
         spriteRenderer.color = _colour;
     }
+    public override void InitTask(CharacterController character)
+    {
+        base.InitTask(character);
+        PathRequestHandler.RequestPath(worker, tile);
+    }
     public override void DoWork(float workTime)
     {
         base.DoWork(workTime);

@@ -10,7 +10,6 @@ using UnityEngine.UIElements;
 public class Task
 {
     public Tile tile;
-    public Path_AStar path;
     protected float taskTime = 1;
 
     public TaskType taskType;
@@ -39,7 +38,6 @@ public class Task
     public virtual void InitTask(CharacterController character)
     {
         worker = character;
-        worker.isWorking = false;
     }
     public void AddTaskCompleteCallback(Action<Task> _taskCompleteCallback)
     {
@@ -50,17 +48,21 @@ public class Task
     {
         taskCancelledCallback += _taskCancelledCallback;
     }
+    public void RemoveTaskCompleteCallback(Action<Task> _taskCompleteCallback)
+    {
+        taskCompleteCallback -= _taskCompleteCallback;
+    }
 
+    public void RemoveTaskCancelledCallback(Action<Task> _taskCancelledCallback)
+    {
+        taskCancelledCallback -= _taskCancelledCallback;
+    }
     public virtual Task CheckTaskRequirements()
     {
         return null;
     }
     public virtual void DoWork(float workTime)
     {
-        if (worker.isWorking == false)
-        {
-            worker.isWorking = true;
-        }
         taskTime -= workTime * worker.workSpeed;
 
         if (taskTime <= 0)

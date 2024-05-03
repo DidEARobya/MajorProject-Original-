@@ -11,10 +11,6 @@ public static class TaskRequestHandler
 
     static bool isHandlingRequest = false;
 
-    public static void Init()
-    {
-        //requestCompleteThread = new Thread(ThreadedCompleteRequest);
-    }
     public static void RequestTask(CharacterController request)
     {
         if (requests.Contains(request))
@@ -67,16 +63,5 @@ public static class TaskRequestHandler
 
             isHandlingRequest = false;
         }
-    }
-}
-public struct TaskRequest
-{
-    public CharacterController character;
-    public TaskType taskType;
-
-    public TaskRequest(CharacterController _character, TaskType _taskType)
-    {
-        character = _character;
-        taskType = _taskType;
     }
 }

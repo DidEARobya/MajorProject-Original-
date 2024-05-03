@@ -57,8 +57,6 @@ public class GameManager : MonoBehaviour
         mouseController.Init(worldGrid);
         buildModeController.Init();
 
-        TaskRequestHandler.Init();
-
         worldController.GenerateTerrain();
     }
     private void Update()
@@ -66,6 +64,7 @@ public class GameManager : MonoBehaviour
         ObjectManager.Update(Time.deltaTime);
         CharacterManager.Update(Time.deltaTime);
         TaskRequestHandler.Update();
+        PathRequestHandler.Update();
     }
     public static WorldController GetWorldController()
     {
