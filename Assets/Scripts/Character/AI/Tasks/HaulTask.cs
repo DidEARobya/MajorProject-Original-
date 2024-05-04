@@ -41,11 +41,12 @@ public class HaulTask : Task
                         return;
                     }
 
+
                     isGathering = false;
                     taskTime = 1;
+                    worker.SetDestination(storageTile);
 
                     gatherCompleteCallback(this);
-                    worker.SetDestination(storageTile);
                 }
             }
             else

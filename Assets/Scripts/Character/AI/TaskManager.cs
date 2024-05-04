@@ -144,7 +144,7 @@ public static class TaskManager
         Tile tile = pair.tile;
 
         Task task = new HaulTask(tile, (t) => { InventoryManager.DropInventory(character.inventory, toStoreAt); }, toStoreAt, (t) => { InventoryManager.PickUp(character, tile, amount); }, TaskType.CONSTRUCTION);
-        TaskManager.AddTask(task, TaskType.CONSTRUCTION);
+        TaskManager.AddTask(task, TaskType.HAULING);
     }
     public static HaulTask CreateHaulToJobSiteTask(RequirementTask jobSite, CharacterController character, ItemTypes type, Tile toStoreAt, int amount = 0)
     {

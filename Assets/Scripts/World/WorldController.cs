@@ -10,7 +10,10 @@ public class WorldController : MonoBehaviour
     public MouseController mouseController;
 
     public new Camera camera;
+    public Cinemachine.CinemachineVirtualCamera vCamera;
 
+    public GameObject cameraBounds;
+  
     private void Awake()
     {
         camera = Camera.main;
@@ -19,6 +22,9 @@ public class WorldController : MonoBehaviour
     {
         worldGrid = new WorldGrid();
         camera.transform.position = new Vector3(worldGrid.mapWidth / 2, worldGrid.mapHeight / 2, -10);
+
+        cameraBounds.transform.position = new Vector3(worldGrid.mapWidth / 2, (worldGrid.mapHeight / 2) - 0.5f, 0);
+        cameraBounds.transform.localScale = new Vector3(worldGrid.mapWidth, worldGrid.mapHeight + 1, 1);
 
         for (int x = 0; x < worldGrid.mapWidth; x++)
         {

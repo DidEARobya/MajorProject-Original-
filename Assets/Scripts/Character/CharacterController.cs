@@ -172,6 +172,14 @@ public class CharacterController : InventoryOwner
             }
         }
 
+        if (nextTile.IsAccessible() == Accessibility.IMPASSABLE)
+        {
+            nextTile = currentTile;
+            pathFinder = null;
+            PathRequestHandler.RequestPath(this, destinationTile);
+            return;
+        }
+
         if (nextTile.IsAccessible() == Accessibility.DELAYED)
         {
             return;

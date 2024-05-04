@@ -6,6 +6,7 @@ using UnityEngine.Pool;
 using Cinemachine;
 using TMPro.EditorUtilities;
 using Cinemachine.Utility;
+using System.ComponentModel;
 
 public enum MouseMode
 {
@@ -28,6 +29,7 @@ public class MouseController : MonoBehaviour
 {
     public new Camera camera;
     public CinemachineVirtualCamera vCamera;
+    CinemachineConfiner2D confiner;
 
     WorldController worldController;
     public WorldGrid grid;
@@ -62,6 +64,8 @@ public class MouseController : MonoBehaviour
     {
         camera = Camera.main;
         vCamera = camera.GetComponentInChildren<CinemachineVirtualCamera>();
+        confiner = vCamera.GetComponent<CinemachineConfiner2D>();
+
         selectionPool = new ObjectPool(200, tileBoxPrefab, this.transform);
 
         worldController = GameManager.GetWorldController();
@@ -210,8 +214,15 @@ public class MouseController : MonoBehaviour
         lastMousePos = camera.ScreenToWorldPoint(Input.mousePosition);
         lastMousePos.z = 0;
 
-        vCamera.m_Lens.OrthographicSize -= vCamera.m_Lens.OrthographicSize * Input.GetAxis("Mouse ScrollWheel");
-        vCamera.m_Lens.OrthographicSize = Mathf.Clamp(vCamera.m_Lens.OrthographicSize, 4, 15);
+        float val = Input.GetAxis("Mouse ScrollWheel");
+
+        if (val != 0)
+        {
+            vCamera.m_Lens.OrthographicSize -= vCamera.m_Lens.OrthographicSize * val;
+            vCamera.m_Lens.OrthographicSize = Mathf.Clamp(vCamera.m_Lens.OrthographicSize, 4, 15);
+
+            confiner.InvalidateCache();
+        }
     }
     private void MouseInputs()
     {
