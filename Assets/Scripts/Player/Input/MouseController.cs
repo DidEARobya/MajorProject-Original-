@@ -6,6 +6,7 @@ using UnityEngine.Pool;
 using Cinemachine;
 using TMPro.EditorUtilities;
 using Cinemachine.Utility;
+using System.ComponentModel;
 
 public enum MouseMode
 {
@@ -19,12 +20,16 @@ public enum BuildMode
     OBJECT,
     CLEAR,
     DESTROY,
+    ORE,
+    GENERATE,
+    SPAWNCHARACTER,
     CANCEL
 }
 public class MouseController : MonoBehaviour
 {
     public new Camera camera;
     public CinemachineVirtualCamera vCamera;
+    CinemachineConfiner2D confiner;
 
     WorldController worldController;
     public WorldGrid grid;
@@ -33,6 +38,8 @@ public class MouseController : MonoBehaviour
     public MouseMode mouseMode = MouseMode.AREA;
     public BuildMode buildMode = BuildMode.FLOOR;
     public FurnitureTypes toBuild;
+    public OreTypes toSpawn;
+    public ItemTypes toGenerate;
 
     protected Tile tileUnderMouse;
 
@@ -57,6 +64,8 @@ public class MouseController : MonoBehaviour
     {
         camera = Camera.main;
         vCamera = camera.GetComponentInChildren<CinemachineVirtualCamera>();
+        confiner = vCamera.GetComponent<CinemachineConfiner2D>();
+
         selectionPool = new ObjectPool(200, tileBoxPrefab, this.transform);
 
         worldController = GameManager.GetWorldController();
@@ -113,9 +122,27 @@ public class MouseController : MonoBehaviour
             Debug.Log("CancelMode");
             buildMode = BuildMode.CANCEL;
         }
+        if (Input.GetKeyUp(KeyCode.Alpha5))
+        {
+            Debug.Log("OreMode");
+            buildMode = BuildMode.ORE;
+        }
+        if (Input.GetKeyUp(KeyCode.Alpha6))
+        {
+            Debug.Log("GenerateMode");
+            buildMode = BuildMode.GENERATE;
+        }
+        if (Input.GetKeyUp(KeyCode.Alpha7))
+        {
+            Debug.Log("SpawnCharacter");
+            buildMode = BuildMode.SPAWNCHARACTER;
+        }
 
         if (buildMode == BuildMode.OBJECT)
         {
+            toSpawn = null;
+            toGenerate = null;
+
             if(Input.GetKeyUp(KeyCode.N))
             {
                 Debug.Log("Wall");
@@ -125,6 +152,43 @@ public class MouseController : MonoBehaviour
             {
                 Debug.Log("Door");
                 toBuild = FurnitureTypes.DOOR;
+            }
+        }
+        if (buildMode == BuildMode.ORE)
+        {
+            toBuild = null;
+            toGenerate = null;
+
+            if (Input.GetKeyUp(KeyCode.N))
+            {
+                Debug.Log("Stone");
+                toSpawn= OreTypes.STONE_ORE;
+            }
+            if (Input.GetKeyUp(KeyCode.M))
+            {
+                Debug.Log("Iron");
+                toSpawn = OreTypes.IRON_ORE;
+            }
+        }
+        if (buildMode == BuildMode.GENERATE)
+        {
+            toSpawn = null;
+            toBuild = null;
+
+            if (Input.GetKeyUp(KeyCode.B))
+            {
+                Debug.Log("Wood");
+                toGenerate = ItemTypes.WOOD;
+            }
+            if (Input.GetKeyUp(KeyCode.N))
+            {
+                Debug.Log("Stone");
+                toGenerate = ItemTypes.STONE;
+            }
+            if (Input.GetKeyUp(KeyCode.M))
+            {
+                Debug.Log("Iron");
+                toGenerate = ItemTypes.IRON;
             }
         }
         UpdateMousePos();
@@ -150,8 +214,15 @@ public class MouseController : MonoBehaviour
         lastMousePos = camera.ScreenToWorldPoint(Input.mousePosition);
         lastMousePos.z = 0;
 
-        vCamera.m_Lens.OrthographicSize -= vCamera.m_Lens.OrthographicSize * Input.GetAxis("Mouse ScrollWheel");
-        vCamera.m_Lens.OrthographicSize = Mathf.Clamp(vCamera.m_Lens.OrthographicSize, 4, 15);
+        float val = Input.GetAxis("Mouse ScrollWheel");
+
+        if (val != 0)
+        {
+            vCamera.m_Lens.OrthographicSize -= vCamera.m_Lens.OrthographicSize * val;
+            vCamera.m_Lens.OrthographicSize = Mathf.Clamp(vCamera.m_Lens.OrthographicSize, 4, 15);
+
+            confiner.InvalidateCache();
+        }
     }
     private void MouseInputs()
     {
@@ -227,7 +298,7 @@ public class MouseController : MonoBehaviour
 
                     if (temp != null)
                     {
-                        buildModeController.Build(temp, buildMode, toBuild);
+                        buildModeController.Build(temp, buildMode, toBuild, toSpawn, toGenerate);
                     }
 
                 }
@@ -243,7 +314,7 @@ public class MouseController : MonoBehaviour
 
             if (temp != null)
             {
-                buildModeController.Build(temp, buildMode, toBuild);
+                buildModeController.Build(temp, buildMode, toBuild, toSpawn, toGenerate);
             }
         }
     }

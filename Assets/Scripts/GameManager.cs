@@ -6,8 +6,19 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
-    public int mapWidth;
-    public int mapHeight;
+    public int mapSize;
+    int regionMapSize
+    {
+        get 
+        { 
+            if(mapSize % 10 != 0)
+            {
+                Debug.Log("Invalid Map Size");
+            }
+
+            return mapSize / 10; 
+        }
+    }
 
     public int octaves;
     public float terrainScale;
@@ -57,15 +68,15 @@ public class GameManager : MonoBehaviour
         mouseController.Init(worldGrid);
         buildModeController.Init();
 
-        TaskRequestHandler.Init();
-
         worldController.GenerateTerrain();
+        RegionManager.Init(worldGrid, regionMapSize);
     }
     private void Update()
     {
         ObjectManager.Update(Time.deltaTime);
         CharacterManager.Update(Time.deltaTime);
         TaskRequestHandler.Update();
+        PathRequestHandler.Update();
     }
     public static WorldController GetWorldController()
     {

@@ -9,10 +9,9 @@ public class HaulTask : Task
 
     Action<Task> gatherCompleteCallback;
 
-    Path_AStar storagePath;
-
-    RequirementTask parentTask;
     bool isGathering = true;
+    bool pathRequested = false;
+
     public HaulTask(Tile _tile, Action<Task> _taskCompleteCallback, Tile _storageTile, Action<Task> _gatherCompleteCallback, TaskType _type, bool _isFloor = false, float _taskTime = 1, RequirementTask _task = null) : base(_tile, _taskCompleteCallback, _type, _isFloor, _taskTime)
     {
         storageTile = _storageTile;
@@ -21,13 +20,10 @@ public class HaulTask : Task
     public override void InitTask(CharacterController character)
     {
         base.InitTask(character);
+        PathRequestHandler.RequestPath(worker, tile);
     }
     public override void DoWork(float workTime)
     {
-        if (worker.isWorking == false)
-        {
-            worker.isWorking = true;
-        }
         taskTime -= workTime * worker.workSpeed;
 
         if (taskTime <= 0)
@@ -38,23 +34,18 @@ public class HaulTask : Task
 
                 if (gatherCompleteCallback != null)
                 {
-                    isGathering = false;
-                    taskTime = 1;
-                    worker.pathFinder = storagePath;
-
-                    storagePath = new Path_AStar(worker.currentTile, storageTile, true);
-
-                    if (storagePath == null)
+                    if (pathRequested == false)
                     {
-                        Debug.Log("Cannot Haul");
-                        worker.ignoredTasks.Add(this);
-                        CancelTask(false);
-
+                        PathRequestHandler.RequestPath(worker, storageTile);
+                        pathRequested = true;
                         return;
                     }
 
-                    worker.destinationTile = storageTile;
-                    worker.pathFinder = storagePath;
+
+                    isGathering = false;
+                    taskTime = 1;
+                    worker.SetDestination(storageTile);
+
                     gatherCompleteCallback(this);
                 }
             }
@@ -69,7 +60,7 @@ public class HaulTask : Task
             }
         }
     }
-    public override void CancelTask(bool isCancelled)
+    public override void CancelTask(bool isCancelled, bool toIgnore = false)
     {
         if (isCancelled == false)
         {
@@ -77,6 +68,6 @@ public class HaulTask : Task
             storageTile.task = null;
         }
 
-        base.CancelTask(isCancelled);
+        base.CancelTask(isCancelled, toIgnore);
     }
 }

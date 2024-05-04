@@ -5,25 +5,22 @@ using UnityEngine;
 
 public static class TaskRequestHandler
 {
-    static Queue<TaskRequest> requests = new Queue<TaskRequest>();
+    static Queue<CharacterController> requests = new Queue<CharacterController>();
 
-    static Thread requestCompleteThread;
     static Object requestCompleteLock = new Object();
 
     static bool isHandlingRequest = false;
 
-    public static void Init()
+    public static void RequestTask(CharacterController request)
     {
-        requestCompleteThread = new Thread(ThreadedCompleteRequest);
-    }
-    public static void RequestTask(TaskRequest request)
-    {
-        if(requests.Contains(request))
+        if (requests.Contains(request))
         {
             return;
         }
 
+        request.requestedTask = true;
         requests.Enqueue(request);
+        return;
     }
     public static void Update()
     {
@@ -43,34 +40,28 @@ public static class TaskRequestHandler
 
             isHandlingRequest = true;
 
-            TaskRequest request = requests.Dequeue();
+            CharacterController request = requests.Dequeue();
 
-            if (request.character == null)
+            if (request == null)
             {
                 isHandlingRequest = false;
                 return;
             }
 
-            request.character.requestedTask = false;
-            Task task = TaskManager.GetTask(request.taskType, request.character);
+            request.requestedTask = false;
 
-            if (task != null)
+            foreach(TaskType type in request.priorityList)
             {
-                request.character.taskList.Add(task);
+                Task task = TaskManager.GetTask(type, request);
+
+                if (task != null)
+                {
+                    request.taskList.Add(task);
+                    break;
+                }
             }
 
             isHandlingRequest = false;
         }
-    }
-}
-public struct TaskRequest
-{
-    public CharacterController character;
-    public TaskType taskType;
-
-    public TaskRequest(CharacterController _character, TaskType _taskType)
-    {
-        character = _character;
-        taskType = _taskType;
     }
 }

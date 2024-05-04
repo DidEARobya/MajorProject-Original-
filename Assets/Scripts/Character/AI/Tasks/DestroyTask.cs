@@ -29,6 +29,11 @@ public class DestroyTask : Task
 
         spriteRenderer.color = _colour;
     }
+    public override void InitTask(CharacterController character)
+    {
+        base.InitTask(character);
+        PathRequestHandler.RequestPath(worker, tile);
+    }
     public override void DoWork(float workTime)
     {
         base.DoWork(workTime);
@@ -41,13 +46,13 @@ public class DestroyTask : Task
             }
         }
     }
-    public override void CancelTask(bool isCancelled)
+    public override void CancelTask(bool isCancelled, bool toIgnore = false)
     {
         if (isCancelled == false)
         {
             spriteRenderer.color = colour;
         }
 
-        base.CancelTask(isCancelled);
+        base.CancelTask(isCancelled, toIgnore);
     }
 }

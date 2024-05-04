@@ -28,7 +28,7 @@ public class BuildModeController : MonoBehaviour
     {
         grid = GameManager.GetWorldGrid();
     }
-    public void Build(Tile tile, BuildMode mode, FurnitureTypes toBuild = null)
+    public void Build(Tile tile, BuildMode mode, FurnitureTypes toBuild = null, OreTypes toSpawn = null, ItemTypes toGenerate = null)
     {
         Task task;
 
@@ -81,7 +81,33 @@ public class BuildModeController : MonoBehaviour
                 }
 
                 break;
+            case BuildMode.ORE:
 
+                if (tile != null && toSpawn != null && tile.GetInstalledObject() == null && tile.isPendingTask == false)
+                {
+                    ObjectManager.SpawnOre(toSpawn, tile);
+
+                    task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.MINING, false, tile.GetInstalledObject().durability);
+                    TaskManager.AddTask(task, task.taskType);
+                }
+
+                break;
+            case BuildMode.GENERATE:
+
+                if (tile != null && toGenerate != null && tile.GetInstalledObject() == null && tile.isPendingTask == false)
+                {
+                    InventoryManager.AddToTileInventory(toGenerate, tile, 1);
+                }
+
+                break;
+            case BuildMode.SPAWNCHARACTER:
+
+                if (tile != null && tile.GetInstalledObject() == null && tile.isPendingTask == false)
+                {
+                    CharacterManager.CreateCharacter(tile);
+                }
+
+                break;
             case BuildMode.CANCEL:
 
                 if(tile.task != null)

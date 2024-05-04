@@ -83,7 +83,7 @@ public class Tile : InventoryOwner, INodeData
 
     public void SetNeighbours()
     {
-        int length = world.mapHeight;
+        int length = world.mapSize;
 
         for (int _x = -1; _x <= 1; _x++)
         {

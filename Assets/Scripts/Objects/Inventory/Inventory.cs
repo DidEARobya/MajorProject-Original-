@@ -10,6 +10,7 @@ public class Inventory
     public GameObject inventoryObject;
 
     public int stackSize;
+    public int queriedAmount = 0;
 
     public bool isQueried = false;
     public Inventory()
@@ -34,12 +35,12 @@ public class Inventory
     }
     public void StoreItem(Inventory inventory)
     {
-        if(CanBeStored(inventory) == false)
+        if (item != null && inventory.item != item)
         {
             return;
         }
 
-        if(item == null)
+        if (item == null)
         {
             item = inventory.item;
         }
@@ -59,7 +60,7 @@ public class Inventory
     }
     public void StoreItem(Inventory inventory, int amount)
     {
-        if (CanBeStored(inventory) == false)
+        if (item != null && inventory.item != item)
         {
             return;
         }
@@ -84,14 +85,10 @@ public class Inventory
     {
         item = null;
         stackSize = 0;
+        queriedAmount = 0;
     }
     public int StoreItem(ItemTypes _item, int amount)
     {
-        if(amount == 60)
-        {
-
-        }
-
         int toStore = CanBeStored(_item, amount);
 
         if(toStore == 0)
@@ -108,25 +105,6 @@ public class Inventory
 
         stackSize += toStore;
         return toReturn;
-    }
-    public bool CanBeStored(Inventory inventory)
-    {
-        if (item == null)
-        {
-            return true;
-        }
-
-        if (item != inventory.item)
-        {
-            return false;
-        }
-
-        if(stackSize + inventory.stackSize > ItemTypes.GetMaxStackSize(inventory.item))
-        {
-            return false;
-        }
-
-        return true;
     }
     public int CanBeStored(ItemTypes _item, int amount)
     {

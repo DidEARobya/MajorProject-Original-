@@ -10,11 +10,11 @@ public class Path_TileGraph
     public Node[,] nodes;
     public Path_TileGraph(WorldGrid grid, Tile goal)
     {
-        nodes = new Node[grid.mapWidth, grid.mapHeight];
+        nodes = new Node[grid.mapSize, grid.mapSize];
 
-        for(int x = 0; x < grid.mapWidth; x++)
+        for(int x = 0; x < grid.mapSize; x++)
         {
-            for (int y = 0; y < grid.mapHeight; y++)
+            for (int y = 0; y < grid.mapSize; y++)
             {
                 nodes[x, y] = new Node(grid.GetTile(x, y), x, y);
             }
@@ -51,7 +51,7 @@ public class Path_TileGraph
 
                 if(checkX >= 0 && checkX < length && checkY >= 0 && checkY < length)
                 {
-                    if(nodes[checkX, checkY].data.GetTile().IsAccessible() != Accessibility.IMPASSABLE && isClippingCorner(node, nodes[checkX, checkY]) == false)
+                    if(nodes[checkX, checkY].data.IsAccessible() != Accessibility.IMPASSABLE && isClippingCorner(node, nodes[checkX, checkY]) == false)
                     {
                         neighbours.Add(nodes[checkX, checkY]);
                     }
@@ -68,12 +68,12 @@ public class Path_TileGraph
 
         if(Mathf.Abs(dirX) + Mathf.Abs(dirY) == 2)
         {
-            if(nodes[current.x - dirX, current.y].data.GetTile().IsAccessible() == Accessibility.IMPASSABLE)
+            if(nodes[current.x - dirX, current.y].data.IsAccessible() == Accessibility.IMPASSABLE)
             {
                 return true;
             }
 
-            if (nodes[current.x, current.y - dirY].data.GetTile().IsAccessible() == Accessibility.IMPASSABLE)
+            if (nodes[current.x, current.y - dirY].data.IsAccessible() == Accessibility.IMPASSABLE)
             {
                 return true;
             }

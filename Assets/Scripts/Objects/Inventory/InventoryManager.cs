@@ -57,7 +57,6 @@ public static class InventoryManager
         }
 
         UpdateCallback(tile.inventory);
-
         CharacterManager.ResetCharacterTaskIgnores();
     }
     public static void AddToTileInventory(Tile tile, Dictionary<ItemTypes, int> toDrop)
@@ -84,8 +83,6 @@ public static class InventoryManager
 
         UpdateCallback(character.inventory);
         UpdateCallback(tile.inventory);
-
-        tile.inventory.isQueried = false;
     }
     static void PickUp(CharacterController character, Tile tile)
     {
@@ -101,8 +98,6 @@ public static class InventoryManager
             UpdateCallback(character.inventory);
             UpdateCallback(tile.inventory);
         }
-
-        tile.inventory.isQueried = false;
     }
     public static void SwitchInventories(Inventory inventory1, Inventory inventory2)
     {
@@ -114,21 +109,16 @@ public static class InventoryManager
 
         UpdateCallback(inventory1);
         UpdateCallback(inventory2);
-
-        inventory1.isQueried = false;
-        inventory2.isQueried = false;
     }
     public static void ClearInventory(Inventory inventory)
     {
         inventory.ClearInventory();
 
         UpdateCallback(inventory);
-
-        inventory.isQueried = false;
     }
     static void UpdateCallback(Inventory inventory)
     {
-        if(inventoryUpdateCallback != null)
+        if (inventoryUpdateCallback != null)
         {
             inventoryUpdateCallback(inventory);
         }
@@ -142,11 +132,13 @@ public static class InventoryManager
         }
         else
         {
-            if(inventory.item == null)
+            if(inventory.item == null || inventory.stackSize == 0)
             {
                 inventories.Remove(inventory);
             }
         }
+
+        inventory.isQueried = false;
     }
     public static TilePathPair GetClosestValidItem(Tile start, ItemTypes itemType, int amount = 0)
     {
@@ -198,11 +190,26 @@ public static class InventoryManager
                 continue;
             }
 
-            if (temp != null && amount != 0)
+            Inventory inventory = temp.inventory;
+
+            if(amount == 0)
             {
-                if (temp.inventory.stackSize - amount <= 0)
+                inventory.isQueried = true;
+            }
+            else
+            {
+                inventory.queriedAmount += amount;
+                
+                if (inventory.queriedAmount > inventory.stackSize)
                 {
-                    temp.inventory.isQueried = true;
+                    inventory.isQueried = true;
+
+                    int remaining = inventory.queriedAmount -  inventory.stackSize;
+
+                    if(remaining == 0)
+                    {
+                        continue;
+                    }
                 }
             }
 
