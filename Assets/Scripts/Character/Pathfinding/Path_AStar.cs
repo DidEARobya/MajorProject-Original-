@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class Path_AStar
 {
-    Queue<INodeData> path = new Queue<INodeData>();
+    Queue<ITileData> path = new Queue<ITileData>();
 
     bool isPlayer;
 
@@ -43,7 +43,7 @@ public class Path_AStar
 
             if (current == endNode)
             {
-                path = RetracePath(startNode, current);
+                path = RetraceTilePath(startNode, current);
                 return;
             }
 
@@ -76,14 +76,14 @@ public class Path_AStar
 
         return;
     }
-    Queue<INodeData> RetracePath(Node start, Node end)
+    Queue<ITileData> RetraceTilePath(Node start, Node end)
     {
-        Queue<INodeData> totalPath = new Queue<INodeData>();
+        Queue<ITileData> totalPath = new Queue<ITileData>();
         Node current = end;
 
         while (current != start)
         {
-            totalPath.Enqueue(current.data);
+            totalPath.Enqueue((ITileData)current.data);
             current = current.cameFrom;
         }
 
@@ -92,7 +92,7 @@ public class Path_AStar
             totalPath.Dequeue();
         }
  
-        return new Queue<INodeData>(totalPath.Reverse());
+        return new Queue<ITileData>(totalPath.Reverse());
     }
 
     float DistanceBetween(Node start, Node goal)

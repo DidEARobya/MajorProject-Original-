@@ -21,14 +21,14 @@ public class WorldController : MonoBehaviour
     public void Init(TileSpriteController tileSpriteController)
     {
         worldGrid = new WorldGrid();
-        camera.transform.position = new Vector3(worldGrid.mapWidth / 2, worldGrid.mapHeight / 2, -10);
+        camera.transform.position = new Vector3(worldGrid.mapSize / 2, worldGrid.mapSize / 2, -10);
 
-        cameraBounds.transform.position = new Vector3(worldGrid.mapWidth / 2, (worldGrid.mapHeight / 2) - 0.5f, 0);
-        cameraBounds.transform.localScale = new Vector3(worldGrid.mapWidth, worldGrid.mapHeight + 1, 1);
+        cameraBounds.transform.position = new Vector3(worldGrid.mapSize / 2, (worldGrid.mapSize / 2) - 0.5f, 0);
+        cameraBounds.transform.localScale = new Vector3(worldGrid.mapSize, worldGrid.mapSize + 1, 1);
 
-        for (int x = 0; x < worldGrid.mapWidth; x++)
+        for (int x = 0; x < worldGrid.mapSize; x++)
         {
-            for (int y = 0; y < worldGrid.mapHeight; y++)
+            for (int y = 0; y < worldGrid.mapSize; y++)
             {
                 Tile tileData = worldGrid.GetTile(x, y);
                 tileData.SetNeighbours();
@@ -52,14 +52,11 @@ public class WorldController : MonoBehaviour
     }
     public void GenerateTerrain()
     {
-        int xCentre = worldGrid.mapWidth / 2;
-        int yCentre = worldGrid.mapHeight / 2;
-
         int[,] caValues = worldGrid.cellularAutomataValues;
 
-        for (int x = 0; x < worldGrid.mapWidth; x++)
+        for (int x = 0; x < worldGrid.mapSize; x++)
         {
-            for (int y = 0; y < worldGrid.mapHeight; y++)
+            for (int y = 0; y < worldGrid.mapSize; y++)
             {
                 if (caValues[x, y] == 0)
                 {

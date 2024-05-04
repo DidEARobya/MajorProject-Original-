@@ -14,7 +14,7 @@ public class CharacterSpriteController : MonoBehaviour
         grid = GameManager.GetWorldGrid();
         CharacterManager.SetCharacterCreatedCallback(OnCharacterCreated);
 
-        int length = grid.mapWidth;
+        int length = grid.mapSize;
         int halfLength = grid.worldCentre.x;
 
         //CharacterController test = CharacterManager.CreateCharacter(grid.GetTile(halfLength, halfLength));

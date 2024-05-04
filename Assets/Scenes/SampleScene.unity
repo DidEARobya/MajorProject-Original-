@@ -1187,8 +1187,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6bd3734c5dbb694e8f119bc113377cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapWidth: 100
-  mapHeight: 100
+  mapSize: 100
   octaves: 4
   terrainScale: 0.1
   terrainOffset: 300

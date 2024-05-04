@@ -11,8 +11,7 @@ public class WorldGrid
     protected float[,] noiseValues;
     public int[,] cellularAutomataValues;
 
-    public int mapWidth;
-    public int mapHeight;
+    public int mapSize;
 
     public Vector2Int worldCentre;
 
@@ -20,22 +19,21 @@ public class WorldGrid
 
     public WorldGrid()
     {
-        mapWidth = GameManager.instance.mapWidth;
-        mapHeight = GameManager.instance.mapHeight;
+        mapSize = GameManager.instance.mapSize;
 
-        worldCentre = new Vector2Int(Mathf.FloorToInt(mapWidth / 2), Mathf.FloorToInt(mapHeight / 2));
+        worldCentre = new Vector2Int(Mathf.FloorToInt(mapSize / 2), Mathf.FloorToInt(mapSize / 2));
 
-        CellularAutomata ca = new CellularAutomata(mapWidth, mapHeight);
+        CellularAutomata ca = new CellularAutomata(mapSize, mapSize);
         cellularAutomataValues = ca.RandomFillMap();
 
-        PerlinNoise noise = new PerlinNoise(mapWidth, mapHeight);
+        PerlinNoise noise = new PerlinNoise(mapSize, mapSize);
         noiseValues = noise.GenerateTerrainNoise();
 
-        tiles = new Tile[mapWidth, mapHeight];
+        tiles = new Tile[mapSize, mapSize];
 
-        for (int x = 0; x < mapWidth; x++)
+        for (int x = 0; x < mapSize; x++)
         {
-            for (int y = 0; y < mapHeight; y++)
+            for (int y = 0; y < mapSize; y++)
             {
                 tiles[x, y] = new Tile(this, x, y, noiseValues[x,y]);
             }
@@ -46,7 +44,7 @@ public class WorldGrid
         int x = Mathf.FloorToInt(_x);
         int y = Mathf.FloorToInt(_y);
 
-        if (x > mapWidth - 1 || x < 0 || y > mapHeight - 1 || y < 0)
+        if (x > mapSize - 1 || x < 0 || y > mapSize - 1 || y < 0)
         {
             return null;
         }
