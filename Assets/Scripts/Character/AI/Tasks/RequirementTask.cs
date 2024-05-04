@@ -14,8 +14,6 @@ public class RequirementTask : Task
     public Dictionary<ItemTypes, int> requirements;
     public Dictionary<ItemTypes, int> storedRequirements;
 
-    HashSet<HaulTask> haulTasks = new HashSet<HaulTask>();
-
     FloorTypes floorType;
 
     bool isInitialised = false;
@@ -57,6 +55,7 @@ public class RequirementTask : Task
             return;
         }
 
+        tile.accessibility = Accessibility.IMPASSABLE;
         base.DoWork(workTime);
     }
     public void StoreComponent(Inventory inventory)
@@ -128,7 +127,6 @@ public class RequirementTask : Task
             return;
         }
 
-        haulTasks.Add(task);
         worker.SetActiveTask(task, true);
     }
     bool CheckIfRequirementsFulfilled()
@@ -138,14 +136,7 @@ public class RequirementTask : Task
     public override void CancelTask(bool isCancelled, bool toIgnore = false)
     {
         isInitialised = false;
-
-        if (haulTasks.Count > 0)
-        {
-            foreach(HaulTask haulTask in haulTasks)
-            {
-                haulTask.CancelTask(false);
-            }
-        }
+        tile.accessibility = Accessibility.ACCESSIBLE;
 
         if(isCancelled == false)
         {

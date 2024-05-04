@@ -210,6 +210,7 @@ public class CharacterController : InventoryOwner
 
             if (destinationTile.IsNeighbour(currentTile) == true || destinationTile == currentTile)
             {
+                currentTile.reservedBy = this;
                 pathFinder = null;
                 return;
             }
@@ -226,9 +227,8 @@ public class CharacterController : InventoryOwner
     }
     public void SetDestination(Tile tile)
     {
-        destinationTile.reservedBy = null;
+        currentTile.reservedBy = null;
         destinationTile = tile;
-        destinationTile.reservedBy = this;
     }
     public void UnStuck()
     {
@@ -255,6 +255,10 @@ public class CharacterController : InventoryOwner
     }
     public void EndTask(Task task)
     {
+        if(activeTask != task)
+        {
+
+        }
         if(activeTask == task)
         {
             activeTask = null;
