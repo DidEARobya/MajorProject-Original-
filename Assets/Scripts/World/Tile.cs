@@ -34,7 +34,7 @@ public enum Accessibility
     DELAYED,
     ACCESSIBLE
 }
-public class Tile : InventoryOwner, INodeData
+public class Tile : InventoryOwner, ITileData
 {
     Dictionary<Tile, Direction> neighbours = new Dictionary<Tile, Direction>();
 

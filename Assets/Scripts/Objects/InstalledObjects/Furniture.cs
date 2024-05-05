@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static TreeEditor.TreeEditorHelper;
 
 public class Furniture : InstalledObject
 {
@@ -33,6 +34,8 @@ public class Furniture : InstalledObject
         baseTile.accessibility = FurnitureTypes.GetBaseAccessibility(furnitureType);
         GameManager.GetWorldGrid().InvalidatePathGraph();
 
+        RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(baseTile), furnitureType, 1);
+
         if (FurnitureTypes.GetBaseAccessibility(furnitureType) == Accessibility.DELAYED)
         {
             AddOnActionCallback(InstalledObjectAction.Door_UpdateAction);
@@ -52,6 +55,7 @@ public class Furniture : InstalledObject
 
         if(isInstalled == true)
         {
+            RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(baseTile), furnitureType, -1);
             InventoryManager.AddToTileInventory(baseTile, FurnitureTypes.GetRequirements(furnitureType));
             GameManager.GetWorldGrid().InvalidatePathGraph();
         }

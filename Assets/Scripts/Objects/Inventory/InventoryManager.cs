@@ -50,8 +50,7 @@ public static class InventoryManager
 
             if (temp != null)
             {
-                temp.inventory.StoreItem(type, excess);
-
+                AddToTileInventory(type, temp, excess);
                 UpdateCallback(temp.inventory);
             }
         }

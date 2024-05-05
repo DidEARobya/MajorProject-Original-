@@ -30,6 +30,8 @@ public class Ore : InstalledObject
         baseTile.accessibility = OreTypes.GetBaseAccessibility(oreType);
         GameManager.GetWorldGrid().InvalidatePathGraph();
 
+        RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(baseTile), oreType, 1);
+
         if (updateObjectCallback != null)
         {
             updateObjectCallback(this);
@@ -39,6 +41,8 @@ public class Ore : InstalledObject
     {
         InventoryManager.AddToTileInventory(baseTile, OreTypes.GetComponents(oreType));
         GameManager.GetWorldGrid().InvalidatePathGraph();
+
+        RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(baseTile), oreType, -1);
 
         GameManager.GetInstalledSpriteController().Uninstall(this);
 
