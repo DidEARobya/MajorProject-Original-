@@ -53,7 +53,6 @@ public class Cluster
                     if (tiles[x, y].IsAccessible() != Accessibility.IMPASSABLE)
                     {
                         edges.Add(tiles[x, y]);
-                        //InventoryManager.AddToTileInventory(ItemTypes.WOOD, tiles[x, y], 1);
                     }
                 }
             }
@@ -132,7 +131,7 @@ public class Cluster
             beenChecked.Add(t);
             toCheck.AddTile(t);
 
-            if(regions.Count == 0 && regions.Contains(toCheck) == false)
+            /*if(regions.Count == 0 && regions.Contains(toCheck) == false)
             {
                 t.SetFloorType(FloorTypes.TASK);
             }
@@ -143,7 +142,7 @@ public class Cluster
             else if(regions.Count == 2 && regions.Contains(toCheck) == false)
             {
                 t.SetFloorType(FloorTypes.NONE);
-            }
+            }*/
 
             Dictionary<Tile, Direction> neighbours = t.GetNeighboursDict();
 
