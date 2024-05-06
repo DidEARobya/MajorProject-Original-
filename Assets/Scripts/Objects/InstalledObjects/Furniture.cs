@@ -34,7 +34,7 @@ public class Furniture : InstalledObject
         baseTile.accessibility = FurnitureTypes.GetBaseAccessibility(furnitureType);
         GameManager.GetWorldGrid().InvalidatePathGraph();
 
-        RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(baseTile), furnitureType, 1);
+        RegionManager.UpdateCluster(RegionManager.GetClusterAtTile(baseTile));
 
         if (FurnitureTypes.GetBaseAccessibility(furnitureType) == Accessibility.DELAYED)
         {
@@ -55,7 +55,7 @@ public class Furniture : InstalledObject
 
         if(isInstalled == true)
         {
-            RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(baseTile), furnitureType, -1);
+            RegionManager.UpdateCluster(RegionManager.GetClusterAtTile(baseTile));
             InventoryManager.AddToTileInventory(baseTile, FurnitureTypes.GetRequirements(furnitureType));
             GameManager.GetWorldGrid().InvalidatePathGraph();
         }

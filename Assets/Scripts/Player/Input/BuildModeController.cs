@@ -40,11 +40,11 @@ public class BuildModeController : MonoBehaviour
                 {
                     if (tile != null && toBuild != null && tile.GetInstalledObject() == null && tile.isPendingTask == false)
                     {
-                        ObjectManager.InstallFurniture(toBuild, tile, false);
-                        InstalledObject obj = tile.GetInstalledObject();
+                        ObjectManager.InstallFurniture(toBuild, tile, true);
+                        //InstalledObject obj = tile.GetInstalledObject();
 
-                        task = new RequirementTask(tile, (t) => { obj.Install(); }, TaskType.CONSTRUCTION, FurnitureTypes.GetRequirements(toBuild), false, FurnitureTypes.GetConstructionTime(toBuild));
-                        TaskManager.AddTask(task, task.taskType);
+                        //task = new RequirementTask(tile, (t) => { obj.Install(); }, TaskType.CONSTRUCTION, FurnitureTypes.GetRequirements(toBuild), false, FurnitureTypes.GetConstructionTime(toBuild));
+                        //TaskManager.AddTask(task, task.taskType);
                     }
                 }
 
@@ -52,8 +52,9 @@ public class BuildModeController : MonoBehaviour
 
             case BuildMode.FLOOR:
 
-                task = new RequirementTask(tile, (t) => { tile.SetFloorType(FloorTypes.WOOD); }, TaskType.CONSTRUCTION, FloorTypes.GetRequirements(FloorTypes.WOOD), true, 0.3f);
-                TaskManager.AddTask(task, task.taskType);
+                tile.SetFloorType(FloorTypes.WOOD);
+                //task = new RequirementTask(tile, (t) => { tile.SetFloorType(FloorTypes.WOOD); }, TaskType.CONSTRUCTION, FloorTypes.GetRequirements(FloorTypes.WOOD), true, 0.3f);
+                //TaskManager.AddTask(task, task.taskType);
 
                 break;
 
@@ -64,8 +65,9 @@ public class BuildModeController : MonoBehaviour
                     return;
                 }
 
-                task = new DestroyTask(tile, (t) => { tile.SetFloorType(FloorTypes.NONE); }, TaskType.CONSTRUCTION, true, 50);
-                TaskManager.AddTask(task, task.taskType);
+                tile.SetFloorType(FloorTypes.NONE);
+                //task = new DestroyTask(tile, (t) => { tile.SetFloorType(FloorTypes.NONE); }, TaskType.CONSTRUCTION, true, 50);
+                //TaskManager.AddTask(task, task.taskType);
 
                 break;
 
@@ -75,8 +77,9 @@ public class BuildModeController : MonoBehaviour
                 {
                     if(tile.GetInstalledObject().type == InstalledObjectType.FURNITURE)
                     {
-                        task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.CONSTRUCTION, false, tile.GetInstalledObject().durability);
-                        TaskManager.AddTask(task, task.taskType);
+                        tile.UninstallObject();
+                        //task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.CONSTRUCTION, false, tile.GetInstalledObject().durability);
+                        //TaskManager.AddTask(task, task.taskType);
                     }
                 }
 
@@ -87,8 +90,8 @@ public class BuildModeController : MonoBehaviour
                 {
                     ObjectManager.SpawnOre(toSpawn, tile);
 
-                    task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.MINING, false, tile.GetInstalledObject().durability);
-                    TaskManager.AddTask(task, task.taskType);
+                    //task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.MINING, false, tile.GetInstalledObject().durability);
+                    //TaskManager.AddTask(task, task.taskType);
                 }
 
                 break;

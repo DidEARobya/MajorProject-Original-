@@ -1,41 +1,35 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Region : INodeData
 {
-    int size;
-
     public RegionNeighbour[] neighbours = new RegionNeighbour[4];
-    Tile[,] tiles;
-    HashSet<Tile> edges = new HashSet<Tile>();
+
+    public HashSet<Tile> tiles = new HashSet<Tile>();
 
     Dictionary<FurnitureTypes, int> furnitureInRegion = new Dictionary<FurnitureTypes, int>();
     Dictionary<OreTypes, int> oreInRegion = new Dictionary<OreTypes, int>();
     Dictionary<ItemTypes, int> itemsInRegion = new Dictionary<ItemTypes, int>();
 
-    public int x;
-    public int y;
-
-    public Region(WorldGrid grid, int _x, int _y)
+    public Region()
     {
-        size = RegionManager.regionSize;
-        tiles = new Tile[size, size];
-
-        for(int x = 0; x < size; x++)
+       
+    }
+    public void AddTile(Tile tile)
+    {
+        if(tile == null || tiles.Contains(tile) == true)
         {
-            for(int y = 0; y < size; y++)
-            {
-                tiles[x, y] = grid.GetTile(x + (size * _x), y + (size * _y));
-            }
+            return;
         }
 
-        x = _x;
-        y = _y;
-
-        SetEdges();
+        tile.region = this;
+        tiles.Add(tile);
     }
+
     public void UpdateRegion()
     {
         furnitureInRegion.Clear();
@@ -84,6 +78,8 @@ public class Region : INodeData
                 }
             }
         }
+
+        Debug.Log(itemsInRegion.Count);
     }
     public void UpdateDict(FurnitureTypes type, int amount)
     {
@@ -175,27 +171,11 @@ public class Region : INodeData
 
         return itemsInRegion[type];
     }
-    public void SetEdges()
+    public bool Contains(Tile tile)
     {
-        if(edges.Count > 0)
-        {
-            edges.Clear();
-        }
-
-        for (int x = 0; x < size; x++)
-        {
-            for (int y = 0; y < size; y++)
-            {
-                if(x == 0 || y == 0 || x == size - 1 || y == size - 1)
-                {
-                    if (tiles[x, y].IsAccessible() != Accessibility.IMPASSABLE)
-                    {
-                        edges.Add(tiles[x, y]);
-                    }
-                }
-            }
-        }
+        return tiles.Contains(tile);
     }
+
     public Accessibility IsAccessible()
     {
         return Accessibility.ACCESSIBLE;

@@ -33,11 +33,11 @@ public class Inventory
     {
         if(owner.ownerTile != null)
         {
-            RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(owner.ownerTile), item, -stackSize);
+            //RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(owner.ownerTile), item, -stackSize);
         }
         if(inventory.owner.ownerTile != null)
         {
-            RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(inventory.owner.ownerTile), inventory.item, -inventory.stackSize);
+            //RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(inventory.owner.ownerTile), inventory.item, -inventory.stackSize);
         }
 
         item = inventory.item;
@@ -45,11 +45,11 @@ public class Inventory
 
         if (owner.ownerTile != null)
         {
-            RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(owner.ownerTile), item, stackSize);
+            //RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(owner.ownerTile), item, stackSize);
         }
         if (inventory.owner.ownerTile != null)
         {
-            RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(inventory.owner.ownerTile), inventory.item, inventory.stackSize);
+            //RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(inventory.owner.ownerTile), inventory.item, inventory.stackSize);
         }
     }
     public void StoreItem(Inventory inventory)
@@ -72,7 +72,7 @@ public class Inventory
 
             if(owner.ownerTile != null)
             {
-                RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(owner.ownerTile), item, inventory.stackSize);
+                //RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(owner.ownerTile), item, inventory.stackSize);
             }
 
             inventory.ClearInventory();
@@ -84,11 +84,11 @@ public class Inventory
 
             if (owner.ownerTile != null)
             {
-                RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(owner.ownerTile), item, toTake);
+                //RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(owner.ownerTile), item, toTake);
             }
             if (inventory.owner.ownerTile != null)
             {
-                RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(inventory.owner.ownerTile), item, -toTake);
+                //RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(inventory.owner.ownerTile), item, -toTake);
             }
         }
     }
@@ -110,7 +110,7 @@ public class Inventory
 
             if (owner.ownerTile != null)
             {
-                RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(owner.ownerTile), item, inventory.stackSize);
+                //RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(owner.ownerTile), item, inventory.stackSize);
             }
 
             inventory.ClearInventory();
@@ -122,11 +122,11 @@ public class Inventory
 
             if (owner.ownerTile != null)
             {
-                RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(owner.ownerTile), item, amount);
+                //RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(owner.ownerTile), item, amount);
             }
             if (inventory.owner.ownerTile != null)
             {
-                RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(inventory.owner.ownerTile), item, -amount);
+                //RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(inventory.owner.ownerTile), item, -amount);
             }
         }
     }
@@ -134,7 +134,7 @@ public class Inventory
     {
         if(owner.ownerTile != null)
         {
-            RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(owner.ownerTile), item, -stackSize);
+            //RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(owner.ownerTile), item, -stackSize);
         }
 
         item = null;
@@ -161,7 +161,7 @@ public class Inventory
 
         if (owner.ownerTile != null)
         {
-            RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(owner.ownerTile), item, toStore);
+            //RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(owner.ownerTile), item, toStore);
         }
 
         return toReturn;

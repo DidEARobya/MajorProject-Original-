@@ -36,7 +36,8 @@ public enum Accessibility
 }
 public class Tile : InventoryOwner, ITileData
 {
-    Dictionary<Tile, Direction> neighbours = new Dictionary<Tile, Direction>();
+    Dictionary<Tile, Direction> neighbourTiles = new Dictionary<Tile, Direction>();
+    Dictionary<Direction, Tile> neighbourDirections = new Dictionary<Direction, Tile>();
 
     public GameObject tileObj;
     public Node pathNode;
@@ -49,6 +50,7 @@ public class Tile : InventoryOwner, ITileData
     public Inventory inventory;
 
     public WorldGrid world;
+    public Region region;
 
     public new int x;
     public new int y;
@@ -101,7 +103,8 @@ public class Tile : InventoryOwner, ITileData
                 {
                     if (world.GetTile(checkX, checkY) != null)
                     {
-                        neighbours.Add(world.GetTile(checkX, checkY), GetDirection(_x, _y));
+                        neighbourTiles.Add(world.GetTile(checkX, checkY), GetDirection(_x, _y));
+                        neighbourDirections.Add(neighbourTiles[world.GetTile(checkX, checkY)], world.GetTile(checkX, checkY));
                     }
                 }
             }
@@ -219,6 +222,19 @@ public class Tile : InventoryOwner, ITileData
 
         return cost;
     }
+    public bool IsObjectInstalled()
+    {
+        if(installedObject == null)
+        {
+            return false;
+        }
+        if(installedObject.isInstalled == false)
+        {
+            return false;
+        }
+
+        return true;
+    }
     public Tile GetTile()
     {
         return this;
@@ -248,7 +264,7 @@ public class Tile : InventoryOwner, ITileData
             return this;
         }
         
-        foreach(Tile tile in neighbours.Keys)
+        foreach(Tile tile in neighbourTiles.Keys)
         {
             if(tile.inventory.item == null || tile.inventory.CanBeStored(type, amount) != 0)
             {
@@ -256,9 +272,9 @@ public class Tile : InventoryOwner, ITileData
             }
         }
 
-        foreach (Tile tile in neighbours.Keys)
+        foreach (Tile tile in neighbourTiles.Keys)
         {
-            foreach(Tile _tile in tile.neighbours.Keys)
+            foreach(Tile _tile in tile.neighbourTiles.Keys)
             {
                 if (_tile.inventory.item == null || _tile.inventory.CanBeStored(type, amount) != 0)
                 {
@@ -271,7 +287,7 @@ public class Tile : InventoryOwner, ITileData
     }
     public Tile GetNearestAvailableTile()
     {
-        foreach (Tile tile in neighbours.Keys)
+        foreach (Tile tile in neighbourTiles.Keys)
         {
             if (tile.accessibility != Accessibility.IMPASSABLE)
             {
@@ -283,16 +299,16 @@ public class Tile : InventoryOwner, ITileData
     }
     public bool IsNeighbour(Tile tile)
     {
-        return neighbours.ContainsKey(tile);
+        return neighbourTiles.ContainsKey(tile);
     }
     public Direction GetDirection(Tile tile)
     {
-        if(neighbours.ContainsKey(tile) == false)
+        if(neighbourTiles.ContainsKey(tile) == false)
         {
             return 0;
         }
 
-        return neighbours[tile];
+        return neighbourTiles[tile];
     }
     public Direction GetDirection(int x, int y)
     {
@@ -337,6 +353,58 @@ public class Tile : InventoryOwner, ITileData
         }
 
         return 0;
+    }
+    public Dictionary<Tile, Direction> GetNeighboursDict()
+    {
+        return neighbourTiles;
+    }
+    public Tile North
+    {
+        get
+        {
+            if (neighbourDirections.ContainsKey(Direction.N) == false)
+            {
+                return null;
+            }
+
+            return neighbourDirections[Direction.N];
+        }
+    }
+    public Tile East
+    {
+        get
+        {
+            if (neighbourDirections.ContainsKey(Direction.E) == false)
+            {
+                return null;
+            }
+
+            return neighbourDirections[Direction.E];
+        }
+    }
+    public Tile South
+    {
+        get
+        {
+            if (neighbourDirections.ContainsKey(Direction.S) == false)
+            {
+                return null;
+            }
+
+            return neighbourDirections[Direction.S];
+        }
+    }
+    public Tile West
+    {
+        get
+        {
+            if (neighbourDirections.ContainsKey(Direction.W) == false)
+            {
+                return null;
+            }
+
+            return neighbourDirections[Direction.W];
+        }
     }
     public void SetTileChangedCallback(Action<Tile> callback)
     {

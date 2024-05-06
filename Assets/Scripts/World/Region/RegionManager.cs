@@ -8,37 +8,34 @@ using UnityEngine.UIElements;
 public static class RegionManager
 {
     public const int regionSize = 10;
-    public static Region[,] regions;
+    public static Cluster[,] clusters;
+    //Change how regions are stored
+    public static HashSet<Region> regions;
 
     public static void Init(WorldGrid grid, int size)
     {
-        regions = new Region[size, size];
+        clusters = new Cluster[size, size];
+        regions = new HashSet<Region>();
 
         for(int x = 0; x < size; x++)
         {
             for (int y = 0; y < size; y++)
             {
-                regions[x, y] = new Region(grid, x, y);
+                clusters[x, y] = new Cluster(grid, x, y);
             }
         }
-
-        foreach (Region region in regions)
-        {
-            region.UpdateRegion();
-            SetNeighbourRegions(region);
-        }
     }
-    public static Region GetRegionAtTile(Tile tile)
-    {
-        if(regions == null)
-        {
-            return null;
-        }
 
+    public static Cluster GetClusterAtTile(Tile tile)
+    {
         int x = Mathf.FloorToInt(tile.x / regionSize);
         int y = Mathf.FloorToInt(tile.y / regionSize);
 
-        return regions[x, y];
+        return clusters[x, y];
+    }
+    public static void UpdateCluster(Cluster cluster)
+    {
+        cluster.UpdateCluster();
     }
     public static void UpdateRegionDict(Region region, FurnitureTypes furnitureType, int amount)
     {
@@ -109,7 +106,7 @@ public static class RegionManager
 
         return 0;
     }
-    public static void SetNeighbourRegions(Region region)
+    /*public static void SetNeighbourRegion(Region region)
     {
         int length = regions.GetLength(0);
 
@@ -160,5 +157,5 @@ public static class RegionManager
         {
             region.neighbours[3] = new RegionNeighbour(null, Direction.W);
         }
-    }
+    }*/
 }
