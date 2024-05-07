@@ -19,7 +19,7 @@ public class Cluster
 
     public Cluster(WorldGrid grid, int _x, int _y)
     {
-        size = RegionManager.regionSize;
+        size = RegionManager.clusterSize;
         tiles = new Tile[size, size];
 
         for (int x = 0; x < size; x++)
@@ -34,7 +34,7 @@ public class Cluster
         x = _x;
         y = _y;
 
-        UpdateCluster();
+        UpdateCluster(true);
         SetEdges();
     }
     public void SetEdges()
@@ -58,8 +58,13 @@ public class Cluster
             }
         }
     }
-    public void UpdateCluster()
+    public void UpdateCluster(bool isStart = false)
     {
+        foreach(Region region in regions)
+        {
+            region.Delete();
+        }
+
         regions.Clear();
         beenChecked.Clear();
 
@@ -80,12 +85,22 @@ public class Cluster
                 continue;
             }
 
+
+            if (tile.installedObject != null)
+            {
+
+            }
+
             FloodFillCluster(tile, toCheck);
 
             if (toCheck.tiles.Count > 0 && regions.Contains(toCheck) == false)
             {
                 regions.Add(toCheck);
-                toCheck.UpdateRegion();
+                Debug.Log(toCheck.borderTiles.Count);
+                if(isStart == false)
+                {
+                    toCheck.UpdateRegion();
+                }
             }
         }
     }
@@ -111,7 +126,7 @@ public class Cluster
 
     void FloodFillFromTile(Tile tile, Region toCheck)
     {
-        if(tile.IsObjectInstalled() == true)
+        if(tile.IsObjectInstalled() == true && tile.IsAccessible() == Accessibility.IMPASSABLE)
         {
             beenChecked.Add(tile);
             return;
@@ -131,19 +146,6 @@ public class Cluster
             beenChecked.Add(t);
             toCheck.AddTile(t);
 
-            /*if(regions.Count == 0 && regions.Contains(toCheck) == false)
-            {
-                t.SetFloorType(FloorTypes.TASK);
-            }
-            else if(regions.Count == 1  && regions.Contains(toCheck) == false)
-            {
-                t.SetFloorType(FloorTypes.WOOD);
-            }
-            else if(regions.Count == 2 && regions.Contains(toCheck) == false)
-            {
-                t.SetFloorType(FloorTypes.NONE);
-            }*/
-
             Dictionary<Tile, Direction> neighbours = t.GetNeighboursDict();
 
             foreach (Tile t2 in neighbours.Keys)
@@ -151,6 +153,14 @@ public class Cluster
                 if (t2 != null && beenChecked.Contains(t2) == false && tileset.Contains(t2) == true && t2.IsObjectInstalled() == false && toCheck.Contains(t2) == false)
                 {
                     stack.Push(t2);
+                }
+                else
+                {
+                    if((t2.IsObjectInstalled() == false && t2.IsAccessible() != Accessibility.IMPASSABLE) && tileset.Contains(t2) == false)
+                    {
+                        t.SetFloorType(FloorTypes.WOOD);
+                        toCheck.borderTiles.Add(t2);
+                    }
                 }
             }
         }

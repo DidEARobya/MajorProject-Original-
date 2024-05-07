@@ -10,14 +10,24 @@ public class Region : INodeData
     public RegionNeighbour[] neighbours = new RegionNeighbour[4];
 
     public HashSet<Tile> tiles = new HashSet<Tile>();
+    public List<Tile> borderTiles = new List<Tile>();
 
-    Dictionary<FurnitureTypes, int> furnitureInRegion = new Dictionary<FurnitureTypes, int>();
-    Dictionary<OreTypes, int> oreInRegion = new Dictionary<OreTypes, int>();
     Dictionary<ItemTypes, int> itemsInRegion = new Dictionary<ItemTypes, int>();
 
     public Region()
     {
        
+    }
+    public void Delete()
+    {
+        foreach(Tile tile in tiles)
+        {
+            tile.region = null;
+        }
+
+        neighbours = null;
+        tiles = null;
+        itemsInRegion = null;
     }
     public void AddTile(Tile tile)
     {
@@ -32,8 +42,6 @@ public class Region : INodeData
 
     public void UpdateRegion()
     {
-        furnitureInRegion.Clear();
-        oreInRegion.Clear();
         itemsInRegion.Clear();
 
         foreach(Tile tile in tiles)
@@ -49,80 +57,11 @@ public class Region : INodeData
                     itemsInRegion[tile.inventory.item] += tile.inventory.stackSize;
                 }
             }
-
-            if (tile.installedObject == null || tile.installedObject.isInstalled == false)
-            {
-                continue;
-            }
-
-            if (tile.installedObject.type == InstalledObjectType.FURNITURE)
-            {
-                if (furnitureInRegion.ContainsKey((tile.installedObject as Furniture).furnitureType) == false)
-                {
-                    furnitureInRegion.Add((tile.installedObject as Furniture).furnitureType, 1);
-                }
-                else
-                {
-                    furnitureInRegion[(tile.installedObject as Furniture).furnitureType] += 1;
-                }
-            }
-            else
-            {
-                if (oreInRegion.ContainsKey((tile.installedObject as Ore).oreType) == false)
-                {
-                    oreInRegion.Add((tile.installedObject as Ore).oreType, 1);
-                }
-                else
-                {
-                    oreInRegion[(tile.installedObject as Ore).oreType] += 1;
-                }
-            }
         }
 
-        //Debug.Log(itemsInRegion.Count);
+        Debug.Log(itemsInRegion.Count);
     }
-    public void UpdateDict(FurnitureTypes type, int amount)
-    {
-        if (furnitureInRegion.ContainsKey(type) == false)
-        {
-            if (amount < 0)
-            {
-                Debug.Log("Invalid Update Request");
-                return;
-            }
 
-            furnitureInRegion.Add(type, amount);
-            return;
-        }
-
-        furnitureInRegion[type] += amount;
-
-        if (furnitureInRegion[type] <= 0)
-        {
-            furnitureInRegion.Remove(type);
-        }
-    }
-    public void UpdateDict(OreTypes type, int amount)
-    {
-        if (oreInRegion.ContainsKey(type) == false)
-        {
-            if (amount < 0)
-            {
-                Debug.Log("Invalid Update Request");
-                return;
-            }
-
-            oreInRegion.Add(type, amount);
-            return;
-        }
-
-        oreInRegion[type] += amount;
-
-        if (oreInRegion[type] <= 0)
-        {
-            oreInRegion.Remove(type);
-        }
-    }
     public void UpdateDict(ItemTypes type, int amount)
     {
         if (itemsInRegion.ContainsKey(type) == false)
@@ -134,33 +73,16 @@ public class Region : INodeData
             }
 
             itemsInRegion.Add(type, amount);
+            Debug.Log(itemsInRegion[type]);
             return;
         }
 
         itemsInRegion[type] += amount;
-
+        Debug.Log(itemsInRegion[type]);
         if (itemsInRegion[type] <= 0)
         {
             itemsInRegion.Remove(type);
         }
-    }
-    public int Contains(OreTypes type)
-    {
-        if(oreInRegion.ContainsKey(type) == false)
-        {
-            return 0;
-        }
-
-        return oreInRegion[type];
-    }
-    public int Contains(FurnitureTypes type)
-    {
-        if (furnitureInRegion.ContainsKey(type) == false)
-        {
-            return 0;
-        }
-
-        return furnitureInRegion[type];
     }
     public int Contains(ItemTypes type)
     {

@@ -6,7 +6,6 @@ using static TreeEditor.TreeEditorHelper;
 public class Furniture : InstalledObject
 {
     public FurnitureTypes furnitureType;
-
     static public Furniture PlaceObject(FurnitureTypes _type, Tile tile, bool _isInstalled)
     {
         Furniture obj = new Furniture();

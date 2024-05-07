@@ -68,8 +68,8 @@ public class GameManager : MonoBehaviour
         mouseController.Init(worldGrid);
         buildModeController.Init();
 
-        worldController.GenerateTerrain();
         RegionManager.Init(worldGrid, regionMapSize);
+        worldController.GenerateTerrain();
     }
     private void Update()
     {

@@ -32,7 +32,7 @@ public class Ore : InstalledObject
 
         GameManager.GetWorldGrid().InvalidatePathGraph();
 
-        //RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(baseTile), oreType, 1);
+        RegionManager.UpdateCluster(RegionManager.GetClusterAtTile(baseTile));
 
         if (updateObjectCallback != null)
         {
@@ -44,7 +44,7 @@ public class Ore : InstalledObject
         InventoryManager.AddToTileInventory(baseTile, OreTypes.GetComponents(oreType));
         GameManager.GetWorldGrid().InvalidatePathGraph();
 
-        //RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(baseTile), oreType, -1);
+        RegionManager.UpdateCluster(RegionManager.GetClusterAtTile(baseTile));
 
         GameManager.GetInstalledSpriteController().Uninstall(this);
 
