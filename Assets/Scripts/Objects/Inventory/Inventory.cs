@@ -42,6 +42,7 @@ public class Inventory
 
         item = inventory.item;
         stackSize = inventory.stackSize;
+        queriedAmount = 0;
 
         if (owner.ownerTile != null)
         {

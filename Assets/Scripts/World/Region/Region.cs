@@ -79,7 +79,7 @@ public class Region : INodeData
             }
         }
 
-        Debug.Log(itemsInRegion.Count);
+        //Debug.Log(itemsInRegion.Count);
     }
     public void UpdateDict(FurnitureTypes type, int amount)
     {
