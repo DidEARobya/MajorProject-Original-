@@ -7,6 +7,7 @@ using UnityEngine.UIElements;
 
 public static class RegionManager
 {
+    static int clusterMapSize;
     public const int clusterSize = 10;
     public static Cluster[,] clusters;
     //Change how regions are stored
@@ -17,6 +18,7 @@ public static class RegionManager
 
     public static void Init(WorldGrid grid, int size)
     {
+        clusterMapSize = size;
         clusters = new Cluster[size, size];
         regions = new HashSet<Region>();
         regionsMap = new Dictionary<int, HashSet<Region>>();
@@ -48,7 +50,7 @@ public static class RegionManager
     }
     public static void AddHash(int hash, Region region)
     {
-        if(regionsMap.ContainsKey(hash))
+        if(regionsMap.ContainsKey(hash) && regionsMap[hash].Contains(region) == false)
         {
             regionsMap[hash].Add(region);
             return;
@@ -100,7 +102,19 @@ public static class RegionManager
             return;
         }
 
+        int x = cluster.x;
+        int y = cluster.y;
+
         cluster.UpdateCluster();
+        clusters[x + 1, y].UpdateCluster();
+        clusters[x - 1, y].UpdateCluster();
+        clusters[x, y + 1].UpdateCluster();
+        clusters[x, y - 1].UpdateCluster();
+
+        foreach (Cluster c in clusters)
+        {
+            c.UpdateRegionsNeighbours();
+        }
     }
     public static void UpdateMaps()
     {
@@ -108,9 +122,9 @@ public static class RegionManager
         {
             cluster.UpdateCluster();
         }
-        foreach(Region region in regions)
+        foreach(Cluster cluster in clusters)
         {
-            region.SetNeighbours();
+            cluster.UpdateRegionsNeighbours();
         }
 
         hasGenerated = true;

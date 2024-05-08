@@ -13,7 +13,6 @@ public class Cluster
 
     Tile[,] tiles;
     HashSet<Tile> tileset = new HashSet<Tile>();
-    HashSet<Tile> edges = new HashSet<Tile>();
     HashSet<Tile> beenChecked = new HashSet<Tile>();
     public List<Region> regions = new List<Region>();
 
@@ -46,8 +45,6 @@ public class Cluster
         regions.Clear();
         beenChecked.Clear();
 
-        int half = (size / 2) - 1;
-
         Region toCheck;
 
         int tilesSize = size * size;
@@ -63,27 +60,17 @@ public class Cluster
                 continue;
             }
 
-
-            if (tile.installedObject != null)
-            {
-
-            }
-
             FloodFillCluster(tile, toCheck);
 
             if (toCheck.tiles.Count > 0 && regions.Contains(toCheck) == false)
             {
                 regions.Add(toCheck);
 
-                if(isStart == false)
-                {
-                    toCheck.UpdateRegion();
-                    UpdateRegionsNeighbours();
-                }
+                toCheck.UpdateRegion();
             }
         }
     }
-    void UpdateRegionsNeighbours()
+    public void UpdateRegionsNeighbours()
     {
         foreach(Region region in regions)
         {

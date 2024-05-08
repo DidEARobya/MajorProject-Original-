@@ -64,8 +64,10 @@ public class BuildModeController : MonoBehaviour
                     return;
                 }
 
-                task = new DestroyTask(tile, (t) => { tile.SetFloorType(FloorTypes.NONE); }, TaskType.CONSTRUCTION, true, 50);
-                TaskManager.AddTask(task, task.taskType);
+                tile.SetFloorType(FloorTypes.NONE);
+
+                //task = new DestroyTask(tile, (t) => { tile.SetFloorType(FloorTypes.NONE); }, TaskType.CONSTRUCTION, true, 50);
+                //TaskManager.AddTask(task, task.taskType);
 
                 break;
 

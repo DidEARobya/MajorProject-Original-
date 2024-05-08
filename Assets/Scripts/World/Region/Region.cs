@@ -22,7 +22,7 @@ public class Region : INodeData
 
     public Region()
     {
-        RegionManager.regions.Add(this);
+        
     }
     public void SetTiles(TerrainTypes type, bool isNeighbour)
     {
@@ -68,6 +68,7 @@ public class Region : INodeData
                 if (t2 != null && beenChecked.Contains(t2) == false && tiles.Contains(t2) == true)
                 {
                     stack.Push(t2);
+
                     continue;
                 }
 
@@ -80,7 +81,9 @@ public class Region : INodeData
         SortSpans(southPairs, 0);
         SortSpans(westPairs, 1);
 
-        if(spans.Count > 0)
+        RegionManager.regions.Add(this);
+
+        if (spans.Count > 0)
         {
             foreach(int i in spans)
             {
@@ -95,6 +98,8 @@ public class Region : INodeData
             return;
         }
 
+        neighbours.Clear();
+
         foreach (int i in spans)
         {
             Region neighbour = RegionManager.GetNeighbour(i, this);
@@ -104,8 +109,6 @@ public class Region : INodeData
                 neighbours.Add(neighbour);
             }
         }
-
-        Debug.Log(neighbours.Count);
     }
     void SortSpans(List<Tile> spanPairs, int isVertical)
     {
@@ -171,7 +174,11 @@ public class Region : INodeData
                 hashY = Mathf.FloorToInt(y / length);
 
                 hash = GenerateLinkHash(hashX, hashY, isVertical, length);
-                spans.Add(hash);
+
+                if (spans.Contains(hash) == false)
+                {
+                    spans.Add(hash);
+                }
 
                 tempIndex = index;
                 x = 0;
@@ -190,7 +197,11 @@ public class Region : INodeData
         hashY = Mathf.FloorToInt(y / length);
 
         hash = GenerateLinkHash(hashX, hashY, isVertical, length);
-        spans.Add(hash);
+
+        if (spans.Contains(hash) == false)
+        {
+            spans.Add(hash);
+        }
     }
     public void Delete()
     {
@@ -212,10 +223,10 @@ public class Region : INodeData
 
         RegionManager.regions.Remove(this);
 
-        neighbours = null;
+        neighbours.Clear();
         tiles.Clear();
         spans.Clear();
-        itemsInRegion = null;
+        itemsInRegion.Clear();
     }
     public void AddTile(Tile tile)
     {
@@ -242,7 +253,7 @@ public class Region : INodeData
         toCheck = t.East;
 
         if (toCheck != null && toCheck.IsObjectInstalled() == false && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this)
-        {
+        { 
             if (eastPairs.Contains(toCheck) == false)
             {
                 eastPairs.Add(toCheck);

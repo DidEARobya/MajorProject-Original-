@@ -55,7 +55,6 @@ public class RequirementTask : Task
             return;
         }
 
-        tile.accessibility = Accessibility.IMPASSABLE;
         base.DoWork(workTime);
     }
     public void StoreComponent(Inventory inventory)

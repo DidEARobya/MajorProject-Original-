@@ -72,14 +72,14 @@ public class Tile : InventoryOwner, ITileData
         x = _x;
         y = _y;
 
-        //if(noiseVal < 0)
-        //{
-            //SetTerrainType(TerrainTypes.GOOD_SOIL);
-        //}
-        //else
-        //{
+        if(noiseVal < 0)
+        {
+            SetTerrainType(TerrainTypes.GOOD_SOIL);
+        }
+        else
+        {
             SetTerrainType(TerrainTypes.POOR_SOIL);
-        //}
+        }
 
         InventoryManager.CreateNewInventory(InventoryOwnerType.TILE, this);
     }
