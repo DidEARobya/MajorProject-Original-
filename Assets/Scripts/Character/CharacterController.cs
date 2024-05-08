@@ -128,11 +128,11 @@ public class CharacterController : InventoryOwner
         }
 
         activeTask = task;
+        SetDestination(activeTask.tile);
 
         activeTask.AddTaskCompleteCallback(EndTask);
         activeTask.AddTaskCancelledCallback(EndTask);
 
-        SetDestination(activeTask.tile);
         activeTask.InitTask(this);
     }
     bool DoWork(float deltaTime)

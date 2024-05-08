@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 using static UnityEditor.Progress;
 
 public class Inventory
@@ -30,8 +31,27 @@ public class Inventory
     }
     public void ReplaceInventory(Inventory inventory)
     {
+        if(owner.ownerTile != null)
+        {
+            RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(owner.ownerTile), item, -stackSize);
+        }
+        if(inventory.owner.ownerTile != null)
+        {
+            RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(inventory.owner.ownerTile), inventory.item, -inventory.stackSize);
+        }
+
         item = inventory.item;
         stackSize = inventory.stackSize;
+        queriedAmount = 0;
+
+        if (owner.ownerTile != null)
+        {
+            RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(owner.ownerTile), item, stackSize);
+        }
+        if (inventory.owner.ownerTile != null)
+        {
+            RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(inventory.owner.ownerTile), inventory.item, inventory.stackSize);
+        }
     }
     public void StoreItem(Inventory inventory)
     {
@@ -50,12 +70,27 @@ public class Inventory
         if(toTake >= inventory.stackSize)
         {
             stackSize += inventory.stackSize;
+
+            if(owner.ownerTile != null)
+            {
+                RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(owner.ownerTile), item, inventory.stackSize);
+            }
+
             inventory.ClearInventory();
         }
         else
         {
             stackSize += toTake;
             inventory.stackSize -= toTake;
+
+            if (owner.ownerTile != null)
+            {
+                RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(owner.ownerTile), item, toTake);
+            }
+            if (inventory.owner.ownerTile != null)
+            {
+                RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(inventory.owner.ownerTile), item, -toTake);
+            }
         }
     }
     public void StoreItem(Inventory inventory, int amount)
@@ -73,16 +108,36 @@ public class Inventory
         if (amount >= inventory.stackSize)
         {
             stackSize += inventory.stackSize;
+
+            if (owner.ownerTile != null)
+            {
+                RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(owner.ownerTile), item, inventory.stackSize);
+            }
+
             inventory.ClearInventory();
         }
         else
         {
             inventory.stackSize -= amount;
             stackSize += amount;
+
+            if (owner.ownerTile != null)
+            {
+                RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(owner.ownerTile), item, amount);
+            }
+            if (inventory.owner.ownerTile != null)
+            {
+                RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(inventory.owner.ownerTile), item, -amount);
+            }
         }
     }
     public void ClearInventory()
     {
+        if(owner.ownerTile != null)
+        {
+            RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(owner.ownerTile), item, -stackSize);
+        }
+
         item = null;
         stackSize = 0;
         queriedAmount = 0;
@@ -104,6 +159,12 @@ public class Inventory
         }
 
         stackSize += toStore;
+
+        if (owner.ownerTile != null)
+        {
+            RegionManager.UpdateRegionDict(RegionManager.GetRegionAtTile(owner.ownerTile), item, toStore);
+        }
+
         return toReturn;
     }
     public int CanBeStored(ItemTypes _item, int amount)

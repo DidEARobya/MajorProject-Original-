@@ -50,8 +50,7 @@ public static class InventoryManager
 
             if (temp != null)
             {
-                temp.inventory.StoreItem(type, excess);
-
+                AddToTileInventory(type, temp, excess);
                 UpdateCallback(temp.inventory);
             }
         }
@@ -80,6 +79,7 @@ public static class InventoryManager
         }
 
         character.inventory.StoreItem(tile.inventory, amount);
+        tile.inventory.queriedAmount -= amount;
 
         UpdateCallback(character.inventory);
         UpdateCallback(tile.inventory);
@@ -94,6 +94,7 @@ public static class InventoryManager
         else
         {
             character.inventory.StoreItem(tile.inventory);
+            tile.inventory.queriedAmount -= tile.inventory.stackSize;
 
             UpdateCallback(character.inventory);
             UpdateCallback(tile.inventory);
@@ -123,6 +124,11 @@ public static class InventoryManager
             inventoryUpdateCallback(inventory);
         }
 
+        if(inventory.owner.GetOwnerType() == InventoryOwnerType.CHARACTER)
+        {
+            return;
+        }
+
         if(inventories.Contains(inventory) == false)
         {
             if(inventory.item != null)
@@ -138,7 +144,10 @@ public static class InventoryManager
             }
         }
 
-        inventory.isQueried = false;
+        if(inventory.stackSize > inventory.queriedAmount)
+        {
+            inventory.isQueried = false;
+        }
     }
     public static TilePathPair GetClosestValidItem(Tile start, ItemTypes itemType, int amount = 0)
     {
@@ -200,16 +209,9 @@ public static class InventoryManager
             {
                 inventory.queriedAmount += amount;
                 
-                if (inventory.queriedAmount > inventory.stackSize)
+                if (inventory.queriedAmount >= inventory.stackSize)
                 {
                     inventory.isQueried = true;
-
-                    int remaining = inventory.queriedAmount -  inventory.stackSize;
-
-                    if(remaining == 0)
-                    {
-                        continue;
-                    }
                 }
             }
 
