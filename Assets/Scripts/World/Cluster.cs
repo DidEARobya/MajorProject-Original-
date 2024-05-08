@@ -78,11 +78,17 @@ public class Cluster
                 if(isStart == false)
                 {
                     toCheck.UpdateRegion();
+                    UpdateRegionsNeighbours();
                 }
             }
         }
-
-        Debug.Log(regions.Count);
+    }
+    void UpdateRegionsNeighbours()
+    {
+        foreach(Region region in regions)
+        {
+            region.SetNeighbours();
+        }
     }
     Tile GetUncheckedTile()
     {

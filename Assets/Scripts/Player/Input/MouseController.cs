@@ -211,6 +211,13 @@ public class MouseController : MonoBehaviour
             camera.transform.Translate(difference);
         }
 
+        if(Input.GetKeyUp(KeyCode.Z))
+        {
+            if(tileUnderMouse.region != null)
+            {
+                tileUnderMouse.region.SetTiles(TerrainTypes.GOOD_SOIL, false);
+            }
+        }
         lastMousePos = camera.ScreenToWorldPoint(Input.mousePosition);
         lastMousePos.z = 0;
 

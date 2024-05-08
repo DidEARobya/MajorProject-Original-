@@ -11,6 +11,7 @@ public static class RegionManager
     public static Cluster[,] clusters;
     //Change how regions are stored
     public static HashSet<Region> regions;
+    public static Dictionary<int, HashSet<Region>> regionsMap;
 
     static bool hasGenerated = false;
 
@@ -18,6 +19,7 @@ public static class RegionManager
     {
         clusters = new Cluster[size, size];
         regions = new HashSet<Region>();
+        regionsMap = new Dictionary<int, HashSet<Region>>();
 
         for(int x = 0; x < size; x++)
         {
@@ -25,6 +27,49 @@ public static class RegionManager
             {
                 clusters[x, y] = new Cluster(grid, x, y);
             }
+        }
+    }
+    public static Region GetNeighbour(int hash, Region region)
+    {
+        if(regionsMap.ContainsKey(hash) == false)
+        {
+            return null;
+        }
+
+        foreach(Region r in regionsMap[hash])
+        {
+            if(region != r)
+            {
+                return r;
+            }
+        }
+
+        return null;
+    }
+    public static void AddHash(int hash, Region region)
+    {
+        if(regionsMap.ContainsKey(hash))
+        {
+            regionsMap[hash].Add(region);
+            return;
+        }
+
+        regionsMap.Add(hash, new HashSet<Region>());
+        regionsMap[hash].Add(region);
+    }
+    public static void RemoveHash(int hash, Region region)
+    {
+        if (regionsMap.ContainsKey(hash) == false)
+        {
+            Debug.Log("Invalid removal");
+            return;
+        }
+
+        regionsMap[hash].Remove(region);
+
+        if (regionsMap[hash].Count == 0)
+        {
+            regionsMap.Remove(hash);
         }
     }
     public static Region GetRegionAtTile(Tile tile)
@@ -57,11 +102,15 @@ public static class RegionManager
 
         cluster.UpdateCluster();
     }
-    public static void UpdateClusters()
+    public static void UpdateMaps()
     {
         foreach(Cluster cluster in clusters)
         {
             cluster.UpdateCluster();
+        }
+        foreach(Region region in regions)
+        {
+            region.SetNeighbours();
         }
 
         hasGenerated = true;

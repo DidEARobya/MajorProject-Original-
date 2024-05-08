@@ -8,6 +8,7 @@ using UnityEngine;
 
 public enum TerrainType
 {
+    GRASS,
     GOOD_SOIL,
     POOR_SOIL,
 }
@@ -71,14 +72,14 @@ public class Tile : InventoryOwner, ITileData
         x = _x;
         y = _y;
 
-        if(noiseVal < 0)
-        {
-            SetTerrainType(TerrainTypes.GOOD_SOIL);
-        }
-        else
-        {
+        //if(noiseVal < 0)
+        //{
+            //SetTerrainType(TerrainTypes.GOOD_SOIL);
+        //}
+        //else
+        //{
             SetTerrainType(TerrainTypes.POOR_SOIL);
-        }
+        //}
 
         InventoryManager.CreateNewInventory(InventoryOwnerType.TILE, this);
     }
@@ -430,6 +431,7 @@ public class TerrainTypes
     protected readonly TerrainType type;
     protected readonly int movementCost;
 
+    public static readonly TerrainTypes GRASS = new TerrainTypes(TerrainType.GRASS, 3);
     public static readonly TerrainTypes GOOD_SOIL = new TerrainTypes(TerrainType.GOOD_SOIL, 2);
     public static readonly TerrainTypes POOR_SOIL = new TerrainTypes(TerrainType.POOR_SOIL, 1);
 
