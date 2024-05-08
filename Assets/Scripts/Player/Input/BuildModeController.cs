@@ -40,11 +40,11 @@ public class BuildModeController : MonoBehaviour
                 {
                     if (tile != null && toBuild != null && tile.GetInstalledObject() == null && tile.isPendingTask == false)
                     {
-                        ObjectManager.InstallFurniture(toBuild, tile, false);
-                        InstalledObject obj = tile.GetInstalledObject();
+                        ObjectManager.InstallFurniture(toBuild, tile, true);
+                        //InstalledObject obj = tile.GetInstalledObject();
 
-                        task = new RequirementTask(tile, (t) => { obj.Install(); }, TaskType.CONSTRUCTION, FurnitureTypes.GetRequirements(toBuild), false, FurnitureTypes.GetConstructionTime(toBuild));
-                        TaskManager.AddTask(task, task.taskType);
+                        //task = new RequirementTask(tile, (t) => { obj.Install(); }, TaskType.CONSTRUCTION, FurnitureTypes.GetRequirements(toBuild), false, FurnitureTypes.GetConstructionTime(toBuild));
+                        //TaskManager.AddTask(task, task.taskType);
                     }
                 }
 
@@ -75,8 +75,9 @@ public class BuildModeController : MonoBehaviour
                 {
                     if(tile.GetInstalledObject().type == InstalledObjectType.FURNITURE)
                     {
-                        task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.CONSTRUCTION, false, tile.GetInstalledObject().durability);
-                        TaskManager.AddTask(task, task.taskType);
+                        tile.UninstallObject();
+                        //task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.CONSTRUCTION, false, tile.GetInstalledObject().durability);
+                        //TaskManager.AddTask(task, task.taskType);
                     }
                 }
 

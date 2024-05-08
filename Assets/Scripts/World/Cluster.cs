@@ -35,28 +35,6 @@ public class Cluster
         y = _y;
 
         UpdateCluster(true);
-        SetEdges();
-    }
-    public void SetEdges()
-    {
-        if (edges.Count > 0)
-        {
-            edges.Clear();
-        }
-
-        for (int x = 0; x < size; x++)
-        {
-            for (int y = 0; y < size; y++)
-            {
-                if (x == 0 || y == 0 || x == size - 1 || y == size - 1)
-                {
-                    if (tiles[x, y].IsAccessible() != Accessibility.IMPASSABLE)
-                    {
-                        edges.Add(tiles[x, y]);
-                    }
-                }
-            }
-        }
     }
     public void UpdateCluster(bool isStart = false)
     {
@@ -96,13 +74,15 @@ public class Cluster
             if (toCheck.tiles.Count > 0 && regions.Contains(toCheck) == false)
             {
                 regions.Add(toCheck);
-                Debug.Log(toCheck.borderTiles.Count);
+
                 if(isStart == false)
                 {
                     toCheck.UpdateRegion();
                 }
             }
         }
+
+        Debug.Log(regions.Count);
     }
     Tile GetUncheckedTile()
     {
@@ -146,21 +126,14 @@ public class Cluster
             beenChecked.Add(t);
             toCheck.AddTile(t);
 
+
             Dictionary<Tile, Direction> neighbours = t.GetNeighboursDict();
 
             foreach (Tile t2 in neighbours.Keys)
             {
-                if (t2 != null && beenChecked.Contains(t2) == false && tileset.Contains(t2) == true && t2.IsObjectInstalled() == false && toCheck.Contains(t2) == false)
+                if (t2 != null && beenChecked.Contains(t2) == false && tileset.Contains(t2) == true && t2.IsObjectInstalled() == false && tile.IsAccessible() != Accessibility.IMPASSABLE && toCheck.Contains(t2) == false)
                 {
                     stack.Push(t2);
-                }
-                else
-                {
-                    if((t2.IsObjectInstalled() == false && t2.IsAccessible() != Accessibility.IMPASSABLE) && tileset.Contains(t2) == false)
-                    {
-                        t.SetFloorType(FloorTypes.WOOD);
-                        toCheck.borderTiles.Add(t2);
-                    }
                 }
             }
         }

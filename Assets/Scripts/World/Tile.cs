@@ -148,7 +148,7 @@ public class Tile : InventoryOwner, ITileData
         {
             if(newType != FloorType.TASK_FLOOR)
             {
-                InventoryManager.AddToTileInventory(this, FloorTypes.GetRequirements(floorType));
+                //InventoryManager.AddToTileInventory(this, FloorTypes.GetRequirements(floorType));
             }
         }
 
@@ -300,6 +300,15 @@ public class Tile : InventoryOwner, ITileData
     public bool IsNeighbour(Tile tile)
     {
         return neighbourTiles.ContainsKey(tile);
+    }
+    public Tile GetTileByDirection(Direction dir)
+    {
+        if (neighbourDirections.ContainsKey(dir) == false)
+        {
+            return null;
+        }
+
+        return neighbourDirections[dir];
     }
     public Direction GetDirection(Tile tile)
     {
