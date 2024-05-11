@@ -14,6 +14,10 @@ public enum OreType
     STONE_ORE,
     IRON_ORE
 }
+public enum PlantType
+{
+    OAK_TREE
+}
 public enum ItemType
 {
     WOOD,
@@ -114,6 +118,56 @@ public class OreTypes
     public static Dictionary<ItemTypes, int> GetComponents(OreTypes type)
     {
         return OreComponents.GetComponents(type.components);
+    }
+}
+public class PlantTypes
+{
+    protected readonly PlantType type;
+    protected readonly int movementCost;
+    protected readonly int durability;
+    protected readonly float growthRate;
+
+    protected readonly Accessibility baseAccessibility;
+    protected readonly CropYields yield;
+
+    protected readonly int width = 1;
+    protected readonly int height = 1;
+
+    public static readonly PlantTypes OAK_TREE = new PlantTypes(PlantType.OAK_TREE, 100, 20, 2f, Accessibility.IMPASSABLE, CropYields.OAK_TREE);
+
+    protected PlantTypes(PlantType _type, int _movementCost, int _durability, float _growthRate, Accessibility _baseAccessibility, CropYields _yield)
+    {
+        type = _type;
+        movementCost = _movementCost;
+        durability = _durability;
+        growthRate = _growthRate;
+        baseAccessibility = _baseAccessibility;
+        yield = _yield;
+    }
+
+    public static PlantType GetObjectType(PlantTypes type)
+    {
+        return type.type;
+    }
+    public static int GetMovementCost(PlantTypes type)
+    {
+        return type.movementCost;
+    }
+    public static int GetDurability(PlantTypes type)
+    {
+        return type.durability;
+    }
+    public static float GetGrowthRate(PlantTypes type)
+    {
+        return type.growthRate;
+    }
+    public static Accessibility GetBaseAccessibility(PlantTypes type)
+    {
+        return type.baseAccessibility;
+    }
+    public static Dictionary<ItemTypes, int> GetYield(PlantTypes type)
+    {
+        return CropYields.GetYield(type.yield);
     }
 }
 public class ItemTypes

@@ -7,7 +7,8 @@ using UnityEngine;
 public enum InstalledObjectType
 {
     FURNITURE,
-    ORE
+    ORE,
+    PLANT
 }
 public class InstalledObject
 {
@@ -30,26 +31,16 @@ public class InstalledObject
 
     }
 
-    public void Update(float deltaTime)
+    public virtual void Update(float deltaTime)
     {
         if (updateActionCallback != null)
         {
             updateActionCallback(this, deltaTime);
         }
     }
-    public virtual void Install()
-    {
-        Debug.Log("Calling Parent Install Function");
-    }
-    public virtual void UnInstall()
-    {
-        Debug.Log("Calling Parent Uninstall Function");
-    }
-    public virtual int GetMovementCost()
-    {
-        Debug.Log("Calling Parent MovementCost Function");
-        return 0;
-    }
+    public virtual void Install() { }
+    public virtual void UnInstall() { }
+    public virtual int GetMovementCost() { return 0; }
     public void AddOnActionCallback(Action<InstalledObject, float> callback)
     {
         updateActionCallback += callback;

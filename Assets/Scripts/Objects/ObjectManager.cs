@@ -35,6 +35,20 @@ public static class ObjectManager
             installObjectCallback(obj);
         }
     }
+    public static void SpawnPlant(PlantTypes type, Tile tile, PlantState state)
+    {
+        InstalledObject obj = Plant.PlaceObject(type, tile, state);
+
+        if (obj == null)
+        {
+            return;
+        }
+
+        if (installObjectCallback != null)
+        {
+            installObjectCallback(obj);
+        }
+    }
     public static void Update(float deltaTime)
     {
         foreach (InstalledObject obj in installedObjects)

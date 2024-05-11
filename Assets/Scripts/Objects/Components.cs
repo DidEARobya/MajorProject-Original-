@@ -39,7 +39,24 @@ public class OreComponents
         return type.components;
     }
 }
+public class CropYields
+{
+    protected readonly PlantTypes type;
+    protected readonly Dictionary<ItemTypes, int> yield;
 
+    public static readonly CropYields OAK_TREE = new CropYields(PlantTypes.OAK_TREE, new Dictionary<ItemTypes, int>() { { ItemTypes.WOOD, 10 } });
+
+    protected CropYields(PlantTypes _type, Dictionary<ItemTypes, int> _yield)
+    {
+        type = _type;
+        yield = _yield;
+    }
+
+    public static Dictionary<ItemTypes, int> GetYield(CropYields type)
+    {
+        return type.yield;
+    }
+}
 public class FloorRequirements
 {
     protected readonly FloorTypes type;

@@ -88,6 +88,8 @@ public class BuildModeController : MonoBehaviour
 
                 if (tile != null && toSpawn != null && tile.GetInstalledObject() == null && tile.isPendingTask == false)
                 {
+                    ObjectManager.SpawnPlant(PlantTypes.OAK_TREE, tile, PlantState.SEED);
+                    return;
                     ObjectManager.SpawnOre(toSpawn, tile);
 
                     task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.MINING, false, tile.GetInstalledObject().durability);

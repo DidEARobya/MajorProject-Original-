@@ -37,6 +37,10 @@ public class InstalledSpriteController : MonoBehaviour
             name = OreTypes.GetObjectType(((_obj as Ore).oreType)).ToString();
             //(_obj as Ore).QueueMiningTask();
         }
+        else if (_obj.type == InstalledObjectType.PLANT)
+        {
+            name = PlantTypes.GetObjectType(((_obj as Plant).plantType)).ToString() + "_" + (_obj as Plant).plantState.ToString();
+        }
 
         obj.name = name + _obj.baseTile.x + "_" + _obj.baseTile.y;
         renderer.sprite = objSprites.GetSprite(name);
@@ -61,6 +65,13 @@ public class InstalledSpriteController : MonoBehaviour
             Color colour = renderer.color;
             colour.a = 100;
 
+            if (obj.type == InstalledObjectType.PLANT)
+            {
+                name = PlantTypes.GetObjectType(((obj as Plant).plantType)).ToString() + "_" + (obj as Plant).plantState.ToString();
+                renderer.sprite = objSprites.GetSprite(name);
+            }
+
+            renderer.sprite = objSprites.GetSprite(name);
             renderer.color = colour;
             renderer.sortingLayerName = "Walls";
         }
