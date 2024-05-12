@@ -126,6 +126,7 @@ public class PlantTypes
     protected readonly int movementCost;
     protected readonly int durability;
     protected readonly float growthRate;
+    protected readonly int growthStage;
 
     protected readonly Accessibility baseAccessibility;
     protected readonly CropYields yield;
@@ -133,14 +134,15 @@ public class PlantTypes
     protected readonly int width = 1;
     protected readonly int height = 1;
 
-    public static readonly PlantTypes OAK_TREE = new PlantTypes(PlantType.OAK_TREE, 100, 20, 2f, Accessibility.IMPASSABLE, CropYields.OAK_TREE);
+    public static readonly PlantTypes OAK_TREE = new PlantTypes(PlantType.OAK_TREE, 100, 20, 100, 2f, Accessibility.ACCESSIBLE, CropYields.OAK_TREE);
 
-    protected PlantTypes(PlantType _type, int _movementCost, int _durability, float _growthRate, Accessibility _baseAccessibility, CropYields _yield)
+    protected PlantTypes(PlantType _type, int _movementCost, int _durability, int _growthStage, float _growthRate, Accessibility _baseAccessibility, CropYields _yield)
     {
         type = _type;
         movementCost = _movementCost;
         durability = _durability;
         growthRate = _growthRate;
+        growthStage = _growthStage;
         baseAccessibility = _baseAccessibility;
         yield = _yield;
     }
@@ -157,6 +159,10 @@ public class PlantTypes
     {
         return type.durability;
     }
+    public static int GetGrowthStage(PlantTypes type)
+    {
+        return type.growthStage;
+    }
     public static float GetGrowthRate(PlantTypes type)
     {
         return type.growthRate;
@@ -165,9 +171,9 @@ public class PlantTypes
     {
         return type.baseAccessibility;
     }
-    public static Dictionary<ItemTypes, int> GetYield(PlantTypes type)
+    public static Dictionary<ItemTypes, int> GetYield(PlantTypes type, PlantState state)
     {
-        return CropYields.GetYield(type.yield);
+        return CropYields.GetYield(type.yield, state);
     }
 }
 public class ItemTypes

@@ -42,19 +42,35 @@ public class OreComponents
 public class CropYields
 {
     protected readonly PlantTypes type;
-    protected readonly Dictionary<ItemTypes, int> yield;
+    protected readonly Dictionary<ItemTypes, int> lowYield;
+    protected readonly Dictionary<ItemTypes, int> highYield;
+    protected readonly Dictionary<ItemTypes, int> matureYield;
 
-    public static readonly CropYields OAK_TREE = new CropYields(PlantTypes.OAK_TREE, new Dictionary<ItemTypes, int>() { { ItemTypes.WOOD, 10 } });
+    public static readonly CropYields OAK_TREE = new CropYields(PlantTypes.OAK_TREE, new Dictionary<ItemTypes, int>() { { ItemTypes.WOOD, 4 } }, new Dictionary<ItemTypes, int>() { { ItemTypes.WOOD, 8 } }, new Dictionary<ItemTypes, int>() { { ItemTypes.WOOD, 16 } });
 
-    protected CropYields(PlantTypes _type, Dictionary<ItemTypes, int> _yield)
+    protected CropYields(PlantTypes _type, Dictionary<ItemTypes, int> _lowYield, Dictionary<ItemTypes, int> _highYield, Dictionary<ItemTypes, int> _matureYield)
     {
         type = _type;
-        yield = _yield;
+        lowYield = _lowYield;
+        highYield = _highYield;
+        matureYield = _matureYield;
     }
 
-    public static Dictionary<ItemTypes, int> GetYield(CropYields type)
+    public static Dictionary<ItemTypes, int> GetYield(CropYields type, PlantState state)
     {
-        return type.yield;
+        switch(state)
+        {
+            case PlantState.SEED:
+                return null;
+            case PlantState.EARLY_GROWTH:
+                return type.lowYield;
+            case PlantState.LATE_GROWTH:
+                return type.highYield;
+            case PlantState.GROWN:
+                return type.matureYield;
+        }
+
+        return null;
     }
 }
 public class FloorRequirements

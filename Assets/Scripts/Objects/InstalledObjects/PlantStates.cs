@@ -12,18 +12,19 @@ public enum PlantState
 }
 public class GrowthState : State
 {
+    public TendTask task;
+
     protected Plant plant;
 	protected float growthRate;
     protected float growth;
+    protected int growthStage;
 
-	float tendDelay = 5;
-	float delay = 0;
-
-    float seedMax;
-    float lowGrowthMax;
-    float highGrowthMax;
+	protected float tendDelay = 20;
+	protected float delay = 0;
 
     bool taskCreated;
+    bool hasEnded;
+
     public GrowthState(Plant _plant)
 	{
 		plant = _plant;
@@ -34,31 +35,16 @@ public class GrowthState : State
         delay = 0;
         growth = 0;
 
-        seedMax = plant.durability * 0.33f;
-        lowGrowthMax = plant.durability * 0.66f;
+        growthStage = 50;
     }
     public override void StateEnd()
 	{
-        
+        hasEnded = true;
 	}
     public override void Update(float deltaTime)
 	{
-        if(growth < seedMax && plant.plantState != PlantState.SEED)
+        if(hasEnded == true)
         {
-            plant.UpdateGrowthState(PlantState.SEED);
-        }
-        else if(growth > seedMax && growth < lowGrowthMax && plant.plantState != PlantState.EARLY_GROWTH)
-        {
-            plant.UpdateGrowthState(PlantState.EARLY_GROWTH);
-        }
-        else if(growth > lowGrowthMax && plant.plantState != PlantState.LATE_GROWTH)
-        {
-            plant.UpdateGrowthState(PlantState.LATE_GROWTH);
-        }
-
-        if(growth > plant.durability)
-        {
-            plant.SetState(PlantState.GROWN);
             return;
         }
 
@@ -66,8 +52,8 @@ public class GrowthState : State
         {
             if(taskCreated == false)
             {
-                TendTask task = new TendTask(plant.baseTile, (t) => { delay = 0; taskCreated = false; }, TaskType.CONSTRUCTION, false, 50);
-                TaskManager.AddTask(task, TaskType.CONSTRUCTION);
+                task = new TendTask(plant.baseTile, (t) => { delay = 0; taskCreated = false; }, TaskType.AGRICULTURE, false, 50);
+                TaskManager.AddTask(task, TaskType.AGRICULTURE);
 
                 taskCreated = true;
             }
@@ -76,35 +62,89 @@ public class GrowthState : State
         }
 
         delay += deltaTime;
-        growth += deltaTime * growthRate;
 	}
 }
-public class GrownState : State
+public class SeedState : GrowthState
 {
-    protected Plant plant;
+    public SeedState(Plant _plant) : base(_plant)
+    {
+        plant = _plant;
+    }
+    public override void Update(float deltaTime)
+    {
+        base.Update(deltaTime);
 
-    float tendDelay = 100;
-    float delay = 0;
+        if (delay >= tendDelay)
+        {
+            return;
+        }
 
-    public GrownState(Plant _plant)
+        Debug.Log("Growing");
+        growth += deltaTime * growthRate;
+
+        if (growth > growthStage)
+        {
+            plant.SetState(PlantState.EARLY_GROWTH);
+            return;
+        }
+    }
+}
+public class EarlyGrowthState : GrowthState
+{
+    public EarlyGrowthState(Plant _plant) : base(_plant)
+    {
+        plant = _plant;
+    }
+    public override void Update(float deltaTime)
+    {
+        base.Update(deltaTime);
+
+        if (delay >= tendDelay)
+        {
+            return;
+        }
+
+        growth += deltaTime * growthRate;
+
+        if (growth > growthStage)
+        {
+            plant.SetState(PlantState.LATE_GROWTH);
+            return;
+        }
+    }
+}
+public class LateGrowthState : GrowthState
+{
+    public LateGrowthState(Plant _plant) : base(_plant)
+    {
+        plant = _plant;
+    }
+    public override void Update(float deltaTime)
+    {
+        base.Update(deltaTime);
+
+        if (delay >= tendDelay)
+        {
+            return;
+        }
+
+        growth += deltaTime * growthRate;
+
+        if (growth > growthStage)
+        {
+            plant.SetState(PlantState.GROWN);
+            return;
+        }
+    }
+}
+public class GrownState : GrowthState
+{
+    public GrownState(Plant _plant) : base(_plant)
     {
         plant = _plant;
     }
     public override void StateStart()
     {
         delay = 0;
-    }
-    public override void StateEnd()
-    {
-
-    }
-    public override void Update(float deltaTime)
-    {
-        if (delay >= tendDelay)
-        {
-            return;
-        }
-
-        delay += deltaTime;
     }
 }

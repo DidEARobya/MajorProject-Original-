@@ -8,8 +8,8 @@ public class Plant : InstalledObject
     public PlantTypes plantType;
     public PlantState plantState;
 
-    public State state;
-    public State[] plantStates;
+    public GrowthState state;
+    public Dictionary<PlantState, GrowthState> states;
 
     static public Plant PlaceObject(PlantTypes _type, Tile tile, PlantState state)
     {
@@ -20,7 +20,7 @@ public class Plant : InstalledObject
         obj.plantType = _type;
         obj.durability = PlantTypes.GetDurability(_type);
 
-        obj.plantStates = new State[2];
+        obj.states = new Dictionary<PlantState, GrowthState>();
         obj.plantState = state;
 
         if (tile.InstallObject(obj) == false)
@@ -45,18 +45,12 @@ public class Plant : InstalledObject
     }
     public override void Install()
     {
-        plantStates[0] = new GrowthState(this);
-        plantStates[1] = new GrownState(this);
+        states.Add(PlantState.SEED, new SeedState(this));
+        states.Add(PlantState.EARLY_GROWTH, new EarlyGrowthState(this));
+        states.Add(PlantState.LATE_GROWTH, new LateGrowthState(this));
+        states.Add(PlantState.GROWN, new GrownState(this));
 
-        if(plantState != PlantState.GROWN)
-        {
-            state = plantStates[0];
-        }
-        else
-        {
-            state = plantStates[1];
-        }
-
+        state = states[plantState];
         state.StateStart();
 
         isInstalled = true;
@@ -75,9 +69,13 @@ public class Plant : InstalledObject
     public override void UnInstall()
     {
         state.StateEnd();
-        plantStates = null;
+        states = null;
 
-        InventoryManager.AddToTileInventory(baseTile, PlantTypes.GetYield(plantType));
+        if(plantState != PlantState.SEED)
+        {
+            InventoryManager.AddToTileInventory(baseTile, PlantTypes.GetYield(plantType, plantState));
+        }
+
         GameManager.GetWorldGrid().InvalidatePathGraph();
 
         RegionManager.UpdateCluster(RegionManager.GetClusterAtTile(baseTile));
@@ -90,34 +88,22 @@ public class Plant : InstalledObject
     {
         return PlantTypes.GetMovementCost(plantType);
     }
-    public void UpdateGrowthState(PlantState _state)
+    public void SetState(PlantState _state)
     {
         if(plantState == _state)
         {
             return;
         }
 
-        plantState = _state;
-
-        if (updateObjectCallback != null)
-        {
-            updateObjectCallback(this);
-        }
-    }
-    public void SetState(PlantState _state)
-    {
         state.StateEnd();
 
-        plantState = _state;
+        if (state.task != null)
+        {
+            state.task.CancelTask(false);
+        }
 
-        if (plantState != PlantState.GROWN)
-        {
-            state = plantStates[0];
-        }
-        else
-        {
-            state = plantStates[1];
-        }
+        plantState = _state;
+        state = states[plantState];
 
         state.StateStart();
 

@@ -77,9 +77,9 @@ public class BuildModeController : MonoBehaviour
                 {
                     if(tile.GetInstalledObject().type == InstalledObjectType.FURNITURE)
                     {
-                        tile.UninstallObject();
-                        //task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.CONSTRUCTION, false, tile.GetInstalledObject().durability);
-                        //TaskManager.AddTask(task, task.taskType);
+                        //tile.UninstallObject();
+                        task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.CONSTRUCTION, false, tile.GetInstalledObject().durability);
+                        TaskManager.AddTask(task, task.taskType);
                     }
                 }
 

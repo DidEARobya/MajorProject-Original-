@@ -71,7 +71,6 @@ public class InstalledSpriteController : MonoBehaviour
                 renderer.sprite = objSprites.GetSprite(name);
             }
 
-            renderer.sprite = objSprites.GetSprite(name);
             renderer.color = colour;
             renderer.sortingLayerName = "Walls";
         }

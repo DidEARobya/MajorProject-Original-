@@ -85,8 +85,6 @@ public class Task
             }
 
             worker.CancelTask(this);
-            worker.activeTask = null;
-            worker.pathFinder = null;
             worker = null;
         }
 
