@@ -146,7 +146,7 @@ public class MouseController : MonoBehaviour
             if(Input.GetKeyUp(KeyCode.N))
             {
                 Debug.Log("Wall");
-                toBuild = FurnitureTypes.WOOD_WALL;
+                toBuild = FurnitureTypes.WALL;
             }
             if (Input.GetKeyUp(KeyCode.M))
             {

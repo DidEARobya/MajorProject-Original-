@@ -7,9 +7,9 @@ public static class ObjectManager
 {
     static List<InstalledObject> installedObjects = new List<InstalledObject>();
     static Action<InstalledObject> installObjectCallback;
-    public static void InstallFurniture(FurnitureTypes type, Tile tile, bool isInstalled)
+    public static void InstallFurniture(FurnitureTypes type, ItemTypes baseMaterial, Tile tile, bool isInstalled)
     {
-        InstalledObject obj = Furniture.PlaceObject(type, tile, isInstalled);
+        InstalledObject obj = Furniture.PlaceObject(type, baseMaterial, tile, isInstalled);
 
         if (obj == null)
         {

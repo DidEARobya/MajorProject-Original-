@@ -79,7 +79,6 @@ public class SeedState : GrowthState
             return;
         }
 
-        Debug.Log("Growing");
         growth += deltaTime * growthRate;
 
         if (growth > growthStage)

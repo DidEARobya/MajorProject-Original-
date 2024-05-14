@@ -23,6 +23,7 @@ public class InstalledObject
 
     public float durability;
     public bool isInstalled = false;
+    public bool hasRelativeRotation = false;
 
     protected Action<InstalledObject> updateObjectCallback;
 
@@ -36,6 +37,30 @@ public class InstalledObject
         if (updateActionCallback != null)
         {
             updateActionCallback(this, deltaTime);
+        }
+    }
+    public void UpdateNeighourSprites(InstalledObject obj)
+    {
+        if(obj == null)
+        {
+            return;
+        }
+
+        if(obj.baseTile.North != null && obj.baseTile.North.IsObjectInstalled() == true)
+        {
+            updateObjectCallback(obj.baseTile.North.installedObject);
+        }
+        if (obj.baseTile.South != null && obj.baseTile.South.IsObjectInstalled() == true)
+        {
+            updateObjectCallback(obj.baseTile.South.installedObject);
+        }
+        if (obj.baseTile.West != null && obj.baseTile.West.IsObjectInstalled() == true)
+        {
+            updateObjectCallback(obj.baseTile.West.installedObject);
+        }
+        if (obj.baseTile.East != null && obj.baseTile.East.IsObjectInstalled() == true)
+        {
+            updateObjectCallback(obj.baseTile.East.installedObject);
         }
     }
     public virtual void Install() { }

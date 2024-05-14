@@ -40,7 +40,8 @@ public class BuildModeController : MonoBehaviour
                 {
                     if (tile != null && toBuild != null && tile.GetInstalledObject() == null && tile.isPendingTask == false)
                     {
-                        ObjectManager.InstallFurniture(toBuild, tile, true);
+                        ObjectManager.InstallFurniture(toBuild, ItemTypes.STONE, tile, true);
+                        ObjectManager.InstallFurniture(toBuild, ItemTypes.WOOD, tile.West.West.West, true);
                         //InstalledObject obj = tile.GetInstalledObject();
 
                         //task = new RequirementTask(tile, (t) => { obj.Install(); }, TaskType.CONSTRUCTION, FurnitureTypes.GetRequirements(toBuild), false, FurnitureTypes.GetConstructionTime(toBuild));
@@ -77,7 +78,8 @@ public class BuildModeController : MonoBehaviour
                 {
                     if(tile.GetInstalledObject().type == InstalledObjectType.FURNITURE)
                     {
-                        //tile.UninstallObject();
+                        tile.UninstallObject();
+                        return;
                         task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.CONSTRUCTION, false, tile.GetInstalledObject().durability);
                         TaskManager.AddTask(task, task.taskType);
                     }

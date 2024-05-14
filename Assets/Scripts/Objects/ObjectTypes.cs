@@ -1,13 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 
 public enum FurnitureType
 {
-    WOOD_WALL,
-    STONE_WALL
+    WALL,
+    DOOR
 }
 public enum OreType
 {
@@ -29,27 +30,32 @@ public class FurnitureTypes
     protected readonly FurnitureType type;
     protected readonly int movementCost;
     protected readonly int constructionTime;
-    protected readonly int durability;
+    protected readonly Dictionary<ItemTypes, int> durabilities;
+
+    protected readonly ConstructionRequirements requirements;
+    protected readonly int baseMaterialAmount;
 
     protected readonly Accessibility baseAccessibility;
-    protected readonly ConstructionRequirements requirements;
 
     protected readonly int width = 1;
     protected readonly int height = 1;
 
-    public static readonly FurnitureTypes WOOD_WALL = new FurnitureTypes(FurnitureType.WOOD_WALL, 100, 50, 200, Accessibility.IMPASSABLE, ConstructionRequirements.WOOD_WALL);
-    public static readonly FurnitureTypes DOOR = new FurnitureTypes(FurnitureType.STONE_WALL, 4, 100, 200, Accessibility.DELAYED, ConstructionRequirements.DOOR);
+    protected readonly bool hasRelativeRotation;
 
-    protected FurnitureTypes(FurnitureType _type, int _movementCost, int _constructionTime, int _durability, Accessibility _baseAccessibility, ConstructionRequirements _requirements)
+    public static readonly FurnitureTypes WALL = new FurnitureTypes(FurnitureType.WALL, 100, 50, new Dictionary<ItemTypes, int>() { { ItemTypes.WOOD, 300 }, { ItemTypes.STONE, 400 } }, Accessibility.IMPASSABLE, false, 4);
+    public static readonly FurnitureTypes DOOR = new FurnitureTypes(FurnitureType.DOOR, 4, 100, new Dictionary<ItemTypes, int>() { { ItemTypes.WOOD, 300 }, { ItemTypes.STONE, 400 } }, Accessibility.DELAYED, true, 4);
+
+    protected FurnitureTypes(FurnitureType _type, int _movementCost, int _constructionTime, Dictionary<ItemTypes, int> _durabilities, Accessibility _baseAccessibility, bool relativeRotation, int _baseMaterialAmount, ConstructionRequirements _requirements = null)
     {
         type = _type;
         movementCost = _movementCost;
         constructionTime = _constructionTime;
-        durability = _durability;
+        durabilities = _durabilities;
         baseAccessibility = _baseAccessibility;
+        baseMaterialAmount = _baseMaterialAmount;
         requirements = _requirements;
+        hasRelativeRotation = relativeRotation;
     }
-
     public static FurnitureType GetObjectType(FurnitureTypes type)
     {
         return type.type;
@@ -62,17 +68,29 @@ public class FurnitureTypes
     {
         return type.constructionTime;
     }
-    public static int GetDurability(FurnitureTypes type)
+    public static int GetDurability(FurnitureTypes type, ItemTypes material)
     {
-        return type.durability;
+        return type.durabilities[material];
+    }
+    public static bool HasRelativeRotation(FurnitureTypes type)
+    {
+        return type.hasRelativeRotation;
     }
     public static Accessibility GetBaseAccessibility(FurnitureTypes type)
     {
         return type.baseAccessibility;
     }
-    public static Dictionary<ItemTypes, int> GetRequirements(FurnitureTypes type)
+    public static Dictionary<ItemTypes, int> GetRequirements(FurnitureTypes type, ItemTypes material)
     {
-        return ConstructionRequirements.GetRequirements(type.requirements);
+        if(type.requirements == null)
+        {
+            return new Dictionary<ItemTypes, int>() { { material, type.baseMaterialAmount } };
+        }
+
+        Dictionary<ItemTypes, int> toReturn = new Dictionary<ItemTypes, int>(ConstructionRequirements.GetRequirements(type.requirements));
+        toReturn.Add(material, type.baseMaterialAmount);
+
+        return toReturn;
     }
 }
 public class OreTypes

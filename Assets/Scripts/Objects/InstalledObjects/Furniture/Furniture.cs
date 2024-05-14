@@ -6,14 +6,18 @@ using static TreeEditor.TreeEditorHelper;
 public class Furniture : InstalledObject
 {
     public FurnitureTypes furnitureType;
-    static public Furniture PlaceObject(FurnitureTypes _type, Tile tile, bool _isInstalled)
+    public ItemTypes baseMaterial;
+
+    static public Furniture PlaceObject(FurnitureTypes _type, ItemTypes _baseMaterial, Tile tile, bool _isInstalled)
     {
         Furniture obj = new Furniture();
         obj.type = InstalledObjectType.FURNITURE;
 
         obj.baseTile = tile;
         obj.furnitureType = _type;
-        obj.durability = FurnitureTypes.GetDurability(_type);
+        obj.baseMaterial = _baseMaterial;
+        obj.durability = FurnitureTypes.GetDurability(_type, obj.baseMaterial);
+        obj.hasRelativeRotation = FurnitureTypes.HasRelativeRotation(_type);
 
         if (tile.InstallObject(obj) == false)
         {
@@ -54,8 +58,8 @@ public class Furniture : InstalledObject
 
         if(isInstalled == true)
         {
-            RegionManager.UpdateCluster(RegionManager.GetClusterAtTile(baseTile));
-            //InventoryManager.AddToTileInventory(baseTile, FurnitureTypes.GetRequirements(furnitureType));
+            //RegionManager.UpdateCluster(RegionManager.GetClusterAtTile(baseTile));
+            InventoryManager.AddToTileInventory(baseTile, FurnitureTypes.GetRequirements(furnitureType, baseMaterial));
             GameManager.GetWorldGrid().InvalidatePathGraph();
         }
 

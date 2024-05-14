@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
 using UnityEngine.U2D;
 
@@ -30,12 +31,11 @@ public class InstalledSpriteController : MonoBehaviour
 
         if (_obj.type == InstalledObjectType.FURNITURE)
         {
-            name = FurnitureTypes.GetObjectType(((_obj as Furniture).furnitureType)).ToString();
+            name =  ItemTypes.GetItemType((_obj as Furniture).baseMaterial) + "_" + FurnitureTypes.GetObjectType(((_obj as Furniture).furnitureType)).ToString();
         }
         else if (_obj.type == InstalledObjectType.ORE)
         {
             name = OreTypes.GetObjectType(((_obj as Ore).oreType)).ToString();
-            //(_obj as Ore).QueueMiningTask();
         }
         else if (_obj.type == InstalledObjectType.PLANT)
         {
@@ -59,23 +59,42 @@ public class InstalledSpriteController : MonoBehaviour
     }
     public void OnInstalledObjectChanged(InstalledObject obj)
     {
-        if (obj.isInstalled == true)
+        if (obj.hasRelativeRotation == true)
         {
-            SpriteRenderer renderer = obj.gameObject.GetComponent<SpriteRenderer>();
-            Color colour = renderer.color;
-            colour.a = 100;
+            UpdateSpriteRotation(obj);
+        }
 
-            if (obj.type == InstalledObjectType.PLANT)
-            {
-                name = PlantTypes.GetObjectType(((obj as Plant).plantType)).ToString() + "_" + (obj as Plant).plantState.ToString();
-                renderer.sprite = objSprites.GetSprite(name);
-            }
+        if (obj.isInstalled == false)
+        {
+            return;
+        }
 
-            renderer.color = colour;
-            renderer.sortingLayerName = "Walls";
+        SpriteRenderer renderer = obj.gameObject.GetComponent<SpriteRenderer>();
+        Color colour = renderer.color;
+        colour.a = 100;
+
+        if (obj.type == InstalledObjectType.PLANT)
+        {
+            name = PlantTypes.GetObjectType(((obj as Plant).plantType)).ToString() + "_" + (obj as Plant).plantState.ToString();
+            renderer.sprite = objSprites.GetSprite(name);
+        }
+
+        renderer.color = colour;
+        renderer.sortingLayerName = "Walls"; 
+    }
+    public void UpdateSpriteRotation(InstalledObject obj)
+    {
+        if (obj.baseTile.North != null && obj.baseTile.North.IsObjectInstalled() == true && obj.baseTile.South != null && obj.baseTile.South.IsObjectInstalled() == true)
+        {
+            obj.gameObject.transform.rotation = Quaternion.Euler(0, 0, 90);
+            obj.gameObject.transform.position += new Vector3(1, 0, 0);
+        }
+        else if (obj.baseTile.West != null && obj.baseTile.West.IsObjectInstalled() == true && obj.baseTile.East != null && obj.baseTile.East.IsObjectInstalled() == true)
+        {
+            obj.gameObject.transform.rotation = Quaternion.Euler(0, 0, 0);
+            obj.gameObject.transform.position = obj.baseTile.tileObj.transform.position;
         }
     }
-
     public void Uninstall(InstalledObject obj)
     {
         ObjectManager.RemoveInstalledObject(obj);
