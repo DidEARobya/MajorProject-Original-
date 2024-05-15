@@ -44,6 +44,11 @@ public class Path_AStar
             if (current == endNode)
             {
                 path = RetraceTilePath(startNode, current);
+
+                if(path.Count == 0)
+                {
+
+                }
                 return;
             }
 

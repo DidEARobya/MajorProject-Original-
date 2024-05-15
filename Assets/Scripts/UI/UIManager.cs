@@ -5,40 +5,23 @@ using UnityEngine;
 public class UIManager : MonoBehaviour
 {
     public GameObject buildPanel;
-    public GameObject deconstructPanel;
-    public GameObject itemPanel;
-    public GameObject tasksPanel;
+    public GameObject structuresPanel;
+    public GameObject floorsPanel;
 
-    public BuildMode buildMode;
-    public FurnitureTypes toBuild;
-    public ItemTypes toGenerate;
-
-    public void ShowBuildPanel()
+    public void ToggleBuildPanel()
     {
-        buildPanel.SetActive(true);
-        deconstructPanel.SetActive(false);
-        itemPanel.SetActive(false);
-        tasksPanel.SetActive(false);
+        buildPanel.SetActive(!buildPanel.activeSelf);
+        structuresPanel.SetActive(false);
+        floorsPanel.SetActive(false);
     }
-    public void ShowDeconstructPanel()
+    public void ToggleStructuresPanel()
     {
-        deconstructPanel.SetActive(true);
-        buildPanel.SetActive(false);
-        itemPanel.SetActive(false);
-        tasksPanel.SetActive(false);
+        structuresPanel.SetActive(!structuresPanel.activeSelf);
+        floorsPanel.SetActive(false);
     }
-    public void ShowItemPanel()
+    public void ToggleFloorsPanel()
     {
-        itemPanel.SetActive(true);
-        buildPanel.SetActive(false);
-        deconstructPanel.SetActive(false);
-        tasksPanel.SetActive(false);
-    }
-    public void ShowTasksPanel()
-    {
-        tasksPanel.SetActive(true);
-        buildPanel.SetActive(false);
-        deconstructPanel.SetActive(false);
-        itemPanel.SetActive(false);
+        floorsPanel.SetActive(!floorsPanel.activeSelf);
+        structuresPanel.SetActive(false);
     }
 }

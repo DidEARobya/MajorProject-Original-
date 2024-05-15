@@ -9,7 +9,8 @@ public enum TaskType
 {
     CONSTRUCTION,
     MINING,
-    HAULING
+    HAULING,
+    AGRICULTURE
 }
 public static class TaskManager
 {
@@ -22,6 +23,7 @@ public static class TaskManager
         taskLists.Add(TaskType.CONSTRUCTION, new List<Task>());
         taskLists.Add(TaskType.MINING, new List<Task>());
         taskLists.Add(TaskType.HAULING, new List<Task>());
+        taskLists.Add(TaskType.AGRICULTURE, new List<Task>());
     }
     public static void AddTask(Task task, TaskType type)
     {

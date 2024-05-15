@@ -54,8 +54,8 @@ public class CharacterController : InventoryOwner
 
         priorityList.Add(TaskType.CONSTRUCTION);
         priorityList.Add(TaskType.MINING);
+        priorityList.Add(TaskType.AGRICULTURE);
     }
-
     public void SetCharacterObj(GameObject obj)
     {
         characterObj = obj;
@@ -76,7 +76,7 @@ public class CharacterController : InventoryOwner
         {
             workDelay += deltaTime;
 
-            if (workDelay >= 0.5f && requestedTask == false)
+            if (workDelay >= 0.2f && requestedTask == false)
             {
                 TaskRequestHandler.RequestTask(this);
 
@@ -123,7 +123,6 @@ public class CharacterController : InventoryOwner
         if(requeue == true)
         {
             activeTask.RemoveTaskCompleteCallback(EndTask);
-            activeTask.RemoveTaskCancelledCallback(EndTask);
             taskList.Add(activeTask);
         }
 
@@ -131,7 +130,6 @@ public class CharacterController : InventoryOwner
         SetDestination(activeTask.tile);
 
         activeTask.AddTaskCompleteCallback(EndTask);
-        activeTask.AddTaskCancelledCallback(EndTask);
 
         activeTask.InitTask(this);
     }
@@ -154,7 +152,7 @@ public class CharacterController : InventoryOwner
     {
         if (pathFinder == null)
         {
-            if(currentTile != nextTile)
+            if (currentTile != nextTile)
             {
                 Move(deltaTime);
             }
@@ -248,6 +246,9 @@ public class CharacterController : InventoryOwner
 
     public void CancelTask(Task task)
     {
+        activeTask = null;
+        pathFinder = null;
+        
         if(taskList.Contains(task))
         {
             taskList.Remove(task);
@@ -255,10 +256,6 @@ public class CharacterController : InventoryOwner
     }
     public void EndTask(Task task)
     {
-        if(activeTask != task)
-        {
-
-        }
         if(activeTask == task)
         {
             activeTask = null;

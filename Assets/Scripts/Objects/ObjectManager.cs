@@ -7,9 +7,9 @@ public static class ObjectManager
 {
     static List<InstalledObject> installedObjects = new List<InstalledObject>();
     static Action<InstalledObject> installObjectCallback;
-    public static void InstallFurniture(FurnitureTypes type, Tile tile, bool isInstalled)
+    public static void InstallFurniture(FurnitureTypes type, ItemTypes baseMaterial, Tile tile, bool isInstalled)
     {
-        InstalledObject obj = Furniture.PlaceObject(type, tile, isInstalled);
+        InstalledObject obj = Furniture.PlaceObject(type, baseMaterial, tile, isInstalled);
 
         if (obj == null)
         {
@@ -24,6 +24,20 @@ public static class ObjectManager
     public static void SpawnOre(OreTypes type, Tile tile)
     {
         InstalledObject obj = Ore.PlaceObject(type, tile);
+
+        if (obj == null)
+        {
+            return;
+        }
+
+        if (installObjectCallback != null)
+        {
+            installObjectCallback(obj);
+        }
+    }
+    public static void SpawnPlant(PlantTypes type, Tile tile, PlantState state)
+    {
+        InstalledObject obj = Plant.PlaceObject(type, tile, state);
 
         if (obj == null)
         {

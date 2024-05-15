@@ -1,0 +1,116 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using static TreeEditor.TreeEditorHelper;
+
+public class Plant : InstalledObject
+{
+    public PlantTypes plantType;
+    public PlantState plantState;
+
+    public GrowthState state;
+    public Dictionary<PlantState, GrowthState> states;
+
+    static public Plant PlaceObject(PlantTypes _type, Tile tile, PlantState state)
+    {
+        Plant obj = new Plant();
+        obj.type = InstalledObjectType.PLANT;
+
+        obj.baseTile = tile;
+        obj.plantType = _type;
+        obj.durability = PlantTypes.GetDurability(_type);
+
+        obj.states = new Dictionary<PlantState, GrowthState>();
+        obj.plantState = state;
+
+        if (tile.InstallObject(obj) == false)
+        {
+            return null;
+        }
+
+        obj.Install();
+
+        return obj;
+    }
+    public override void Update(float deltaTime)
+    {
+        base.Update(deltaTime);
+
+        if(state == null)
+        {
+            return;
+        }
+
+        state.Update(deltaTime);
+    }
+    public override void Install()
+    {
+        states.Add(PlantState.SEED, new SeedState(this));
+        states.Add(PlantState.EARLY_GROWTH, new EarlyGrowthState(this));
+        states.Add(PlantState.LATE_GROWTH, new LateGrowthState(this));
+        states.Add(PlantState.GROWN, new GrownState(this));
+
+        state = states[plantState];
+        state.StateStart();
+
+        isInstalled = true;
+        baseTile.accessibility = PlantTypes.GetBaseAccessibility(plantType);
+        baseTile.installedObject = this;
+
+        GameManager.GetWorldGrid().InvalidatePathGraph();
+
+        RegionManager.UpdateCluster(RegionManager.GetClusterAtTile(baseTile));
+
+        if (updateObjectCallback != null)
+        {
+            updateObjectCallback(this);
+        }
+    }
+    public override void UnInstall()
+    {
+        state.StateEnd();
+        states = null;
+
+        if(plantState != PlantState.SEED)
+        {
+            InventoryManager.AddToTileInventory(baseTile, PlantTypes.GetYield(plantType, plantState));
+        }
+
+        GameManager.GetWorldGrid().InvalidatePathGraph();
+
+        RegionManager.UpdateCluster(RegionManager.GetClusterAtTile(baseTile));
+
+        GameManager.GetInstalledSpriteController().Uninstall(this);
+
+        UnityEngine.Object.Destroy(gameObject);
+    }
+    public override int GetMovementCost()
+    {
+        return PlantTypes.GetMovementCost(plantType);
+    }
+    public void SetState(PlantState _state)
+    {
+        if(plantState == _state)
+        {
+            return;
+        }
+
+        state.StateEnd();
+
+        if (state.task != null)
+        {
+            state.task.CancelTask(false);
+        }
+
+        plantState = _state;
+        state = states[plantState];
+
+        state.StateStart();
+
+        if (updateObjectCallback != null)
+        {
+            updateObjectCallback(this);
+        }
+    }
+
+}

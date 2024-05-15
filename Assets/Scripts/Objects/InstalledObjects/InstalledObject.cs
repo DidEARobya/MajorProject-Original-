@@ -7,7 +7,8 @@ using UnityEngine;
 public enum InstalledObjectType
 {
     FURNITURE,
-    ORE
+    ORE,
+    PLANT
 }
 public class InstalledObject
 {
@@ -22,6 +23,7 @@ public class InstalledObject
 
     public float durability;
     public bool isInstalled = false;
+    public bool hasRelativeRotation = false;
 
     protected Action<InstalledObject> updateObjectCallback;
 
@@ -30,26 +32,40 @@ public class InstalledObject
 
     }
 
-    public void Update(float deltaTime)
+    public virtual void Update(float deltaTime)
     {
         if (updateActionCallback != null)
         {
             updateActionCallback(this, deltaTime);
         }
     }
-    public virtual void Install()
+    public void UpdateNeighourSprites(InstalledObject obj)
     {
-        Debug.Log("Calling Parent Install Function");
+        if(obj == null)
+        {
+            return;
+        }
+
+        if(obj.baseTile.North != null && obj.baseTile.North.IsObjectInstalled() == true)
+        {
+            updateObjectCallback(obj.baseTile.North.installedObject);
+        }
+        if (obj.baseTile.South != null && obj.baseTile.South.IsObjectInstalled() == true)
+        {
+            updateObjectCallback(obj.baseTile.South.installedObject);
+        }
+        if (obj.baseTile.West != null && obj.baseTile.West.IsObjectInstalled() == true)
+        {
+            updateObjectCallback(obj.baseTile.West.installedObject);
+        }
+        if (obj.baseTile.East != null && obj.baseTile.East.IsObjectInstalled() == true)
+        {
+            updateObjectCallback(obj.baseTile.East.installedObject);
+        }
     }
-    public virtual void UnInstall()
-    {
-        Debug.Log("Calling Parent Uninstall Function");
-    }
-    public virtual int GetMovementCost()
-    {
-        Debug.Log("Calling Parent MovementCost Function");
-        return 0;
-    }
+    public virtual void Install() { }
+    public virtual void UnInstall() { }
+    public virtual int GetMovementCost() { return 0; }
     public void AddOnActionCallback(Action<InstalledObject, float> callback)
     {
         updateActionCallback += callback;
