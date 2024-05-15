@@ -5,18 +5,19 @@ using UnityEngine.U2D;
 
 public class TileSpriteController : MonoBehaviour
 {
-    [SerializeField]
-    public SpriteAtlas terrainSprites;
-    [SerializeField]
-    public SpriteAtlas floorSprites;
+    SpriteAtlas terrainSprites;
+    SpriteAtlas floorSprites;
 
     WorldController worldController;
-
+    public void AssignAtlas()
+    {
+        terrainSprites = GameManager.instance.terrainAtlas;
+        floorSprites = GameManager.instance.floorAtlas;
+    }
     public void Init()
     {
         worldController = GameManager.GetWorldController();
     }
-
     public void SetTileSprite(GameObject tile, TerrainType type, FloorType floor)
     {
         SpriteRenderer renderer = tile.GetComponent<SpriteRenderer>();

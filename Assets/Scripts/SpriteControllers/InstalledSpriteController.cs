@@ -5,11 +5,12 @@ using UnityEngine;
 using UnityEngine.U2D;
 
 public class InstalledSpriteController : MonoBehaviour
-{
-    [SerializeField]
-    public SpriteAtlas objSprites;
-
-    // Start is called before the first frame update
+{       
+    SpriteAtlas objSprites;
+    public void AssignAtlas()
+    {
+        objSprites = GameManager.instance.objectAtlas;
+    }
     public void Init()
     {
         ObjectManager.SetInstallObjectCallback(OnObjectInstalled);

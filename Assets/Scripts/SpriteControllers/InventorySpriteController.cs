@@ -7,12 +7,13 @@ using UnityEngine.U2D;
 
 public class InventorySpriteController : MonoBehaviour
 {
-    [SerializeField]
-    public SpriteAtlas itemSprites;
+    SpriteAtlas itemSprites;
 
-    [SerializeField]
     public GameObject displayPrefab;
-
+    public void AssignAtlas()
+    {
+        itemSprites = GameManager.instance.itemAtlas;
+    }
     public void Init()
     {
         InventoryManager.SetInventoryUpdateCallback(OnInventoryUpdate);

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.U2D;
 
 public class GameManager : MonoBehaviour
 {
@@ -40,7 +41,14 @@ public class GameManager : MonoBehaviour
     public BuildModeController buildModeController;
     public MouseController mouseController;
 
+    public SpriteAtlas terrainAtlas;
+    public SpriteAtlas floorAtlas;
+    public SpriteAtlas itemAtlas;
+    public SpriteAtlas objectAtlas;
+
     WorldGrid worldGrid;
+
+    public GameObject menu;
 
     private void Awake()
     {
@@ -54,6 +62,10 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         random = new System.Random(seed);
+
+        inventorySpriteController.AssignAtlas();
+        tileSpriteController.AssignAtlas();
+        installedSpriteController.AssignAtlas();
 
         worldController.Init(tileSpriteController);
         worldGrid = worldController.worldGrid;

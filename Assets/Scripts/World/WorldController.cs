@@ -46,7 +46,6 @@ public class WorldController : MonoBehaviour
                 tileData.SetTileChangedCallback((tile) => { tileSpriteController.OnTileTypeChange(tile, tileObj); });
 
                 tileSpriteController.SetTileSprite(tileObj, TerrainTypes.GetTerrainType(tileData.terrainType), FloorTypes.GetFloorType(tileData.floorType));
-
             }
         }
     }
