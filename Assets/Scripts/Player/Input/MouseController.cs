@@ -8,6 +8,7 @@ using TMPro.EditorUtilities;
 using Cinemachine.Utility;
 using System.ComponentModel;
 using static TMPro.Examples.TMP_ExampleScript_01;
+using System;
 
 public enum MouseMode
 {
@@ -21,7 +22,8 @@ public enum BuildMode
     OBJECT,
     CLEAR_FLOOR,
     DESTROY,
-    GENERATE,
+    MINE,
+    HARVEST,
     SPAWNCHARACTER,
     CANCEL,
     ZONE
@@ -42,9 +44,9 @@ public class MouseController : MonoBehaviour
     public FurnitureTypes toBuild;
     public ItemTypes toBuildMaterial;
     public FloorTypes floorType;
-    public ItemTypes toGenerate;
 
     protected Tile tileUnderMouse;
+    HashSet<Tile> selected = new HashSet<Tile>();
 
     public GameObject tileBoxPrefab;
     private List<GameObject> selectionPrefabs = new List<GameObject>();
@@ -63,7 +65,6 @@ public class MouseController : MonoBehaviour
 
     private bool isReady = false;
 
-    GrowZone zone;
     bool toAdd;
     // Start is called before the first frame update
     void Start()
@@ -77,14 +78,11 @@ public class MouseController : MonoBehaviour
         worldController = GameManager.GetWorldController();
         grid = worldController.worldGrid;
         buildModeController = BuildModeController.instance;
-
-        zone = new GrowZone();
     }
 
     public void Init(WorldGrid _grid)
     {
         grid = _grid;
-
         isReady = true;
     }
     public void SetObject(FurnitureTypes obj, ItemTypes material, MouseMode mode)
@@ -98,8 +96,16 @@ public class MouseController : MonoBehaviour
     {
         mouseMode = MouseMode.AREA;
         buildMode = BuildMode.DESTROY;
-        toBuild = null;
-        toBuildMaterial = null;
+    }
+    public void SetToMine()
+    {
+        mouseMode = MouseMode.AREA;
+        buildMode = BuildMode.MINE;
+    }
+    public void SetToHarvest()
+    {
+        mouseMode = MouseMode.AREA;
+        buildMode = BuildMode.HARVEST;
     }
     public void SetFloor(FloorTypes floor, ItemTypes material, MouseMode mode)
     {
@@ -108,10 +114,26 @@ public class MouseController : MonoBehaviour
         floorType = floor;
         toBuildMaterial = material;
     }
+    public void SetToZoneMode(bool _toAdd)
+    {
+        buildMode = BuildMode.ZONE;
+        mouseMode = MouseMode.AREA;
+        toAdd = _toAdd;
+    }
     public void SetToClearFloor()
     {
         mouseMode = MouseMode.AREA;
         buildMode = BuildMode.CLEAR_FLOOR;
+    }
+    public void SetToCancel()
+    {
+        mouseMode= MouseMode.AREA;
+        buildMode = BuildMode.CANCEL;
+    }
+    public void SetToSpawnCharacter()
+    {
+        mouseMode = MouseMode.SINGLE;
+        buildMode = BuildMode.SPAWNCHARACTER;
     }
     // Update is called once per frame
     void Update()
@@ -121,62 +143,6 @@ public class MouseController : MonoBehaviour
             return;
         }
 
-        if (Input.GetKeyUp(KeyCode.Alpha8))
-        {
-            Debug.Log("Zone Mode");
-            buildMode = BuildMode.ZONE;
-            mouseMode = MouseMode.AREA;
-        }
-
-        if (Input.GetKeyUp(KeyCode.Alpha4))
-        {
-            Debug.Log("CancelMode");
-            buildMode = BuildMode.CANCEL;
-        }
-        if (Input.GetKeyUp(KeyCode.Alpha6))
-        {
-            Debug.Log("GenerateMode");
-            buildMode = BuildMode.GENERATE;
-        }
-        if (Input.GetKeyUp(KeyCode.Alpha7))
-        {
-            Debug.Log("SpawnCharacter");
-            buildMode = BuildMode.SPAWNCHARACTER;
-        }
-
-        if(buildMode == BuildMode.ZONE)
-        {
-            toBuild = null;
-
-            if(Input.GetKeyUp(KeyCode.C))
-            {
-                toAdd = true;
-            }
-            if (Input.GetKeyUp(KeyCode.V))
-            {
-                toAdd = false;
-            }
-        }
-        if (buildMode == BuildMode.GENERATE)
-        {
-            toBuild = null;
-
-            if (Input.GetKeyUp(KeyCode.B))
-            {
-                Debug.Log("Wood");
-                toGenerate = ItemTypes.WOOD;
-            }
-            if (Input.GetKeyUp(KeyCode.N))
-            {
-                Debug.Log("Stone");
-                toGenerate = ItemTypes.STONE;
-            }
-            if (Input.GetKeyUp(KeyCode.M))
-            {
-                Debug.Log("Iron");
-                toGenerate = ItemTypes.IRON;
-            }
-        }
         UpdateMousePos();
 
         if (EventSystem.current.IsPointerOverGameObject() == false)
@@ -266,7 +232,7 @@ public class MouseController : MonoBehaviour
             selectionPool.DespawnObject(selectionPrefabs[0]);
             selectionPrefabs.RemoveAt(0);
         }
-
+        selected.Clear();
         if (Input.GetMouseButton(0))
         {
             for (int x = startX; x <= endX; x++)
@@ -293,25 +259,12 @@ public class MouseController : MonoBehaviour
 
                     if (temp != null)
                     {
-                        if(buildMode == BuildMode.ZONE)
-                        {
-                            if(toAdd == true)
-                            {
-                                zone.AddTile(temp);
-                            }
-                            else
-                            {
-                                zone.RemoveTile(temp);
-                            }
-                        }
-                        else
-                        {
-                            buildModeController.Build(temp, buildMode, toBuild, floorType, toBuildMaterial, toGenerate);
-                        }
+                        selected.Add(temp);
                     }
-
                 }
-            } 
+            }
+
+            SelectedFunctions(selected);
         }
     }
     private void RowBuildMode()
@@ -380,9 +333,11 @@ public class MouseController : MonoBehaviour
 
                     if (temp != null)
                     {
-                        buildModeController.Build(temp, buildMode, toBuild, floorType, toBuildMaterial, toGenerate);
+                        selected.Add(temp);
                     }
                 }
+
+                SelectedFunctions(selected);
             }
         }
         else if (xRow == false && yRow == true)
@@ -416,9 +371,11 @@ public class MouseController : MonoBehaviour
 
                     if (temp != null)
                     {
-                        buildModeController.Build(temp, buildMode, toBuild, floorType, toBuildMaterial, toGenerate);
+                        selected.Add(temp);
                     }
                 }
+
+                SelectedFunctions(selected);
             }
         }
         else
@@ -429,14 +386,13 @@ public class MouseController : MonoBehaviour
 
                 if (temp != null)
                 {
-                    buildModeController.Build(temp, buildMode, toBuild, floorType, toBuildMaterial, toGenerate);
+                    selected.Add(temp);
+                    SelectedFunctions(selected);
                 }
-
-                temp = null;
             }
         }
     }
-    private void SingleBuildMode()
+    private void SingleBuildMode()      
     {
         if (Input.GetMouseButtonUp(0))
         {
@@ -444,7 +400,65 @@ public class MouseController : MonoBehaviour
 
             if (temp != null)
             {
-                buildModeController.Build(temp, buildMode, toBuild, floorType, toBuildMaterial, toGenerate);
+                selected.Add(temp);
+                SelectedFunctions(selected);
+            }
+        }
+    }
+
+    void SelectedFunctions(HashSet<Tile> temp)
+    {
+        if (temp != null)
+        {
+            switch (buildMode)
+            {
+                case BuildMode.CLEAR_FLOOR:
+                    buildModeController.ClearFloor(temp);
+                    break;
+
+                case BuildMode.ZONE:
+                    if (toAdd == true)
+                    {
+                        foreach (Tile tile in temp)
+                        {
+                            ZoneManager.AddTile(tile, ZoneType.GROW);
+                        }
+                    }
+                    else
+                    {
+                        foreach (Tile tile in temp)
+                        {
+                            ZoneManager.RemoveTile(tile);
+                        }
+                    }
+                    break;
+
+                case BuildMode.OBJECT:
+                    buildModeController.Build(temp, buildMode, toBuild, toBuildMaterial);
+                    break;
+
+                case BuildMode.FLOOR:
+                    buildModeController.BuildFloor(temp, floorType);
+                    break;
+
+                case BuildMode.DESTROY:
+                    buildModeController.DestroyObject(temp);
+                    break;
+
+                case BuildMode.MINE:
+                    buildModeController.MineOre(temp);
+                    break;
+
+                case BuildMode.HARVEST:
+                    buildModeController.Harvest(temp);
+                    break;
+
+                case BuildMode.CANCEL:
+                    buildModeController.CancelTask(temp);
+                    break;
+                case BuildMode.SPAWNCHARACTER:
+                    buildModeController.SpawnCharacter(temp);
+                    break;
             }
         }
     }

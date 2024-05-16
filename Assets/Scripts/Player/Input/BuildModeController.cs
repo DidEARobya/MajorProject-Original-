@@ -28,90 +28,119 @@ public class BuildModeController : MonoBehaviour
     {
         grid = GameManager.GetWorldGrid();
     }
-    public void Build(Tile tile, BuildMode mode, FurnitureTypes toBuild = null, FloorTypes floorType = null, ItemTypes material = null, ItemTypes toGenerate = null)
+    public void Build(HashSet<Tile> tiles, BuildMode mode, FurnitureTypes toBuild = null, ItemTypes material = null)
     {
-        Task task;
-
-        switch(mode)
+        foreach (Tile tile in tiles)
         {
-            case BuildMode.OBJECT:
+            Task task;
 
-                if (tile != null && toBuild != null && tile.GetInstalledObject() == null && tile.isPendingTask == false)
-                {
-                    ObjectManager.InstallFurniture(toBuild, material, tile, true);
-                    //InstalledObject obj = tile.GetInstalledObject();
+            if (tile != null && toBuild != null && tile.GetInstalledObject() == null && tile.isPendingTask == false)
+            {
+                ObjectManager.InstallFurniture(toBuild, material, tile, true);
+                //InstalledObject obj = tile.GetInstalledObject();
 
-                    //task = new RequirementTask(tile, (t) => { obj.Install(); }, TaskType.CONSTRUCTION, FurnitureTypes.GetRequirements(toBuild), false, FurnitureTypes.GetConstructionTime(toBuild));
-                    //TaskManager.AddTask(task, task.taskType);
-                }
-
-                break;
-
-            case BuildMode.FLOOR:
-
-                if(tile != null && tile.IsAccessible() != Accessibility.IMPASSABLE)
-                {
-                    tile.SetFloorType(floorType);
-
-                    //task = new RequirementTask(tile, (t) => { tile.SetFloorType(floorType); }, TaskType.CONSTRUCTION, FloorTypes.GetRequirements(FloorTypes.WOOD), true, 0.3f);
-                    //TaskManager.AddTask(task, task.taskType);
-                }
-
-                break;
-
-            case BuildMode.CLEAR_FLOOR:
-
-                if(tile.floorType == FloorTypes.NONE)
-                {
-                    return;
-                }
-
-                tile.SetFloorType(FloorTypes.NONE);
-
-                //task = new DestroyTask(tile, (t) => { tile.SetFloorType(FloorTypes.NONE); }, TaskType.CONSTRUCTION, true, 50);
+                //task = new RequirementTask(tile, (t) => { obj.Install(); }, TaskType.CONSTRUCTION, FurnitureTypes.GetRequirements(toBuild), false, FurnitureTypes.GetConstructionTime(toBuild));
                 //TaskManager.AddTask(task, task.taskType);
+            }
+        }  
+    }
+    public void DestroyObject(HashSet<Tile> tiles)
+    {
+        foreach (Tile tile in tiles)
+        {
+            Task task;
 
-                break;
+            if (tile.GetInstalledObject() != null && tile.GetInstalledObject().isInstalled == true && tile.GetInstalledObject().type == InstalledObjectType.FURNITURE)
+            {
+                tile.UninstallObject();
+                continue;
+                task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.CONSTRUCTION, false, tile.GetInstalledObject().durability);
+                TaskManager.AddTask(task, task.taskType);
+            }
+        }
+    }
+    public void MineOre(HashSet<Tile> tiles)
+    {
+        foreach (Tile tile in tiles)
+        {
+            Task task;
 
-            case BuildMode.DESTROY:
+            if (tile.GetInstalledObject() != null && tile.GetInstalledObject().isInstalled == true && tile.GetInstalledObject().type == InstalledObjectType.ORE)
+            {
+                tile.UninstallObject();
+                continue;
+                task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.CONSTRUCTION, false, tile.GetInstalledObject().durability);
+                TaskManager.AddTask(task, task.taskType);
+            }
+        }
+    }
+    public void Harvest(HashSet<Tile> tiles)
+    {
+        foreach (Tile tile in tiles)
+        {
+            Task task;
 
-                if(tile.GetInstalledObject() != null && tile.GetInstalledObject().isInstalled == true)
-                {
-                    if(tile.GetInstalledObject().type == InstalledObjectType.FURNITURE)
-                    {
-                        tile.UninstallObject();
-                        return;
-                        task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.CONSTRUCTION, false, tile.GetInstalledObject().durability);
-                        TaskManager.AddTask(task, task.taskType);
-                    }
-                }
+            if (tile.GetInstalledObject() != null && tile.GetInstalledObject().isInstalled == true && tile.GetInstalledObject().type == InstalledObjectType.PLANT)
+            {
+                tile.UninstallObject();
+                continue;
+                task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.CONSTRUCTION, false, tile.GetInstalledObject().durability);
+                TaskManager.AddTask(task, task.taskType);
+            }
+        }
+    }
+    public void BuildFloor(HashSet<Tile> tiles, FloorTypes floorType)
+    {
+        foreach (Tile tile in tiles)
+        {
+            Task task;
 
-                break;
+            if (tile != null && tile.IsAccessible() != Accessibility.IMPASSABLE)
+            {
+                tile.SetFloorType(floorType);
 
-            case BuildMode.GENERATE:
+                //task = new RequirementTask(tile, (t) => { tile.SetFloorType(floorType); }, TaskType.CONSTRUCTION, FloorTypes.GetRequirements(FloorTypes.WOOD), true, 0.3f);
+                //TaskManager.AddTask(task, task.taskType);
+            }
+        }
+    }
+    public void ClearFloor(HashSet<Tile> tiles)
+    {
+        foreach (Tile tile in tiles)
+        {
+            if (tile.floorType == FloorTypes.NONE)
+            {
+                continue;
+            }
 
-                if (tile != null && toGenerate != null && tile.GetInstalledObject() == null && tile.isPendingTask == false)
-                {
-                    InventoryManager.AddToTileInventory(toGenerate, tile, 1);
-                }
+            Task task;
 
-                break;
-            case BuildMode.SPAWNCHARACTER:
+            tile.SetFloorType(FloorTypes.NONE);
 
-                if (tile != null && tile.GetInstalledObject() == null && tile.isPendingTask == false)
-                {
-                    CharacterManager.CreateCharacter(tile);
-                }
+            //task = new DestroyTask(tile, (t) => { tile.SetFloorType(FloorTypes.NONE); }, TaskType.CONSTRUCTION, true, 50);
+            //TaskManager.AddTask(task, task.taskType);
+        }
+    }
+    public void CancelTask(HashSet<Tile> tiles)
+    {
+        foreach(Tile tile in tiles)
+        {
+            if (tile.task != null)
+            {
+                tile.task.CancelTask(false);
+            }
+        }
+    }
+    public void SpawnCharacter(HashSet<Tile> tiles)
+    {
+        foreach(Tile tile in tiles)
+        {
+            if (tile.IsAccessible() == Accessibility.IMPASSABLE)
+            {
+                continue;
+            }
 
-                break;
-            case BuildMode.CANCEL:
-
-                if(tile.task != null)
-                {
-                    tile.task.CancelTask(false);
-                }
-
-                break;
-        }    
+            CharacterManager.CreateCharacter(tile);
+        }
     }
 }

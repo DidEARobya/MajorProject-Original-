@@ -81,6 +81,7 @@ public class GameManager : MonoBehaviour
         buildModeController.Init();
 
         RegionManager.Init(worldGrid, regionMapSize);
+        ZoneManager.Init();
         worldController.GenerateTerrain();
     }
     private void Update()

@@ -66,7 +66,7 @@ public class Tile : InventoryOwner, ITileData
     public bool isPendingTask = false;
     public CharacterController reservedBy = null;
 
-    public GrowZone zone = null;
+    public Zone zone = null;
     public GameObject zoneObj = null;
     public Tile(WorldGrid grid, int _x, int _y, float noiseVal = 0) : base (InventoryOwnerType.TILE)
     {

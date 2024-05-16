@@ -2,17 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GrowZone
+public class GrowZone : Zone
 {
-    public Color zoneColour = Color.green;
-    HashSet<Tile> tiles = new HashSet<Tile>();
-
     public GrowZone()
     {
+        zoneType = ZoneType.GROW; 
         zoneColour.a = 0.1f;
     }
 
-    void UpdateZone()
+    protected override void UpdateZoneTasks()
     {
         foreach(Tile tile in tiles)
         {
@@ -22,29 +20,5 @@ public class GrowZone
                 TaskManager.AddTask(task, TaskType.AGRICULTURE);
             }
         }
-    }
-    public void AddTile(Tile tile)
-    {
-        if(tiles.Contains(tile) || tile.IsAccessible() == Accessibility.IMPASSABLE)
-        {
-            return;
-        }
-
-        tiles.Add(tile);
-        tile.zone = this;
-        tile.UpdateVisual();
-        //UpdateZone();
-    }
-
-    public void RemoveTile(Tile tile)
-    {
-        if (tiles.Contains(tile) == false)
-        {
-            return;
-        }
-
-        tiles.Remove(tile);
-        tile.zone = null;
-        tile.UpdateVisual();
     }
 }
