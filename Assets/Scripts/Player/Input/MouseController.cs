@@ -23,7 +23,8 @@ public enum BuildMode
     DESTROY,
     GENERATE,
     SPAWNCHARACTER,
-    CANCEL
+    CANCEL,
+    ZONE
 }
 public class MouseController : MonoBehaviour
 {
@@ -61,6 +62,9 @@ public class MouseController : MonoBehaviour
     private int endY;
 
     private bool isReady = false;
+
+    GrowZone zone;
+    bool toAdd;
     // Start is called before the first frame update
     void Start()
     {
@@ -73,6 +77,8 @@ public class MouseController : MonoBehaviour
         worldController = GameManager.GetWorldController();
         grid = worldController.worldGrid;
         buildModeController = BuildModeController.instance;
+
+        zone = new GrowZone();
     }
 
     public void Init(WorldGrid _grid)
@@ -115,6 +121,13 @@ public class MouseController : MonoBehaviour
             return;
         }
 
+        if (Input.GetKeyUp(KeyCode.Alpha8))
+        {
+            Debug.Log("Zone Mode");
+            buildMode = BuildMode.ZONE;
+            mouseMode = MouseMode.AREA;
+        }
+
         if (Input.GetKeyUp(KeyCode.Alpha4))
         {
             Debug.Log("CancelMode");
@@ -131,6 +144,19 @@ public class MouseController : MonoBehaviour
             buildMode = BuildMode.SPAWNCHARACTER;
         }
 
+        if(buildMode == BuildMode.ZONE)
+        {
+            toBuild = null;
+
+            if(Input.GetKeyUp(KeyCode.C))
+            {
+                toAdd = true;
+            }
+            if (Input.GetKeyUp(KeyCode.V))
+            {
+                toAdd = false;
+            }
+        }
         if (buildMode == BuildMode.GENERATE)
         {
             toBuild = null;
@@ -267,7 +293,21 @@ public class MouseController : MonoBehaviour
 
                     if (temp != null)
                     {
-                        buildModeController.Build(temp, buildMode, toBuild, floorType, toBuildMaterial, toGenerate);
+                        if(buildMode == BuildMode.ZONE)
+                        {
+                            if(toAdd == true)
+                            {
+                                zone.AddTile(temp);
+                            }
+                            else
+                            {
+                                zone.RemoveTile(temp);
+                            }
+                        }
+                        else
+                        {
+                            buildModeController.Build(temp, buildMode, toBuild, floorType, toBuildMaterial, toGenerate);
+                        }
                     }
 
                 }

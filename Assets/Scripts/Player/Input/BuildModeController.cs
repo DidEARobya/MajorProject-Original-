@@ -49,7 +49,7 @@ public class BuildModeController : MonoBehaviour
 
             case BuildMode.FLOOR:
 
-                if(tile != null)
+                if(tile != null && tile.IsAccessible() != Accessibility.IMPASSABLE)
                 {
                     tile.SetFloorType(floorType);
 

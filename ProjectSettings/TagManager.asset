@@ -56,6 +56,9 @@ TagManager:
   - name: Held
     uniqueID: 1563979989
     locked: 0
+  - name: Zones
+    uniqueID: 3820424339
+    locked: 0
   - name: UI
     uniqueID: 1322402453
     locked: 0

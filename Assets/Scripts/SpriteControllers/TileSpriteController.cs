@@ -8,6 +8,9 @@ public class TileSpriteController : MonoBehaviour
     SpriteAtlas terrainSprites;
     SpriteAtlas floorSprites;
 
+    public GameObject overlay;
+    public GameObject overlayParent;
+
     WorldController worldController;
     public void AssignAtlas()
     {
@@ -42,10 +45,36 @@ public class TileSpriteController : MonoBehaviour
         if (floor == FloorType.NONE)
         {
             renderer.sprite = terrainSprites.GetSprite(type.ToString());
+        }
+        else
+        {
+            worldController.worldGrid.InvalidatePathGraph();
+            renderer.sprite = floorSprites.GetSprite(floor.ToString());
+        }
+
+        if(tileData.zone == null)
+        {
+            if (tileData.zoneObj != null)
+            {
+                Destroy(tileData.zoneObj);
+            }
+
             return;
         }
 
-        worldController.worldGrid.InvalidatePathGraph();
-        renderer.sprite = floorSprites.GetSprite(floor.ToString());
+        SpriteRenderer zoneRenderer;
+
+        if (tileData.zoneObj == null)
+        {
+            GameObject obj = Instantiate(overlay);
+            obj.transform.SetParent(overlayParent.transform, true);
+            obj.transform.position = tileObj.transform.position;
+
+            tileData.zoneObj = obj;
+        }
+
+        zoneRenderer = tileData.zoneObj.GetComponent<SpriteRenderer>();
+        zoneRenderer.sortingLayerName = "Zones";
+        zoneRenderer.color = tileData.zone.zoneColour;
     }
 }

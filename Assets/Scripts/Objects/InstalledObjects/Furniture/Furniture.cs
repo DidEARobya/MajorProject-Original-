@@ -37,6 +37,10 @@ public class Furniture : InstalledObject
         baseTile.accessibility = FurnitureTypes.GetBaseAccessibility(furnitureType);
         GameManager.GetWorldGrid().InvalidatePathGraph();
 
+        if(baseTile.accessibility == Accessibility.IMPASSABLE && baseTile.zone != null)
+        {
+            baseTile.zone.RemoveTile(baseTile); 
+        }
         RegionManager.UpdateCluster(RegionManager.GetClusterAtTile(baseTile));
 
         if (FurnitureTypes.GetBaseAccessibility(furnitureType) == Accessibility.DELAYED)
