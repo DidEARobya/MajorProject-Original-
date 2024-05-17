@@ -68,6 +68,10 @@ public class Tile : InventoryOwner, ITileData
 
     public Zone zone = null;
     public GameObject zoneObj = null;
+
+    public bool isSelected = false;
+    public GameObject selectedObj = null;
+
     public Tile(WorldGrid grid, int _x, int _y, float noiseVal = 0) : base (InventoryOwnerType.TILE)
     {
         world = grid;
@@ -155,6 +159,16 @@ public class Tile : InventoryOwner, ITileData
 
         floorType = floor;
 
+        UpdateVisual();
+    }
+    public void SetSelected(bool selected)
+    {
+        if(isSelected == selected)
+        {
+            return;
+        }
+
+        isSelected = selected;
         UpdateVisual();
     }
     public void UpdateVisual()

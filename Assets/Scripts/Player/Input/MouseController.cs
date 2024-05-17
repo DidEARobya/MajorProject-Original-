@@ -9,6 +9,7 @@ using Cinemachine.Utility;
 using System.ComponentModel;
 using static TMPro.Examples.TMP_ExampleScript_01;
 using System;
+using UnityEngine.UIElements;
 
 public enum MouseMode
 {
@@ -48,9 +49,7 @@ public class MouseController : MonoBehaviour
     protected Tile tileUnderMouse;
     HashSet<Tile> selected = new HashSet<Tile>();
 
-    public GameObject tileBoxPrefab;
-    private List<GameObject> selectionPrefabs = new List<GameObject>();
-    private ObjectPool selectionPool;
+    public GameObject tileOutline;
 
     protected Vector2 selectionDragStart;
     protected Vector2 selectionDragEnd;
@@ -74,8 +73,6 @@ public class MouseController : MonoBehaviour
         camera = Camera.main;
         vCamera = camera.GetComponentInChildren<CinemachineVirtualCamera>();
         confiner = vCamera.GetComponent<CinemachineConfiner2D>();
-
-        selectionPool = new ObjectPool(200, tileBoxPrefab, transform);
 
         worldController = GameManager.GetWorldController();
         grid = worldController.worldGrid;
@@ -157,6 +154,11 @@ public class MouseController : MonoBehaviour
 
         if (EventSystem.current.IsPointerOverGameObject() == false)
         {
+            if(tileUnderMouse != null)
+            {
+                tileOutline.transform.position = tileUnderMouse.tileObj.transform.position;
+            }
+
             MouseInputs();
         }
     }
@@ -237,12 +239,16 @@ public class MouseController : MonoBehaviour
             startY = temp;
         }
 
-        while (selectionPrefabs.Count > 0)
+        if(selected.Count > 0)
         {
-            selectionPool.DespawnObject(selectionPrefabs[0]);
-            selectionPrefabs.RemoveAt(0);
+            foreach(Tile tile in selected)
+            {
+                tile.SetSelected(false);
+            }
+
+            selected.Clear();
         }
-        selected.Clear();
+
         if (Input.GetMouseButton(0))
         {
             for (int x = startX; x <= endX; x++)
@@ -253,8 +259,8 @@ public class MouseController : MonoBehaviour
 
                     if (temp != null)
                     {
-                        GameObject tileBox = selectionPool.SpawnObject(new Vector3(x, y, 0), Quaternion.identity);
-                        selectionPrefabs.Add(tileBox);
+                        temp.SetSelected(true);
+                        selected.Add(temp);
                     }
                 }
             }
@@ -306,10 +312,14 @@ public class MouseController : MonoBehaviour
             yRow = false;
         }
 
-        while (selectionPrefabs.Count > 0)
+        if (selected.Count > 0)
         {
-            selectionPool.DespawnObject(selectionPrefabs[0]);
-            selectionPrefabs.RemoveAt(0);
+            foreach (Tile tile in selected)
+            {
+                tile.SetSelected(false);
+            }
+
+            selected.Clear();
         }
 
         if (xRow == true && yRow == false)
@@ -329,10 +339,9 @@ public class MouseController : MonoBehaviour
 
                     if (temp != null)
                     {
-                        GameObject tileBox = selectionPool.SpawnObject(new Vector3(x, startY, 0), Quaternion.identity);
-                        selectionPrefabs.Add(tileBox);
+                        temp.SetSelected(true);
+                        selected.Add(temp);
                     }
-
                 }
             }
             if (Input.GetMouseButtonUp(0))
@@ -367,10 +376,9 @@ public class MouseController : MonoBehaviour
 
                     if (temp != null)
                     {
-                        GameObject tileBox = selectionPool.SpawnObject(new Vector3(startX, y, 0), Quaternion.identity);
-                        selectionPrefabs.Add(tileBox);
+                        temp.SetSelected(true);
+                        selected.Add(temp);
                     }
-
                 }
             }
             if (Input.GetMouseButtonUp(0))
@@ -396,6 +404,7 @@ public class MouseController : MonoBehaviour
 
                 if (temp != null)
                 {
+                    temp.SetSelected(true);
                     selected.Add(temp);
                     SelectedFunctions(selected);
                 }
@@ -404,18 +413,28 @@ public class MouseController : MonoBehaviour
     }
     private void SingleBuildMode()      
     {
+        if (selected.Count > 0)
+        {
+            foreach (Tile tile in selected)
+            {
+                tile.SetSelected(false);
+            }
+
+            selected.Clear();
+        }
+
         if (Input.GetMouseButtonUp(0))
         {
             Tile temp = grid.GetTile(currentMousePos.x, currentMousePos.y);
 
             if (temp != null)
             {
+                temp.SetSelected(true);
                 selected.Add(temp);
                 SelectedFunctions(selected);
             }
         }
     }
-
     void SelectedFunctions(HashSet<Tile> temp)
     {
         if (temp != null)
