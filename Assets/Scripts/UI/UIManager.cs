@@ -11,6 +11,7 @@ public class UIManager : MonoBehaviour
     public GameObject agriculturePanel;
     public GameObject tasksPanel;
     public GameObject testPanel;
+    public GameObject zonePanel;
 
     public GameObject visualsPanel;
     public TextMeshProUGUI visualsText;
@@ -25,6 +26,7 @@ public class UIManager : MonoBehaviour
         agriculturePanel.SetActive(false);
         tasksPanel.SetActive(false);
         testPanel.SetActive(false);
+        zonePanel.SetActive(false);
     }
     public void ToggleStructuresPanel()
     {
@@ -33,6 +35,7 @@ public class UIManager : MonoBehaviour
         agriculturePanel.SetActive(false);
         tasksPanel.SetActive(false);
         testPanel.SetActive(false);
+        zonePanel.SetActive(false);
     }
     public void ToggleFloorsPanel()
     {
@@ -41,6 +44,7 @@ public class UIManager : MonoBehaviour
         agriculturePanel.SetActive(false);
         tasksPanel.SetActive(false);
         testPanel.SetActive(false);
+        zonePanel.SetActive(false);
     }
     public void ToggleAgriculturePanel()
     {
@@ -49,6 +53,7 @@ public class UIManager : MonoBehaviour
         floorsPanel.SetActive(false);
         tasksPanel.SetActive(false);
         testPanel.SetActive(false);
+        zonePanel.SetActive(false);
     }
     public void ToggleTasksPanel()
     {
@@ -57,6 +62,7 @@ public class UIManager : MonoBehaviour
         floorsPanel.SetActive(false);
         agriculturePanel.SetActive(false);
         testPanel.SetActive(false);
+        zonePanel.SetActive(false);
     }
     public void ToggleTestPanel()
     {
@@ -65,6 +71,16 @@ public class UIManager : MonoBehaviour
         floorsPanel.SetActive(false);
         agriculturePanel.SetActive(false);
         tasksPanel.SetActive(false);
+        zonePanel.SetActive(false);
+    }
+    public void ToggleZonePanel()
+    {
+        zonePanel.SetActive(!zonePanel.activeSelf);
+        structuresPanel.SetActive(false);
+        floorsPanel.SetActive(false);
+        agriculturePanel.SetActive(false);
+        tasksPanel.SetActive(false);
+        testPanel.SetActive(false);
     }
     public void ToggleGrowZones()
     {

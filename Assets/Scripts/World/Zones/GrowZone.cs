@@ -7,10 +7,11 @@ public class GrowZone : Zone
     public GrowZone()
     {
         zoneType = ZoneType.GROW; 
+        zoneColour = Color.green;
         zoneColour.a = 0.1f;
     }
 
-    protected override void UpdateZoneTasks()
+    public override void UpdateZoneTasks()
     {
         foreach(Tile tile in tiles)
         {

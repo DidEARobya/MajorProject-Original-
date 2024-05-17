@@ -11,7 +11,7 @@ public enum ZoneType
 public class Zone
 {
     public ZoneType zoneType;
-    public Color zoneColour = Color.green;
+    public Color zoneColour;
     public HashSet<Tile> tiles = new HashSet<Tile>();
 
     public HashSet<Tile> UpdateZone()
@@ -82,7 +82,6 @@ public class Zone
         tiles.Add(tile);
         tile.zone = this;
         tile.UpdateVisual();
-        UpdateZoneTasks();
     }
 
     public void RemoveTile(Tile tile)
@@ -122,7 +121,7 @@ public class Zone
         tiles.Clear();
         ZoneManager.RemoveZone(this, zoneType);
     }
-    protected virtual void UpdateZoneTasks()
+    public virtual void UpdateZoneTasks()
     {
 
     }

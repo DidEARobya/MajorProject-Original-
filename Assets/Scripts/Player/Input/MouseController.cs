@@ -66,6 +66,8 @@ public class MouseController : MonoBehaviour
     private bool isReady = false;
 
     bool toAdd;
+    ZoneType zoneType;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -114,10 +116,18 @@ public class MouseController : MonoBehaviour
         floorType = floor;
         toBuildMaterial = material;
     }
-    public void SetToZoneMode(bool _toAdd)
+    public void SetToGrowZoneMode(bool _toAdd)
     {
         buildMode = BuildMode.ZONE;
         mouseMode = MouseMode.AREA;
+        zoneType = ZoneType.GROW;
+        toAdd = _toAdd;
+    }
+    public void SetToStorageZoneMode(bool _toAdd)
+    {
+        buildMode = BuildMode.ZONE;
+        mouseMode = MouseMode.AREA;
+        zoneType = ZoneType.STORAGE;
         toAdd = _toAdd;
     }
     public void SetToClearFloor()
@@ -421,14 +431,14 @@ public class MouseController : MonoBehaviour
                     {
                         foreach (Tile tile in temp)
                         {
-                            ZoneManager.AddTile(tile, ZoneType.GROW);
+                            ZoneManager.AddTile(tile, zoneType);
                         }
                     }
                     else
                     {
                         foreach (Tile tile in temp)
                         {
-                            ZoneManager.RemoveTile(tile);
+                            ZoneManager.RemoveTile(tile, zoneType);
                         }
                     }
                     break;

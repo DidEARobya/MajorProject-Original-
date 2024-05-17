@@ -8,20 +8,20 @@ using UnityEngine.XR;
 public static class ZoneManager
 {
     static HashSet<Zone> growZones = new HashSet<Zone>();
-    //static HashSet<Zone> storageZones = new HashSet<Zone>();
+    static HashSet<Zone> storageZones = new HashSet<Zone>();
 
     static Dictionary<ZoneType, HashSet<Zone>> zones = new Dictionary<ZoneType, HashSet<Zone>>();
 
     public static void Init()
     {
         zones.Add(ZoneType.GROW, growZones);
-        //zones.Add(ZoneType.STORAGE, storageZones);
+        zones.Add(ZoneType.STORAGE, storageZones);
     }
     public static void AddTile(Tile tile, ZoneType type)
     {
         if(tile.zone != null && tile.zone.zoneType != type)
         {
-            tile.zone.RemoveTile(tile);
+            return;
         }
 
         Zone z = null;
@@ -47,7 +47,7 @@ public static class ZoneManager
         {
             foreach (Tile t in tile.GetNeighboursDict().Keys)
             {
-                if (t.zone == null || t.zone == z)
+                if (t.zone == null || t.zone == z || t.zone.zoneType != z.zoneType)
                 {
                     continue;
                 }
@@ -72,22 +72,27 @@ public static class ZoneManager
             {
                 zone = new GrowZone();
             }
+            else if(type == ZoneType.STORAGE)
+            {
+                zone = new StorageZone();
+            }
 
             zone.AddTile(tile);
             zones[type].Add(zone);
+            zone.UpdateZoneTasks();
         }
     }
 
-    public static void RemoveTile(Tile tile)
+    public static void RemoveTile(Tile tile, ZoneType toRemove)
     {
-        if (tile.zone == null)
+        if (tile.zone == null || tile.zone.zoneType != toRemove)
         {
             return;
         }
 
         HashSet<Tile> set = null;
 
-        ZoneType type = tile.zone.zoneType;
+        ZoneType type = toRemove;
 
         foreach (Zone zone in zones[type])
         {
@@ -95,6 +100,7 @@ public static class ZoneManager
             {
                 zone.RemoveTile(tile);
                 set = zone.UpdateZone();
+                zone.UpdateZoneTasks();
                 break;
             }
         }
@@ -107,6 +113,10 @@ public static class ZoneManager
             {
                 newZone = new GrowZone();
             }
+            else if (type == ZoneType.STORAGE)
+            {
+                newZone = new StorageZone();
+            }
 
             foreach (Tile t in set)
             {
@@ -114,6 +124,8 @@ public static class ZoneManager
             }
 
             zones[type].Add(newZone);
+
+            newZone.UpdateZoneTasks();
         }
     }
     public static void RemoveZone(Zone zone, ZoneType type)
@@ -133,5 +145,6 @@ public static class ZoneManager
         }
 
         toMerge.DeleteZone();
+        mergeInto.UpdateZoneTasks();
     }
 }
