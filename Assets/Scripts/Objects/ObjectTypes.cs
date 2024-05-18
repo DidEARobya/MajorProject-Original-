@@ -42,8 +42,8 @@ public class FurnitureTypes
 
     protected readonly bool hasRelativeRotation;
 
-    public static readonly FurnitureTypes WALL = new FurnitureTypes(FurnitureType.WALL, 100, 50, new Dictionary<ItemTypes, int>() { { ItemTypes.WOOD, 300 }, { ItemTypes.STONE, 400 } }, Accessibility.IMPASSABLE, false, 4);
-    public static readonly FurnitureTypes DOOR = new FurnitureTypes(FurnitureType.DOOR, 4, 100, new Dictionary<ItemTypes, int>() { { ItemTypes.WOOD, 300 }, { ItemTypes.STONE, 400 } }, Accessibility.DELAYED, true, 4);
+    public static readonly FurnitureTypes WALL = new FurnitureTypes(FurnitureType.WALL, 100, 50, new Dictionary<ItemTypes, int>() { { ItemTypes.WOOD, 300 }, { ItemTypes.STONE, 400 }, { ItemTypes.IRON, 500 } }, Accessibility.IMPASSABLE, false, 4);
+    public static readonly FurnitureTypes DOOR = new FurnitureTypes(FurnitureType.DOOR, 4, 100, new Dictionary<ItemTypes, int>() { { ItemTypes.WOOD, 300 }, { ItemTypes.STONE, 400 }, { ItemTypes.IRON, 500 } }, Accessibility.DELAYED, true, 4);
 
     protected FurnitureTypes(FurnitureType _type, int _movementCost, int _constructionTime, Dictionary<ItemTypes, int> _durabilities, Accessibility _baseAccessibility, bool relativeRotation, int _baseMaterialAmount, ConstructionRequirements _requirements = null)
     {

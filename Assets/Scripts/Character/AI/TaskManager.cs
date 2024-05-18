@@ -134,44 +134,49 @@ public static class TaskManager
         return taskLists[type].Count;
     }
 
-    public static void CreateHaulToStorageTask(CharacterController character, ItemTypes type, Tile toStoreAt, int amount = 0)
+    public static Task CreateHaulToStorageTask(CharacterController character)
     {
-        TilePathPair pair = InventoryManager.GetClosestValidItem(character.currentTile, type);
-
-        if(pair.tile == null || pair.path == null)
-        {
-            return;
-        }
-
-        Tile tile = pair.tile;
-
-        Task task = new HaulTask(tile, (t) => { InventoryManager.DropInventory(character.inventory, toStoreAt); }, toStoreAt, (t) => { InventoryManager.PickUp(character, tile, amount); }, TaskType.CONSTRUCTION);
-        TaskManager.AddTask(task, TaskType.HAULING);
-    }
-    public static HaulTask CreateHaulToJobSiteTask(RequirementTask jobSite, CharacterController character, ItemTypes type, Tile toStoreAt, int amount = 0)
-    {
-        TilePathPair pair = InventoryManager.GetClosestValidItem(character.currentTile, type, amount);
-
-        if (pair.tile == null || pair.path == null)
+        if(StorageManager.storageTiles.Count == 0 || InventoryManager.inventories.Count == 0)
         {
             return null;
         }
 
-        Tile tile = pair.tile;
+        Tile tile = InventoryManager.GetClosestValidItem(character.currentTile, false);
+
+        if(tile == null)
+        {
+            return null;
+        }
+
+        Tile toStoreAt = StorageManager.GetClosestAcceptableInventory(tile, tile.inventory.item, tile.inventory.stackSize);
+
+        if(toStoreAt == null)
+        {
+            tile.inventory.isQueried = false;
+            return null;
+        }
+
+        int amount = toStoreAt.inventory.CanBeStored(tile.inventory.item, tile.inventory.stackSize);
+        Task task = new HaulTask(tile, (t) => { InventoryManager.DropInventory(character.inventory, toStoreAt); }, toStoreAt, (t) => { InventoryManager.PickUp(character, tile, amount); }, TaskType.CONSTRUCTION);
+
+        return task;
+    }
+    public static HaulTask CreateHaulToJobSiteTask(RequirementTask jobSite, CharacterController character, ItemTypes type, Tile toStoreAt, int amount = 0)
+    {
+        if (InventoryManager.inventories.Count == 0)
+        {
+            return null;
+        }
+
+        Tile tile = InventoryManager.GetClosestValidItem(character.currentTile, type, amount);
+
+        if (tile == null)
+        {
+            return null;
+        }
 
         HaulTask task = new HaulTask(tile, (t) => { jobSite.StoreComponent(character.inventory); }, toStoreAt, (t) => { InventoryManager.PickUp(character, tile, amount); }, TaskType.CONSTRUCTION);
 
         return task;
-    }
-}
-public struct TaskPair
-{
-    public Task task;
-    public Path_AStar path;
-
-    public TaskPair(Task _task,  Path_AStar _path)
-    {
-        task = _task;
-        path = _path;
     }
 }

@@ -45,6 +45,10 @@ public class Plant : InstalledObject
     }
     public override void Install()
     {
+        baseTile.accessibility = PlantTypes.GetBaseAccessibility(plantType);
+        baseTile.installedObject = this;
+        isInstalled = true;
+
         states.Add(PlantState.SEED, new SeedState(this));
         states.Add(PlantState.EARLY_GROWTH, new EarlyGrowthState(this));
         states.Add(PlantState.LATE_GROWTH, new LateGrowthState(this));
@@ -53,13 +57,9 @@ public class Plant : InstalledObject
         state = states[plantState];
         state.StateStart();
 
-        isInstalled = true;
-        baseTile.accessibility = PlantTypes.GetBaseAccessibility(plantType);
-        baseTile.installedObject = this;
-
         GameManager.GetWorldGrid().InvalidatePathGraph();
 
-        RegionManager.UpdateCluster(RegionManager.GetClusterAtTile(baseTile));
+        //RegionManager.UpdateCluster(RegionManager.GetClusterAtTile(baseTile));
 
         if (updateObjectCallback != null)
         {
@@ -68,6 +68,11 @@ public class Plant : InstalledObject
     }
     public override void UnInstall()
     {
+        if(state.task != null)
+        {
+            state.task.CancelTask(false);
+        }
+
         state.StateEnd();
         states = null;
 
@@ -84,6 +89,10 @@ public class Plant : InstalledObject
 
         UnityEngine.Object.Destroy(gameObject);
     }
+    public override string GetObjectType()
+    {
+        return PlantTypes.GetObjectType(plantType).ToString();
+    }
     public override int GetMovementCost()
     {
         return PlantTypes.GetMovementCost(plantType);
@@ -97,11 +106,6 @@ public class Plant : InstalledObject
 
         state.StateEnd();
 
-        if (state.task != null)
-        {
-            state.task.CancelTask(false);
-        }
-
         plantState = _state;
         state = states[plantState];
 
@@ -112,5 +116,4 @@ public class Plant : InstalledObject
             updateObjectCallback(this);
         }
     }
-
 }

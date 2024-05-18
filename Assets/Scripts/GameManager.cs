@@ -7,6 +7,8 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
+    public bool devMode = false;
+
     public int mapSize;
     int regionMapSize
     {
@@ -81,6 +83,7 @@ public class GameManager : MonoBehaviour
         buildModeController.Init();
 
         RegionManager.Init(worldGrid, regionMapSize);
+        ZoneManager.Init();
         worldController.GenerateTerrain();
     }
     private void Update()

@@ -13,7 +13,7 @@ public class WorldController : MonoBehaviour
     public Cinemachine.CinemachineVirtualCamera vCamera;
 
     public GameObject cameraBounds;
-  
+
     private void Awake()
     {
         camera = Camera.main;
