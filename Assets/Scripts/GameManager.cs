@@ -7,6 +7,8 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
+    public bool devMode = false;
+
     public int mapSize;
     int regionMapSize
     {

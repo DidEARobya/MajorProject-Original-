@@ -14,6 +14,8 @@ public class Inventory
     public int queriedAmount = 0;
 
     public bool isQueried = false;
+    public bool isStored = false;
+
     public Inventory()
     {
 

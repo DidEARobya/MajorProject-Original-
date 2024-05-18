@@ -52,7 +52,16 @@ public static class TaskRequestHandler
 
             foreach(TaskType type in request.priorityList)
             {
-                Task task = TaskManager.GetTask(type, request);
+                Task task;
+
+                if (type == TaskType.HAULING)
+                {
+                    task = TaskManager.CreateHaulToStorageTask(request);
+                }
+                else
+                {
+                    task = TaskManager.GetTask(type, request);
+                }
 
                 if (task != null)
                 {

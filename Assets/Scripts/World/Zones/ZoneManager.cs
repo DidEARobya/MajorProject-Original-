@@ -55,14 +55,16 @@ public static class ZoneManager
                 if(t.zone.tiles.Count > z.tiles.Count)
                 {
                     MergeZones(t.zone, z);
-                    break;
+                    return;
                 }
                 else
                 {
                     MergeZones(z, t.zone);
-                    break;
+                    return;
                 }
             }
+
+            z.UpdateZoneTasks();
         }
         else
         {

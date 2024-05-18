@@ -55,6 +55,7 @@ public class CharacterController : InventoryOwner
         priorityList.Add(TaskType.CONSTRUCTION);
         priorityList.Add(TaskType.MINING);
         priorityList.Add(TaskType.AGRICULTURE);
+        priorityList.Add(TaskType.HAULING);
     }
     public void SetCharacterObj(GameObject obj)
     {

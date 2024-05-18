@@ -72,7 +72,7 @@ public class Zone
 
         return null;
     }
-    public void AddTile(Tile tile)
+    public virtual void AddTile(Tile tile)
     {
         if (tiles.Contains(tile) || tile.IsAccessible() == Accessibility.IMPASSABLE)
         {
@@ -84,7 +84,7 @@ public class Zone
         tile.UpdateVisual();
     }
 
-    public void RemoveTile(Tile tile)
+    public virtual void RemoveTile(Tile tile)
     {
         if (tiles.Contains(tile) == false)
         {
@@ -107,7 +107,7 @@ public class Zone
         }
     }
 
-    public void DeleteZone()
+    public virtual void DeleteZone()
     {
         foreach(Tile tile in tiles)
         {

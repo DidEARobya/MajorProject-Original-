@@ -89,6 +89,10 @@ public class Plant : InstalledObject
 
         UnityEngine.Object.Destroy(gameObject);
     }
+    public override string GetObjectType()
+    {
+        return PlantTypes.GetObjectType(plantType).ToString();
+    }
     public override int GetMovementCost()
     {
         return PlantTypes.GetMovementCost(plantType);

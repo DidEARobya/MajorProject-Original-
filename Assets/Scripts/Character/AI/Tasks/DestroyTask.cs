@@ -50,6 +50,11 @@ public class DestroyTask : Task
     {
         if (isCancelled == false)
         {
+            if(spriteRenderer == null)
+            {
+                Debug.Log("Invalid Sprite Renderer");
+                return;
+            }
             spriteRenderer.color = colour;
         }
 

@@ -71,6 +71,10 @@ public class Furniture : InstalledObject
 
         UnityEngine.Object.Destroy(gameObject);
     }
+    public override string GetObjectType()
+    {
+        return ItemTypes.GetItemType(baseMaterial).ToString() + "_" + FurnitureTypes.GetObjectType(furnitureType).ToString();
+    }
     public override int GetMovementCost()
     {
         return FurnitureTypes.GetMovementCost(furnitureType);

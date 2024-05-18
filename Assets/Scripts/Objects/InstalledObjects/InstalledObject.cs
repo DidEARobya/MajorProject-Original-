@@ -66,6 +66,10 @@ public class InstalledObject
     public virtual void Install() { }
     public virtual void UnInstall() { }
     public virtual int GetMovementCost() { return 0; }
+    public virtual string GetObjectType()
+    {
+        return " ";
+    }
     public void AddOnActionCallback(Action<InstalledObject, float> callback)
     {
         updateActionCallback += callback;

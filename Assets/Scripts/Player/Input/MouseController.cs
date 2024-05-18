@@ -19,6 +19,7 @@ public enum MouseMode
 }
 public enum BuildMode
 {
+    SELECTED,
     FLOOR,
     OBJECT,
     CLEAR_FLOOR,
@@ -39,8 +40,10 @@ public class MouseController : MonoBehaviour
     public WorldGrid grid;
     BuildModeController buildModeController;
 
-    public MouseMode mouseMode = MouseMode.AREA;
-    public BuildMode buildMode = BuildMode.FLOOR;
+    public TileDetails tileDetails;
+
+    public MouseMode mouseMode = MouseMode.SINGLE;
+    public BuildMode buildMode = BuildMode.SELECTED;
 
     public FurnitureTypes toBuild;
     public ItemTypes toBuildMaterial;
@@ -83,6 +86,11 @@ public class MouseController : MonoBehaviour
     {
         grid = _grid;
         isReady = true;
+    }
+    public void SetToSelect()
+    {
+        mouseMode = MouseMode.SINGLE;
+        buildMode = BuildMode.SELECTED;
     }
     public void SetObject(FurnitureTypes obj, ItemTypes material, MouseMode mode)
     {
@@ -157,6 +165,7 @@ public class MouseController : MonoBehaviour
             if(tileUnderMouse != null)
             {
                 tileOutline.transform.position = tileUnderMouse.tileObj.transform.position;
+                tileDetails.SetDisplayedTile(tileUnderMouse);
             }
 
             MouseInputs();
@@ -175,7 +184,7 @@ public class MouseController : MonoBehaviour
             camera.transform.Translate(difference);
         }
 
-        if(Input.GetKeyUp(KeyCode.Z))
+        if (Input.GetKeyUp(KeyCode.Z))
         {
             if(tileUnderMouse.region != null)
             {
@@ -398,13 +407,26 @@ public class MouseController : MonoBehaviour
         }
         else
         {
+            if (Input.GetMouseButton(0))
+            {
+                for (int x = startX; x <= endX; x++)
+                {
+                    Tile temp = grid.GetTile(x, startY);
+
+                    if (temp != null)
+                    {
+                        temp.SetSelected(true);
+                        selected.Add(temp);
+                    }
+                }
+            }
+
             if (Input.GetMouseButtonUp(0))
             {
                 Tile temp = grid.GetTile(currentMousePos.x, currentMousePos.y);
 
                 if (temp != null)
                 {
-                    temp.SetSelected(true);
                     selected.Add(temp);
                     SelectedFunctions(selected);
                 }

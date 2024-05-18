@@ -9,7 +9,7 @@ using UnityEngine.TextCore.Text;
 
 public static class InventoryManager
 {
-    static List<Inventory> inventories = new List<Inventory>();
+    public static List<Inventory> inventories = new List<Inventory>();
     static Action<Inventory> inventoryUpdateCallback;
     public static void CreateNewInventory(InventoryOwnerType type, Tile tile = null, CharacterController character = null)
     {
@@ -149,11 +149,11 @@ public static class InventoryManager
             inventory.isQueried = false;
         }
     }
-    public static TilePathPair GetClosestValidItem(Tile start, ItemTypes itemType, int amount = 0)
+    public static Tile GetClosestValidItem(Tile start, ItemTypes itemType, int amount = 0)
     {
         if(inventories.Count == 0)
         {
-            return new TilePathPair(null, null);
+            return null;
         }
 
         float lowestDist = Mathf.Infinity;
@@ -185,7 +185,7 @@ public static class InventoryManager
 
         if(tileStack.Count == 0)
         {
-            return new TilePathPair(null, null);
+            return null;
         }
 
         while(tileStack.Count > 0)
@@ -215,10 +215,71 @@ public static class InventoryManager
                 }
             }
 
-            return new TilePathPair(temp, path);
+            return temp;
         }
 
-        return new TilePathPair(null, null);
+        return null;
+    }
+    public static Tile GetClosestValidItem(Tile start, bool checkStored)
+    {
+        if (inventories.Count == 0)
+        {
+            return null;
+        }
+
+        float lowestDist = Mathf.Infinity;
+        Stack<Tile> tileStack = new Stack<Tile>();
+
+        for (int i = 0; i < inventories.Count; i++)
+        {
+            Tile temp = GameManager.GetWorldGrid().GetTile(inventories[i].owner.x, inventories[i].owner.y);
+
+            if (temp == null || temp.inventory.isQueried == true)
+            {
+                continue;
+            }
+
+            if(checkStored == false)
+            {
+                if(temp.inventory.isStored == true)
+                {
+                    continue;
+                }
+            }
+
+            int distX = Mathf.Abs(start.x - temp.x);
+            int distY = Mathf.Abs(start.y - temp.y);
+
+            if (lowestDist > (distX + distY))
+            {
+                tileStack.Push(temp);
+                lowestDist = distX + distY;
+            }
+        }
+
+        if (tileStack.Count == 0)
+        {
+            return null;
+        }
+
+        while (tileStack.Count > 0)
+        {
+            Tile temp = tileStack.Pop();
+
+            Path_AStar path = new Path_AStar(start, temp, true);
+
+            if (path == null)
+            {
+                Debug.Log("null path");
+                continue;
+            }
+
+            temp.inventory.isQueried = true;
+
+            return temp;
+        }
+
+        return null;
     }
     public static void SetInventoryUpdateCallback(Action<Inventory> callback)
     {
