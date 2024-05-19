@@ -57,10 +57,10 @@ public class WorldController : MonoBehaviour
         {
             for (int y = 0; y < worldGrid.mapSize; y++)
             {
+                int rand = Utility.GetRandomNumber(0, 100);
+
                 if (caValues[x, y] == 0)
                 {
-                    int rand = Utility.GetRandomNumber(0, 100);
-
                     if(rand < 70)
                     {
                         ObjectManager.SpawnOre(OreTypes.STONE_ORE, worldGrid.GetTile(x, y));
@@ -68,6 +68,16 @@ public class WorldController : MonoBehaviour
                     else
                     {
                         ObjectManager.SpawnOre(OreTypes.IRON_ORE, worldGrid.GetTile(x, y));
+                    }
+                }
+                else
+                {
+                    Tile tile = worldGrid.GetTile(x, y);
+
+                    if(rand < TerrainTypes.GetGrowthChance(tile.terrainType))
+                    {
+                        PlantState state = (PlantState)Utility.GetRandomNumber(0, 4);
+                        ObjectManager.SpawnPlant(PlantTypes.OAK_TREE, tile, state);
                     }
                 }
             }

@@ -79,6 +79,11 @@ public class Zone
             return;
         }
 
+        if(zoneType == ZoneType.GROW && tile.floorType != FloorTypes.NONE)
+        {
+            return;
+        }
+
         tiles.Add(tile);
         tile.zone = this;
         tile.UpdateVisual();

@@ -24,6 +24,7 @@ public class GrowthState : State
 
     bool taskCreated;
     bool hasEnded;
+    protected bool needsTending;
 
     public GrowthState(Plant _plant)
 	{
@@ -31,7 +32,8 @@ public class GrowthState : State
 	}
     public override void StateStart()
 	{
-        growthRate = PlantTypes.GetGrowthRate(plant.plantType);
+        growthRate = PlantTypes.GetGrowthRate(plant.plantType) * TerrainTypes.GetFertilityMultiplier(plant.baseTile.terrainType);
+        needsTending = PlantTypes.GetNeedsTending(plant.plantType);
         delay = 0;
         growth = 0;
 
@@ -48,7 +50,7 @@ public class GrowthState : State
             return;
         }
 
-        if (delay >= tendDelay)
+        if (needsTending == true && delay >= tendDelay)
         {
             if(taskCreated == false)
             {
@@ -74,7 +76,7 @@ public class SeedState : GrowthState
     {
         base.Update(deltaTime);
 
-        if (delay >= tendDelay)
+        if (needsTending == true && delay >= tendDelay)
         {
             return;
         }
@@ -98,7 +100,7 @@ public class EarlyGrowthState : GrowthState
     {
         base.Update(deltaTime);
 
-        if (delay >= tendDelay)
+        if (needsTending == true && delay >= tendDelay)
         {
             return;
         }
@@ -122,7 +124,7 @@ public class LateGrowthState : GrowthState
     {
         base.Update(deltaTime);
 
-        if (delay >= tendDelay)
+        if (needsTending == true && delay >= tendDelay)
         {
             return;
         }

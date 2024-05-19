@@ -89,7 +89,7 @@ public class Plant : InstalledObject
 
         UnityEngine.Object.Destroy(gameObject);
     }
-    public override string GetObjectType()
+    public override string GetObjectNameToString()
     {
         return PlantTypes.GetObjectType(plantType).ToString();
     }

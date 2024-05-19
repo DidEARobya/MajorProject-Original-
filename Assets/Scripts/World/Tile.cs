@@ -148,13 +148,17 @@ public class Tile : InventoryOwner, ITileData
         FloorType oldType = FloorTypes.GetFloorType(floorType);
         FloorType newType = FloorTypes.GetFloorType(floor);
 
-
         if (oldType != FloorType.NONE || oldType != FloorType.TASK_FLOOR)
         {
             if(newType != FloorType.TASK_FLOOR)
             {
-                //InventoryManager.AddToTileInventory(this, FloorTypes.GetRequirements(floorType));
+                InventoryManager.AddToTileInventory(this, FloorTypes.GetRequirements(floorType));
             }
+        }
+
+        if (accessibility == Accessibility.IMPASSABLE && zone != null && zone.zoneType == ZoneType.GROW)
+        {
+            zone.RemoveTile(this);
         }
 
         floorType = floor;
@@ -448,15 +452,18 @@ public class TerrainTypes
 {
     protected readonly TerrainType type;
     protected readonly int movementCost;
+    protected readonly int plantGrowthChance;
+    protected readonly float fertilityMultiplier;
 
-    public static readonly TerrainTypes GRASS = new TerrainTypes(TerrainType.GRASS, 3);
-    public static readonly TerrainTypes GOOD_SOIL = new TerrainTypes(TerrainType.GOOD_SOIL, 2);
-    public static readonly TerrainTypes POOR_SOIL = new TerrainTypes(TerrainType.POOR_SOIL, 1);
+    public static readonly TerrainTypes GOOD_SOIL = new TerrainTypes(TerrainType.GOOD_SOIL, 2, 10, 1.1f);
+    public static readonly TerrainTypes POOR_SOIL = new TerrainTypes(TerrainType.POOR_SOIL, 1, 2, 0.9f);
 
-    protected TerrainTypes(TerrainType _type, int _movementCost)
+    protected TerrainTypes(TerrainType _type, int _movementCost, int growthChance, float _fertilityMultiplier)
     {
         type = _type;
         movementCost = _movementCost;
+        plantGrowthChance = growthChance;
+        fertilityMultiplier = _fertilityMultiplier;
     }
 
     public static TerrainType GetTerrainType(TerrainTypes type) 
@@ -466,6 +473,14 @@ public class TerrainTypes
     public static int GetMovementCost(TerrainTypes type)
     {
         return type.movementCost;
+    }
+    public static int GetGrowthChance(TerrainTypes type)
+    {
+        return type.plantGrowthChance;
+    }
+    public static float GetFertilityMultiplier(TerrainTypes type)
+    {
+        return type.fertilityMultiplier;
     }
 }
 public class FloorTypes

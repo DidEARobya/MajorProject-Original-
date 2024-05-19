@@ -8,8 +8,16 @@ using UnityEngine.UI;
 
 public class MenuDropdown : MonoBehaviour
 {
+    public enum MenuType
+    {
+        MATERIALS,
+        PLANT
+    }
+
+    public MenuType menuType;
+
     public GameObject menu;
-    public StructuresUIObject uiObject;
+    public UIObject uiObject;
 
     public List<Button> buttons = new List<Button>();
 
@@ -18,10 +26,21 @@ public class MenuDropdown : MonoBehaviour
     {
         for (int i = 0; i < buttons.Count; i++)
         {
-            ItemType type = new ItemType();
-            type = (ItemType)i;
+            switch(menuType)
+            {
+                case MenuType.MATERIALS:
+                    ItemType type = new ItemType();
+                    type = (ItemType)i;
 
-            buttons[i].onClick.AddListener(() => { SetType(type); });
+                    buttons[i].onClick.AddListener(() => { SetType(type); });
+                    break;
+                case MenuType.PLANT:
+                    PlantType pType = new PlantType();
+                    pType = (PlantType)i;
+
+                    buttons[i].onClick.AddListener(() => { SetType(pType); });
+                    break;
+            }
         }
     }
     public void SetType(ItemType type)
@@ -45,6 +64,21 @@ public class MenuDropdown : MonoBehaviour
             case ItemType.IRON:
             uiObject.SetType(ItemTypes.IRON);
             break;
+        }
+    }
+    public void SetType(PlantType type)
+    {
+        if (uiObject == null)
+        {
+            Debug.Log("No UI Object");
+            return;
+        }
+
+        switch (type)
+        {
+            case PlantType.OAK_TREE:
+                uiObject.SetType(PlantTypes.OAK_TREE);
+                break;
         }
     }
 }

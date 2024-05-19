@@ -28,19 +28,11 @@ public class InstalledSpriteController : MonoBehaviour
 
         SpriteRenderer renderer = obj.AddComponent<SpriteRenderer>();
 
-        string name = " ";
+        string name = _obj.GetObjectNameToString();
 
-        if (_obj.type == InstalledObjectType.FURNITURE)
+        if (_obj.type == InstalledObjectType.PLANT)
         {
-            name =  ItemTypes.GetItemType((_obj as Furniture).baseMaterial) + "_" + FurnitureTypes.GetObjectType(((_obj as Furniture).furnitureType)).ToString();
-        }
-        else if (_obj.type == InstalledObjectType.ORE)
-        {
-            name = OreTypes.GetObjectType(((_obj as Ore).oreType)).ToString();
-        }
-        else if (_obj.type == InstalledObjectType.PLANT)
-        {
-            name = PlantTypes.GetObjectType(((_obj as Plant).plantType)).ToString() + "_" + (_obj as Plant).plantState.ToString();
+            name += "_" + (_obj as Plant).plantState.ToString();
         }
 
         obj.name = name + _obj.baseTile.x + "_" + _obj.baseTile.y;
@@ -76,7 +68,7 @@ public class InstalledSpriteController : MonoBehaviour
 
         if (obj.type == InstalledObjectType.PLANT)
         {
-            name = PlantTypes.GetObjectType(((obj as Plant).plantType)).ToString() + "_" + (obj as Plant).plantState.ToString();
+            name = obj.GetObjectNameToString() + "_" + (obj as Plant).plantState.ToString();
             renderer.sprite = objSprites.GetSprite(name);
         }
 
