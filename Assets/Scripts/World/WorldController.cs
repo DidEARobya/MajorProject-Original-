@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 
 public class WorldController : MonoBehaviour
@@ -32,7 +33,7 @@ public class WorldController : MonoBehaviour
             {
                 Tile tileData = worldGrid.GetTile(x, y);
                 tileData.SetNeighbours();
-                Vector2 tilePos = new Vector2(tileData.x, tileData.y);
+                Vector3 tilePos = new Vector2(tileData.x, tileData.y);
 
                 GameObject tileObj = new GameObject();
                 tileObj.name = "Tile: " + x + "_" + y;
@@ -40,7 +41,7 @@ public class WorldController : MonoBehaviour
                 tileObj.transform.position = tilePos;
 
                 SpriteRenderer renderer = tileObj.AddComponent<SpriteRenderer>();
-                renderer.sortingLayerName = "Ground";
+                renderer.sortingLayerName = "Background";
 
                 tileData.SetGameObject(tileObj);
                 tileData.SetTileChangedCallback((tile) => { tileSpriteController.OnTileTypeChange(tile, tileObj); });
@@ -83,7 +84,7 @@ public class WorldController : MonoBehaviour
             }
         }
 
-        RegionManager.UpdateMaps();
+        //RegionManager.UpdateMaps();
     }
     public Vector2 GetWorldToCell(Vector2 pos)
     {

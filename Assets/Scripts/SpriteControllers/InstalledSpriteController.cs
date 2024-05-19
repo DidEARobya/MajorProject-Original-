@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.U2D;
 
 public class InstalledSpriteController : MonoBehaviour
@@ -35,10 +37,12 @@ public class InstalledSpriteController : MonoBehaviour
             name += "_" + (_obj as Plant).plantState.ToString();
         }
 
+        renderer.sortingLayerName = "Foreground";
+
         obj.name = name + _obj.baseTile.x + "_" + _obj.baseTile.y;
         renderer.sprite = objSprites.GetSprite(name);
 
-        renderer.sortingLayerName = "Walls";
+        
 
         if(_obj.isInstalled == false)
         {
@@ -73,7 +77,7 @@ public class InstalledSpriteController : MonoBehaviour
         }
 
         renderer.color = colour;
-        renderer.sortingLayerName = "Walls"; 
+        renderer.sortingLayerName = "Foreground"; 
     }
     public void UpdateSpriteRotation(InstalledObject obj)
     {

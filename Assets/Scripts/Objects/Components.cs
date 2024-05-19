@@ -75,7 +75,8 @@ public class FloorRequirements
     protected readonly FloorTypes type;
     protected readonly Dictionary<ItemTypes, int> requirements;
 
-    public static readonly FloorRequirements WOOD = new FloorRequirements(FloorTypes.WOOD, new Dictionary<ItemTypes, int>() { { ItemTypes.WOOD, 1 } });
+    public static readonly FloorRequirements WOOD = new FloorRequirements(FloorTypes.WOOD, new Dictionary<ItemTypes, int>() { { ItemTypes.WOOD, 2 } });
+    public static readonly FloorRequirements STONE = new FloorRequirements(FloorTypes.STONE, new Dictionary<ItemTypes, int>() { { ItemTypes.STONE, 2 } });
 
     protected FloorRequirements(FloorTypes _type, Dictionary<ItemTypes, int> _requirements)
     {

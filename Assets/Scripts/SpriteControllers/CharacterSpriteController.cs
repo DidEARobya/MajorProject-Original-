@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class CharacterSpriteController : MonoBehaviour
 {
@@ -17,12 +18,6 @@ public class CharacterSpriteController : MonoBehaviour
         int length = grid.mapSize;
         int halfLength = grid.worldCentre.x;
 
-        //CharacterController test = CharacterManager.CreateCharacter(grid.GetTile(halfLength, halfLength));
-        //CharacterController test2 = CharacterManager.CreateCharacter(grid.GetTile(halfLength + 1, halfLength + 1));
-        //CharacterController test3 = CharacterManager.CreateCharacter(grid.GetTile(halfLength + 2, halfLength - 1));
-        //CharacterController test4 = CharacterManager.CreateCharacter(grid.GetTile(halfLength + 2, halfLength - 4));
-        //CharacterController test5 = CharacterManager.CreateCharacter(grid.GetTile(halfLength + 5, halfLength - 1));
-
     }
     public void OnCharacterCreated(CharacterController character)
     {
@@ -34,7 +29,7 @@ public class CharacterSpriteController : MonoBehaviour
 
         SpriteRenderer renderer = obj.AddComponent<SpriteRenderer>();
         renderer.sprite = characterSprite;
-        renderer.sortingLayerName = "Characters";
+        renderer.sortingLayerName = "Foreground";
 
         character.SetCharacterObj(obj);
         character.AddCharacterUpdate(OnCharacterUpdate);

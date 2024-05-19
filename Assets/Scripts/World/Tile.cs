@@ -18,6 +18,7 @@ public enum FloorType
     NONE,
     TASK_FLOOR,
     WOOD_FLOOR,
+    STONE_FLOOR
 }
 public enum Direction
 {
@@ -493,6 +494,7 @@ public class FloorTypes
     public static readonly FloorTypes NONE = new FloorTypes(FloorType.NONE, 0, null);
     public static readonly FloorTypes TASK = new FloorTypes(FloorType.TASK_FLOOR, 0, null);
     public static readonly FloorTypes WOOD = new FloorTypes(FloorType.WOOD_FLOOR, 1, FloorRequirements.WOOD);
+    public static readonly FloorTypes STONE = new FloorTypes(FloorType.STONE_FLOOR, 1, FloorRequirements.STONE);
 
     protected FloorTypes(FloorType _type, int _movementCost, FloorRequirements _requirements)
     {

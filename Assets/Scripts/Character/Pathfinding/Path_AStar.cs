@@ -25,7 +25,30 @@ public class Path_AStar
 
         if (world.pathGraph == null)
         {
-            world.pathGraph = new Path_TileGraph(world, end);
+            if (end.accessibility == Accessibility.IMPASSABLE)
+            {
+                Accessibility temp = end.accessibility;
+                end.accessibility = Accessibility.ACCESSIBLE;
+
+                world.pathGraph = new Path_TileGraph(world);
+
+                end.accessibility = temp;
+            }
+        }
+        else
+        {
+            if (end.accessibility == Accessibility.IMPASSABLE)
+            {
+                Accessibility temp = end.accessibility;
+                end.accessibility = Accessibility.ACCESSIBLE;
+
+                foreach (Tile tile in end.GetNeighboursDict().Keys)
+                {
+                    tile.pathNode.neighbours = world.pathGraph.GetNeighbourNodes(tile.pathNode).ToArray();
+                }
+
+                end.accessibility = temp;
+            }
         }
 
         Node startNode = start.pathNode;

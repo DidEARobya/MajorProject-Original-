@@ -48,7 +48,7 @@ public class StructuresUIObject : UIObject, IButtonClickHandler
                         mouseController.SetFloor(FloorTypes.WOOD, itemType, MouseMode.AREA);
                         break;
                     case ItemType.STONE:
-                        mouseController.SetFloor(FloorTypes.TASK, itemType, MouseMode.AREA);
+                        mouseController.SetFloor(FloorTypes.STONE, itemType, MouseMode.AREA);
                         break;
                 }
 

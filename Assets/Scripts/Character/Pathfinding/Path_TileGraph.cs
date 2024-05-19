@@ -8,7 +8,7 @@ using System.Linq;
 public class Path_TileGraph
 {
     public Node[,] nodes;
-    public Path_TileGraph(WorldGrid grid, Tile goal)
+    public Path_TileGraph(WorldGrid grid)
     {
         nodes = new Node[grid.mapSize, grid.mapSize];
 
@@ -20,18 +20,13 @@ public class Path_TileGraph
             }
         }
 
-        Accessibility temp = goal.accessibility;
-        goal.accessibility = Accessibility.ACCESSIBLE;
-
         foreach (Node node in nodes)
         {
             node.neighbours = GetNeighbourNodes(node).ToArray();
         }
-
-        goal.accessibility = temp;
     }
 
-    List<Node> GetNeighbourNodes(Node node, Node ignore = null)
+    public List<Node> GetNeighbourNodes(Node node)
     {
         List<Node> neighbours = new List<Node>();
 
