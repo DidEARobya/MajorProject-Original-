@@ -124,8 +124,6 @@ public class CharacterController : InventoryOwner
         }
 
         activeTask = task;
-        SetDestination(activeTask.tile);
-
         activeTask.AddTaskCompleteCallback(EndTask);
 
         activeTask.InitTask(this);
@@ -137,7 +135,7 @@ public class CharacterController : InventoryOwner
             return false;
         }
 
-        if(destinationTile.IsNeighbour(currentTile) == true || destinationTile == currentTile)
+        if(destinationTile == currentTile)
         {
             activeTask.DoWork(deltaTime);
             return true;
@@ -167,8 +165,10 @@ public class CharacterController : InventoryOwner
             }
         }
 
-        if (destinationTile.IsNeighbour(nextTile) == false && nextTile.IsAccessible() == Accessibility.IMPASSABLE)
+        if (nextTile.IsAccessible() == Accessibility.IMPASSABLE)
         {
+            Debug.Log("Blocked");
+
             nextTile = currentTile;
             pathFinder = null;
             PathRequestHandler.RequestPath(this, destinationTile);
@@ -203,7 +203,7 @@ public class CharacterController : InventoryOwner
             currentTile = nextTile;
             movementPercentage = 0;
 
-            if (destinationTile.IsNeighbour(currentTile) == true || destinationTile == currentTile)
+            if (destinationTile == currentTile)
             {
                 currentTile.reservedBy = this;
                 pathFinder = null;
@@ -224,13 +224,6 @@ public class CharacterController : InventoryOwner
     {
         currentTile.reservedBy = null;
         destinationTile = tile;
-    }
-    public void UnStuck()
-    {
-        pathFinder = null;
-
-        nextTile = currentTile.GetNearestAvailableTile();
-        destinationTile = nextTile;
     }
     public void AddCharacterUpdate(Action<CharacterController> callback)
     {

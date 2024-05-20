@@ -38,12 +38,10 @@ public class HaulTask : Task
                     {
                         PathRequestHandler.RequestPath(worker, storageTile);
                         pathRequested = true;
-                        return;
                     }
 
                     isGathering = false;
                     taskTime = 1;
-                    worker.SetDestination(storageTile);
 
                     gatherCompleteCallback(this);
                 }

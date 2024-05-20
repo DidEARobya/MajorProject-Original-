@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using Unity.VisualScripting;
+using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 
@@ -22,7 +24,6 @@ public static class TaskManager
     {
         taskLists.Add(TaskType.CONSTRUCTION, new List<Task>());
         taskLists.Add(TaskType.MINING, new List<Task>());
-        taskLists.Add(TaskType.HAULING, new List<Task>());
         taskLists.Add(TaskType.AGRICULTURE, new List<Task>());
     }
     public static void AddTask(Task task, TaskType type)
@@ -46,7 +47,7 @@ public static class TaskManager
     }
     public static void RemoveTask(Task task, TaskType type)
     {
-        if (task == null)
+        if (task == null || taskLists.ContainsKey(type) == false)
         {
             return;
         }
@@ -92,6 +93,7 @@ public static class TaskManager
         {
             if (character.ignoredTasks.Contains(list[i]))
             {
+                Debug.Log("Ignored");
                 continue;
             }
 
@@ -118,8 +120,9 @@ public static class TaskManager
 
             Path_AStar path = new Path_AStar(start, task.tile, true);
 
-            if(path == null)
+            if (path == null || (path.Length() == 0 && start.IsNeighbour(task.tile) == false))
             {
+                Debug.Log("No Path");
                 character.ignoredTasks.Add(task);
                 continue;
             }
@@ -157,7 +160,7 @@ public static class TaskManager
         }
 
         int amount = toStoreAt.inventory.CanBeStored(tile.inventory.item, tile.inventory.stackSize);
-        Task task = new HaulTask(tile, (t) => { InventoryManager.DropInventory(character.inventory, toStoreAt); }, toStoreAt, (t) => { InventoryManager.PickUp(character, tile, amount); }, TaskType.CONSTRUCTION);
+        Task task = new HaulTask(tile, (t) => { InventoryManager.DropInventory(character.inventory, toStoreAt); }, toStoreAt, (t) => { InventoryManager.PickUp(character, tile, amount); }, TaskType.HAULING);
 
         return task;
     }
@@ -175,7 +178,7 @@ public static class TaskManager
             return null;
         }
 
-        HaulTask task = new HaulTask(tile, (t) => { jobSite.StoreComponent(character.inventory); }, toStoreAt, (t) => { InventoryManager.PickUp(character, tile, amount); }, TaskType.CONSTRUCTION);
+        HaulTask task = new HaulTask(tile, (t) => { jobSite.StoreComponent(character.inventory); }, toStoreAt, (t) => { InventoryManager.PickUp(character, tile, amount); }, TaskType.HAULING);
 
         return task;
     }
