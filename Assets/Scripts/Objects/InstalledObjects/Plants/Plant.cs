@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static TreeEditor.TreeEditorHelper;
 
 public class Plant : InstalledObject
 {
@@ -89,7 +88,7 @@ public class Plant : InstalledObject
 
         UnityEngine.Object.Destroy(gameObject);
     }
-    public override string GetObjectType()
+    public override string GetObjectNameToString()
     {
         return PlantTypes.GetObjectType(plantType).ToString();
     }

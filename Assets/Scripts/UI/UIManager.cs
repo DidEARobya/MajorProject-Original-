@@ -20,7 +20,10 @@ public class UIManager : MonoBehaviour
 
     public GameObject growZones;
     public GameObject tileDetailsPanel;
+    public GameObject tileActionsPanel;
 
+    public GameObject materialsMenu;
+    public GameObject plantMenu;
     public TextMeshProUGUI devToggleText;
 
     private void Start()
@@ -39,11 +42,15 @@ public class UIManager : MonoBehaviour
     {
         if(Input.GetKeyUp(KeyCode.Escape))
         {
+            buildPanel.SetActive(false);
             TogglePanels(null);
         }
     }
     void TogglePanels(GameObject toActivate)
     {
+        materialsMenu.SetActive(false);
+        plantMenu.SetActive(false);
+
         if(toActivate == buildPanel)
         {
             buildPanel.SetActive(!buildPanel.activeSelf);
@@ -52,6 +59,7 @@ public class UIManager : MonoBehaviour
         if(buildPanel.activeSelf == true)
         {
             tileDetailsPanel.SetActive(false);
+            tileActionsPanel.SetActive(false);
         }
 
         for(int i = 0; i < panels.Count; i++)
@@ -120,7 +128,19 @@ public class UIManager : MonoBehaviour
             TogglePanels(null);
         }
     }
+    public void DisplayTileActionsPanel(Tile tile)
+    {
+        tileActionsPanel.SetActive(true);
+        tileActionsPanel.GetComponent<TileActionsPanel>().Init(tile);
+        tileDetailsPanel.SetActive(true);
+        tileDetailsPanel.GetComponent<TileDetails>().SetDisplayedTile(tile);
 
+        if (tileDetailsPanel.activeSelf == true)
+        {
+            buildPanel.SetActive(false);
+            TogglePanels(null);
+        }
+    }
     public void ToggleDevMode()
     {
         GameManager.instance.devMode = !GameManager.instance.devMode;

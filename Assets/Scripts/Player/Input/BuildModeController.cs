@@ -56,7 +56,7 @@ public class BuildModeController : MonoBehaviour
         {
             Task task;
 
-            if (tile.GetInstalledObject() != null && tile.GetInstalledObject().isInstalled == true && tile.GetInstalledObject().type == InstalledObjectType.FURNITURE)
+            if (tile.IsObjectInstalled() == true && tile.installedObject.type == InstalledObjectType.FURNITURE)
             {
                 if (GameManager.instance.devMode == true)
                 {
@@ -64,7 +64,7 @@ public class BuildModeController : MonoBehaviour
                     continue;
                 }
 
-                task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.CONSTRUCTION, false, tile.GetInstalledObject().durability);
+                task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.CONSTRUCTION, false, tile.installedObject.durability);
                 TaskManager.AddTask(task, task.taskType);
             }
         }
@@ -75,7 +75,7 @@ public class BuildModeController : MonoBehaviour
         {
             Task task;
 
-            if (tile.GetInstalledObject() != null && tile.GetInstalledObject().isInstalled == true && tile.GetInstalledObject().type == InstalledObjectType.ORE)
+            if (tile.IsObjectInstalled() == true && tile.installedObject.type == InstalledObjectType.ORE)
             {
                 if (GameManager.instance.devMode == true)
                 {
@@ -83,7 +83,7 @@ public class BuildModeController : MonoBehaviour
                     continue;
                 }
 
-                task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.CONSTRUCTION, false, tile.GetInstalledObject().durability);
+                task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.MINING, false, tile.installedObject.durability);
                 TaskManager.AddTask(task, task.taskType);
             }
         }
@@ -94,7 +94,7 @@ public class BuildModeController : MonoBehaviour
         {
             Task task;
 
-            if (tile.GetInstalledObject() != null && tile.GetInstalledObject().isInstalled == true && tile.GetInstalledObject().type == InstalledObjectType.PLANT)
+            if (tile.IsObjectInstalled() == true && tile.installedObject.type == InstalledObjectType.PLANT)
             {
                 if (GameManager.instance.devMode == true)
                 {
@@ -102,7 +102,7 @@ public class BuildModeController : MonoBehaviour
                     continue;
                 }
 
-                task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.CONSTRUCTION, false, tile.GetInstalledObject().durability);
+                task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.AGRICULTURE, false, tile.installedObject.durability);
                 TaskManager.AddTask(task, task.taskType);
             }
         }

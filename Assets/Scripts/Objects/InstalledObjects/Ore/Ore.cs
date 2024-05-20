@@ -55,7 +55,7 @@ public class Ore : InstalledObject
         Task task = new MineTask(baseTile, (t) => { baseTile.UninstallObject(); }, TaskType.MINING, false, baseTile.GetInstalledObject().durability);
         TaskManager.AddTask(task, task.taskType);
     }
-    public override string GetObjectType()
+    public override string GetObjectNameToString()
     {
         return OreTypes.GetObjectType(oreType).ToString();
     }

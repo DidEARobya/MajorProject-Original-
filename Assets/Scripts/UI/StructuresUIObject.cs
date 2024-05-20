@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.U2D;
 using UnityEngine.UI;
 
-public class StructuresUIObject : MonoBehaviour, IButtonClickHandler
+public class StructuresUIObject : UIObject, IButtonClickHandler
 {
     public enum UIObjectType
     {
@@ -14,19 +14,10 @@ public class StructuresUIObject : MonoBehaviour, IButtonClickHandler
         FLOOR
     }
 
-    private new Camera camera;
-    public GameObject typeMenu;
-
-    public Image image;
-    public TextMeshProUGUI nameText;
-
     MouseController mouseController;
-
-    public SpriteAtlas atlas;
     public UIObjectType objectType;
 
     ItemTypes itemType;
-    FurnitureTypes furnitureTypes;
 
     // Start is called before the first frame update
     void Start()
@@ -57,18 +48,14 @@ public class StructuresUIObject : MonoBehaviour, IButtonClickHandler
                         mouseController.SetFloor(FloorTypes.WOOD, itemType, MouseMode.AREA);
                         break;
                     case ItemType.STONE:
-                        mouseController.SetFloor(FloorTypes.TASK, itemType, MouseMode.AREA);
+                        mouseController.SetFloor(FloorTypes.STONE, itemType, MouseMode.AREA);
                         break;
                 }
 
             break;
         }
     }
-    public void OnButtonRightClick()
-    {
-        DisplayMaterialMenu();
-    }
-    public void SetType(ItemTypes type)
+    public override void SetType(ItemTypes type)
     {
         typeMenu.SetActive(false);
 
@@ -85,11 +72,5 @@ public class StructuresUIObject : MonoBehaviour, IButtonClickHandler
     {
         nameText.text = ItemTypes.GetItemType(itemType).ToString() + " " + objectType.ToString();
         image.sprite = atlas.GetSprite(ItemTypes.GetItemType(itemType).ToString() + "_" + objectType.ToString());
-    }
-    private void DisplayMaterialMenu()
-    {
-        typeMenu.GetComponent<MenuDropdown>().uiObject = this;
-        typeMenu.transform.position = transform.position + new Vector3(0, 150, 0);
-        typeMenu.SetActive(true);
     }
 }

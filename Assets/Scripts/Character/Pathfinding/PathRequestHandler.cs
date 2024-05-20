@@ -1,13 +1,15 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 
 public class PathRequestHandler : MonoBehaviour
 {
     static Queue<PathRequest> requests = new Queue<PathRequest>();
 
-    static Object requestCompleteLock = new Object();
+    static object requestCompleteLock = new object();
 
     static bool isHandlingRequest = false;
 
@@ -28,6 +30,7 @@ public class PathRequestHandler : MonoBehaviour
     {
         if (requests.Count > 0 && isHandlingRequest == false)
         {
+            //ThreadedCompleteRequest();
             ThreadPool.QueueUserWorkItem(delegate { ThreadedCompleteRequest(); });
         }
     }
@@ -46,6 +49,7 @@ public class PathRequestHandler : MonoBehaviour
 
             if (request.character == null || request.destination == null)
             {
+                request = null;
                 isHandlingRequest = false;
                 return;
             } 
@@ -54,14 +58,43 @@ public class PathRequestHandler : MonoBehaviour
 
             Path_AStar path = new Path_AStar(character.currentTile, request.destination, true);
 
+            if(path == null || (path.Length() == 0 && character.currentTile.IsNeighbour(request.destination) == false && character.currentTile != request.destination))
+            {
+                NoValidPath(character);
+                request = null;
+                return;
+            }
+
+            character.SetDestination(path.destination);
             character.pathFinder = path;
-            request.character.requestedPath = false;
+            character.requestedPath = false;
 
             isHandlingRequest = false;
+            request = null;
         }
     }
+    static void NoValidPath(CharacterController character)
+    {
+        Debug.Log("No Path");
+        isHandlingRequest = false;
+
+        if (character.activeTask != null)
+        {
+            if (character.activeTask.taskType == TaskType.HAULING)
+            {
+                character.activeTask.CancelTask(false);
+            }
+            else
+            {
+                character.activeTask.CancelTask(true);
+            }
+        }
+
+        character.pathFinder = null;
+        character.requestedPath = false;
+    }
 }
-public struct PathRequest
+public class PathRequest
 {
     public CharacterController character;
     public Tile destination;

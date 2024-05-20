@@ -36,7 +36,7 @@ public class TileDetails : MonoBehaviour
 
         if(tile.IsObjectInstalled() == true)
         {
-            installedText.text = "Object: " + tile.installedObject.GetObjectType();
+            installedText.text = "Object: " + tile.installedObject.GetObjectNameToString();
         }
         else
         {

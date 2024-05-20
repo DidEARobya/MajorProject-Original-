@@ -66,7 +66,7 @@ public class InstalledObject
     public virtual void Install() { }
     public virtual void UnInstall() { }
     public virtual int GetMovementCost() { return 0; }
-    public virtual string GetObjectType()
+    public virtual string GetObjectNameToString()
     {
         return " ";
     }

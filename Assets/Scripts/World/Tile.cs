@@ -1,9 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting.Antlr3.Runtime.Tree;
-using UnityEditor;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,6 +15,7 @@ public enum FloorType
     NONE,
     TASK_FLOOR,
     WOOD_FLOOR,
+    STONE_FLOOR
 }
 public enum Direction
 {
@@ -148,13 +146,17 @@ public class Tile : InventoryOwner, ITileData
         FloorType oldType = FloorTypes.GetFloorType(floorType);
         FloorType newType = FloorTypes.GetFloorType(floor);
 
-
         if (oldType != FloorType.NONE || oldType != FloorType.TASK_FLOOR)
         {
             if(newType != FloorType.TASK_FLOOR)
             {
-                //InventoryManager.AddToTileInventory(this, FloorTypes.GetRequirements(floorType));
+                InventoryManager.AddToTileInventory(this, FloorTypes.GetRequirements(floorType));
             }
+        }
+
+        if (accessibility == Accessibility.IMPASSABLE && zone != null && zone.zoneType == ZoneType.GROW)
+        {
+            zone.RemoveTile(this);
         }
 
         floorType = floor;
@@ -448,15 +450,18 @@ public class TerrainTypes
 {
     protected readonly TerrainType type;
     protected readonly int movementCost;
+    protected readonly int plantGrowthChance;
+    protected readonly float fertilityMultiplier;
 
-    public static readonly TerrainTypes GRASS = new TerrainTypes(TerrainType.GRASS, 3);
-    public static readonly TerrainTypes GOOD_SOIL = new TerrainTypes(TerrainType.GOOD_SOIL, 2);
-    public static readonly TerrainTypes POOR_SOIL = new TerrainTypes(TerrainType.POOR_SOIL, 1);
+    public static readonly TerrainTypes GOOD_SOIL = new TerrainTypes(TerrainType.GOOD_SOIL, 2, 10, 1.1f);
+    public static readonly TerrainTypes POOR_SOIL = new TerrainTypes(TerrainType.POOR_SOIL, 1, 2, 0.9f);
 
-    protected TerrainTypes(TerrainType _type, int _movementCost)
+    protected TerrainTypes(TerrainType _type, int _movementCost, int growthChance, float _fertilityMultiplier)
     {
         type = _type;
         movementCost = _movementCost;
+        plantGrowthChance = growthChance;
+        fertilityMultiplier = _fertilityMultiplier;
     }
 
     public static TerrainType GetTerrainType(TerrainTypes type) 
@@ -466,6 +471,14 @@ public class TerrainTypes
     public static int GetMovementCost(TerrainTypes type)
     {
         return type.movementCost;
+    }
+    public static int GetGrowthChance(TerrainTypes type)
+    {
+        return type.plantGrowthChance;
+    }
+    public static float GetFertilityMultiplier(TerrainTypes type)
+    {
+        return type.fertilityMultiplier;
     }
 }
 public class FloorTypes
@@ -478,6 +491,7 @@ public class FloorTypes
     public static readonly FloorTypes NONE = new FloorTypes(FloorType.NONE, 0, null);
     public static readonly FloorTypes TASK = new FloorTypes(FloorType.TASK_FLOOR, 0, null);
     public static readonly FloorTypes WOOD = new FloorTypes(FloorType.WOOD_FLOOR, 1, FloorRequirements.WOOD);
+    public static readonly FloorTypes STONE = new FloorTypes(FloorType.STONE_FLOOR, 1, FloorRequirements.STONE);
 
     protected FloorTypes(FloorType _type, int _movementCost, FloorRequirements _requirements)
     {

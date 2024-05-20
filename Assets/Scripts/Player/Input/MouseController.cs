@@ -2,14 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.Pool;
 using Cinemachine;
-using TMPro.EditorUtilities;
-using Cinemachine.Utility;
-using System.ComponentModel;
-using static TMPro.Examples.TMP_ExampleScript_01;
-using System;
-using UnityEngine.UIElements;
+using TMPro;
 
 public enum MouseMode
 {
@@ -19,7 +13,7 @@ public enum MouseMode
 }
 public enum BuildMode
 {
-    SELECTED,
+    SELECT,
     FLOOR,
     OBJECT,
     CLEAR_FLOOR,
@@ -40,19 +34,26 @@ public class MouseController : MonoBehaviour
     public WorldGrid grid;
     BuildModeController buildModeController;
 
+    public UIManager uiManager;
+
     public TileDetails tileDetails;
 
-    public MouseMode mouseMode = MouseMode.SINGLE;
-    public BuildMode buildMode = BuildMode.SELECTED;
+    public MouseMode mouseMode;
+    public BuildMode buildMode;
 
     public FurnitureTypes toBuild;
     public ItemTypes toBuildMaterial;
     public FloorTypes floorType;
 
     protected Tile tileUnderMouse;
+    protected Tile selectedTile;
+
     HashSet<Tile> selected = new HashSet<Tile>();
 
+    public GameObject selectedTileDisplay;
     public GameObject tileOutline;
+
+    public TextMeshProUGUI modeText;
 
     protected Vector2 selectionDragStart;
     protected Vector2 selectionDragEnd;
@@ -80,6 +81,8 @@ public class MouseController : MonoBehaviour
         worldController = GameManager.GetWorldController();
         grid = worldController.worldGrid;
         buildModeController = BuildModeController.instance;
+
+        SetToSelect();
     }
 
     public void Init(WorldGrid _grid)
@@ -89,66 +92,125 @@ public class MouseController : MonoBehaviour
     }
     public void SetToSelect()
     {
+        ResetSelected();
+
         mouseMode = MouseMode.SINGLE;
-        buildMode = BuildMode.SELECTED;
+        buildMode = BuildMode.SELECT;
+
+        UpdateText();
+    }
+    void ResetSelected()
+    {
+        if (buildMode != BuildMode.SELECT)
+        {
+            return;
+        }
+
+        selectedTile = null;
+        selectedTileDisplay.SetActive(false);
     }
     public void SetObject(FurnitureTypes obj, ItemTypes material, MouseMode mode)
     {
+        ResetSelected();
+
         buildMode = BuildMode.OBJECT;
         mouseMode = mode;
         toBuild = obj;
         toBuildMaterial = material;
+
+        UpdateText();
     }
     public void SetToDestroy()
     {
+        ResetSelected();
+
         mouseMode = MouseMode.AREA;
         buildMode = BuildMode.DESTROY;
+
+        UpdateText();
     }
     public void SetToMine()
     {
+        ResetSelected();
+
         mouseMode = MouseMode.AREA;
         buildMode = BuildMode.MINE;
+
+        UpdateText();
     }
     public void SetToHarvest()
     {
+        ResetSelected();
+
         mouseMode = MouseMode.AREA;
         buildMode = BuildMode.HARVEST;
+
+        UpdateText();
     }
     public void SetFloor(FloorTypes floor, ItemTypes material, MouseMode mode)
     {
+        ResetSelected();
+
         buildMode = BuildMode.FLOOR;
         mouseMode = mode;
         floorType = floor;
         toBuildMaterial = material;
+
+        UpdateText();
     }
     public void SetToGrowZoneMode(bool _toAdd)
     {
+        ResetSelected();
+
         buildMode = BuildMode.ZONE;
         mouseMode = MouseMode.AREA;
         zoneType = ZoneType.GROW;
         toAdd = _toAdd;
+
+        UpdateText();
     }
     public void SetToStorageZoneMode(bool _toAdd)
     {
+        ResetSelected();
+
         buildMode = BuildMode.ZONE;
         mouseMode = MouseMode.AREA;
         zoneType = ZoneType.STORAGE;
         toAdd = _toAdd;
+
+        UpdateText();
     }
     public void SetToClearFloor()
     {
+        ResetSelected();
+
         mouseMode = MouseMode.AREA;
         buildMode = BuildMode.CLEAR_FLOOR;
+
+        UpdateText();
     }
     public void SetToCancel()
     {
-        mouseMode= MouseMode.AREA;
+        ResetSelected();
+
+        mouseMode = MouseMode.AREA;
         buildMode = BuildMode.CANCEL;
+
+        UpdateText();
     }
     public void SetToSpawnCharacter()
     {
+        ResetSelected();
+
         mouseMode = MouseMode.SINGLE;
         buildMode = BuildMode.SPAWNCHARACTER;
+
+        UpdateText();
+    }
+
+    void UpdateText()
+    {
+        modeText.text = "Mode: " + buildMode.ToString();
     }
     // Update is called once per frame
     void Update()
@@ -158,6 +220,11 @@ public class MouseController : MonoBehaviour
             return;
         }
 
+        if(Input.GetKeyUp(KeyCode.Tab))
+        {
+            SetToSelect();
+        }
+
         UpdateMousePos();
 
         if (EventSystem.current.IsPointerOverGameObject() == false)
@@ -165,7 +232,11 @@ public class MouseController : MonoBehaviour
             if(tileUnderMouse != null)
             {
                 tileOutline.transform.position = tileUnderMouse.tileObj.transform.position;
-                tileDetails.SetDisplayedTile(tileUnderMouse);
+
+                if (selectedTile == null)
+                {
+                    tileDetails.SetDisplayedTile(tileUnderMouse);
+                }
             }
 
             MouseInputs();
@@ -451,9 +522,21 @@ public class MouseController : MonoBehaviour
 
             if (temp != null)
             {
-                temp.SetSelected(true);
-                selected.Add(temp);
-                SelectedFunctions(selected);
+                if(buildMode == BuildMode.SELECT)
+                {
+                    selectedTile = temp;
+
+                    selectedTileDisplay.transform.position = selectedTile.gameObj.transform.position;
+                    selectedTileDisplay.SetActive(true);
+
+                    uiManager.DisplayTileActionsPanel(selectedTile);
+                }
+                else
+                {
+                    temp.SetSelected(true);
+                    selected.Add(temp);
+                    SelectedFunctions(selected);
+                }
             }
         }
     }
@@ -468,6 +551,7 @@ public class MouseController : MonoBehaviour
                     break;
 
                 case BuildMode.ZONE:
+
                     if (toAdd == true)
                     {
                         foreach (Tile tile in temp)

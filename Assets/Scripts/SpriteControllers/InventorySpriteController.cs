@@ -32,6 +32,7 @@ public class InventorySpriteController : MonoBehaviour
         }
 
         obj = Instantiate(displayPrefab, inventory.owner.gameObj.transform);
+
         renderer = obj.GetComponent<SpriteRenderer>();
         inventory.inventoryObject = obj;
 
@@ -41,15 +42,16 @@ public class InventorySpriteController : MonoBehaviour
         renderer.sprite = itemSprites.GetSprite(ItemTypes.GetItemType(inventory.item).ToString());
 
         InventoryOwnerType type = inventory.owner.GetOwnerType();
-        
-        switch(type)
+        renderer.sortingLayerName = "Foreground";
+
+        switch (type)
         {
             case InventoryOwnerType.TILE:
-                renderer.sortingLayerName = "Item";
+
                 obj.GetComponentInChildren<TextMeshProUGUI>().text = inventory.stackSize.ToString();
+                obj.GetComponentInChildren<Canvas>().sortingLayerName = "WorldText";
                 break;
             case InventoryOwnerType.CHARACTER:
-                renderer.sortingLayerName = "Held";
                 obj.GetComponentInChildren<TextMeshProUGUI>().text = "";
                 break;
         }

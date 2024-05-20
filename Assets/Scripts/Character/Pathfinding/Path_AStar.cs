@@ -5,11 +5,13 @@ using System.Diagnostics;
 using System.Threading;
 using System.Linq;
 using UnityEngine;
+using Unity.VisualScripting;
 
 public class Path_AStar
 {
     Queue<ITileData> path = new Queue<ITileData>();
 
+    public Tile destination;
     bool isPlayer;
 
     public Path_AStar(Tile start, Tile end, bool _isPlayer)
@@ -23,9 +25,37 @@ public class Path_AStar
 
         WorldGrid world = GameManager.GetWorldGrid();
 
+        /*if (world.pathGraph == null)
+        {
+            if (end.accessibility == Accessibility.IMPASSABLE)
+            {
+                Accessibility temp = end.accessibility;
+                end.accessibility = Accessibility.ACCESSIBLE;
+
+                world.pathGraph = new Path_TileGraph(world);
+
+                end.accessibility = temp;
+            }
+        }
+        else
+        {
+            if (end.accessibility == Accessibility.IMPASSABLE)
+            {
+                Accessibility temp = end.accessibility;
+                end.accessibility = Accessibility.ACCESSIBLE;
+
+                foreach (Tile tile in end.GetNeighboursDict().Keys)
+                {
+                    tile.pathNode.neighbours = world.pathGraph.GetNeighbourNodes(tile.pathNode).ToArray();
+                }
+
+                end.accessibility = temp;
+            }
+        }*/
+
         if (world.pathGraph == null)
         {
-            world.pathGraph = new Path_TileGraph(world, end);
+            world.pathGraph = new Path_TileGraph(world);
         }
 
         Node startNode = start.pathNode;
@@ -41,14 +71,9 @@ public class Path_AStar
             Node current = openSet.Dequeue();
             closedSet.Add(current);
 
-            if (current == endNode)
+            if ((current.data as ITileData).GetTile().IsNeighbour(end) == true)
             {
                 path = RetraceTilePath(startNode, current);
-
-                if(path.Count == 0)
-                {
-
-                }
                 return;
             }
 
@@ -83,6 +108,8 @@ public class Path_AStar
     }
     Queue<ITileData> RetraceTilePath(Node start, Node end)
     {
+        destination = (end.data as ITileData).GetTile();
+
         Queue<ITileData> totalPath = new Queue<ITileData>();
         Node current = end;
 
@@ -92,11 +119,6 @@ public class Path_AStar
             current = current.cameFrom;
         }
 
-        if(totalPath.Count != 0)
-        {
-            totalPath.Dequeue();
-        }
- 
         return new Queue<ITileData>(totalPath.Reverse());
     }
 

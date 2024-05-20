@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static TreeEditor.TreeEditorHelper;
 
 public class Furniture : InstalledObject
 {
@@ -71,7 +70,7 @@ public class Furniture : InstalledObject
 
         UnityEngine.Object.Destroy(gameObject);
     }
-    public override string GetObjectType()
+    public override string GetObjectNameToString()
     {
         return ItemTypes.GetItemType(baseMaterial).ToString() + "_" + FurnitureTypes.GetObjectType(furnitureType).ToString();
     }

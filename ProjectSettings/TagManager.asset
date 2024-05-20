@@ -41,20 +41,14 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Ground
+  - name: Background
     uniqueID: 1161077571
     locked: 0
-  - name: Walls
-    uniqueID: 2723368407
+  - name: Foreground
+    uniqueID: 4033877207
     locked: 0
-  - name: Item
-    uniqueID: 1396567471
-    locked: 0
-  - name: Characters
-    uniqueID: 4159787587
-    locked: 0
-  - name: Held
-    uniqueID: 1563979989
+  - name: WorldText
+    uniqueID: 1970675637
     locked: 0
   - name: Zones
     uniqueID: 3820424339
