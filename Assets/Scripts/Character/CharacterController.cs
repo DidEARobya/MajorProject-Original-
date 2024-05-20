@@ -1,11 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.PackageManager.Requests;
-using UnityEditor.Timeline.Actions;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
-using UnityEngine.UIElements;
 
 public class CharacterController : InventoryOwner
 {
@@ -171,7 +167,7 @@ public class CharacterController : InventoryOwner
             }
         }
 
-        if (nextTile.IsAccessible() == Accessibility.IMPASSABLE)
+        if (destinationTile.IsNeighbour(nextTile) == false && nextTile.IsAccessible() == Accessibility.IMPASSABLE)
         {
             nextTile = currentTile;
             pathFinder = null;

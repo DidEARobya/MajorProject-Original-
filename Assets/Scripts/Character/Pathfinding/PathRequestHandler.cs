@@ -54,6 +54,7 @@ public class PathRequestHandler : MonoBehaviour
 
             Path_AStar path = new Path_AStar(character.currentTile, request.destination, true);
 
+            Debug.Log(path.Length());
             character.pathFinder = path;
             request.character.requestedPath = false;
 

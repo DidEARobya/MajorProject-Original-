@@ -2,14 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.Pool;
 using Cinemachine;
-using TMPro.EditorUtilities;
-using Cinemachine.Utility;
-using System.ComponentModel;
-using static TMPro.Examples.TMP_ExampleScript_01;
-using System;
-using UnityEngine.UIElements;
 using TMPro;
 
 public enum MouseMode

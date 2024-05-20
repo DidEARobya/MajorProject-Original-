@@ -48,12 +48,10 @@ public static class TaskRequestHandler
                 return;
             }
 
-            request.requestedTask = false;
+            Task task;
 
-            foreach(TaskType type in request.priorityList)
+            foreach (TaskType type in request.priorityList)
             {
-                Task task;
-
                 if (type == TaskType.HAULING)
                 {
                     task = TaskManager.CreateHaulToStorageTask(request);
@@ -70,6 +68,8 @@ public static class TaskRequestHandler
                 }
             }
 
+            Debug.Log("Task Request");
+            request.requestedTask = false;
             isHandlingRequest = false;
         }
     }

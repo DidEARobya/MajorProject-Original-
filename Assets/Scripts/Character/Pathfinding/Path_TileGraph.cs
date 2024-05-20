@@ -46,7 +46,7 @@ public class Path_TileGraph
 
                 if(checkX >= 0 && checkX < length && checkY >= 0 && checkY < length)
                 {
-                    if(nodes[checkX, checkY].data.IsAccessible() != Accessibility.IMPASSABLE && isClippingCorner(node, nodes[checkX, checkY]) == false)
+                    if (nodes[checkX, checkY].data.IsAccessible() != Accessibility.IMPASSABLE && isClippingCorner(node, nodes[checkX, checkY]) == false)
                     {
                         neighbours.Add(nodes[checkX, checkY]);
                     }
