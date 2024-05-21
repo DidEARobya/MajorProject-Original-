@@ -12,6 +12,7 @@ public class TileSpriteController : MonoBehaviour
     public GameObject overlay;
     public GameObject zoneParent;
     public GameObject selectedParent;
+    public GameObject regionParent;
 
     WorldController worldController;
     public void AssignAtlas()
@@ -97,13 +98,12 @@ public class TileSpriteController : MonoBehaviour
         {
             if (tileData.selectedObj != null)
             {
-                tileData.selectedObj.SetActive(false);
+                Destroy(tileData.selectedObj);
+                tileData.selectedObj = null;
             }
 
             return;
         }
-
-        SpriteRenderer selectedRenderer;
 
         if (tileData.selectedObj == null)
         {
@@ -112,15 +112,15 @@ public class TileSpriteController : MonoBehaviour
             obj.transform.position = tileObj.transform.position;
 
             tileData.selectedObj = obj;
-
-            selectedRenderer = tileData.selectedObj.GetComponent<SpriteRenderer>();
-            selectedRenderer.sortingLayerName = "Zones";
-
-            Color colour = Color.blue;
-            colour.a = 0.3f;
-            selectedRenderer.color = colour;
         }
 
-        tileData.selectedObj.SetActive(true);
+        SpriteRenderer selectedRenderer;
+
+        selectedRenderer = tileData.selectedObj.GetComponent<SpriteRenderer>();
+        selectedRenderer.sortingLayerName = "Zones";
+
+        Color colour = Color.blue;
+        colour.a = 0.3f;
+        selectedRenderer.color = colour;
     }
 }

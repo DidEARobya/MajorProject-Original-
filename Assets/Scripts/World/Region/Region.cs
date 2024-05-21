@@ -1,16 +1,20 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Unity.Mathematics;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 
 public class Region : INodeData
 {
     public HashSet<Region> neighbours = new HashSet<Region>();
-
     public HashSet<Tile> tiles = new HashSet<Tile>();
+
+    HashSet<Tile> borderTiles = new HashSet<Tile>();
 
     List<Tile> northPairs = new List<Tile>();
     List<Tile> eastPairs = new List<Tile>();
@@ -24,15 +28,16 @@ public class Region : INodeData
     {
         
     }
-    public void SetTiles(TerrainTypes type, bool isNeighbour)
+    public void HighlightBorderTiles(TerrainTypes type, bool isNeighbour)
     {
-        if(tiles.Count == 0 || tiles.First().terrainType == type)
+        foreach (Tile tile in tiles)
         {
-            return;
-        }
+            //if(tile.isRegionBorder == true)
+            //{
+            //    continue;
+            //}
 
-        foreach(Tile tile in tiles)
-        {
+            //tile.isRegionBorder = true;
             tile.SetTerrainType(type);
         }
 
@@ -45,8 +50,16 @@ public class Region : INodeData
         {
             if(r != null)
             {
-                r.SetTiles(TerrainTypes.POOR_SOIL, true);
+                r.HighlightBorderTiles(TerrainTypes.GRASS, true);
             }
+        }
+    }
+    public void HideBorderTiles()
+    {
+        foreach (Tile tile in tiles)
+        {
+            tile.isRegionBorder = false;
+            tile.SetTerrainType(TerrainTypes.POOR_SOIL);
         }
     }
     void FindEdges(Tile tile)
@@ -76,6 +89,10 @@ public class Region : INodeData
             }
         }
 
+        UpdateSpans();
+    }
+    public void UpdateSpans()
+    {
         SortSpans(northPairs, 0);
         SortSpans(eastPairs, 1);
         SortSpans(southPairs, 0);
@@ -85,7 +102,7 @@ public class Region : INodeData
 
         if (spans.Count > 0)
         {
-            foreach(int i in spans)
+            foreach (int i in spans)
             {
                 RegionManager.AddHash(i, this);
             }
@@ -104,7 +121,7 @@ public class Region : INodeData
         {
             Region neighbour = RegionManager.GetNeighbour(i, this);
 
-            if(neighbour != null && neighbours.Contains(neighbour) == false)
+            if(neighbour != null)
             {
                 neighbours.Add(neighbour);
             }
@@ -112,44 +129,13 @@ public class Region : INodeData
     }
     void SortSpans(List<Tile> spanPairs, int isVertical)
     {
-        if(spanPairs.Count == 0)
+        if (spanPairs.Count == 0)
         {
             return;
         }
 
-        List<Tile> spanTiles = new List<Tile>(spanPairs);
-        List<Tile> sortedTiles = new List<Tile>();
+        List<Tile> sortedTiles = SortSpanList(new List<Tile>(spanPairs), isVertical);
 
-        while(spanTiles.Count > 0)
-        {
-            Tile first = null;
-            int posCheck = 9999;
-
-            for(int i = 0; i < spanTiles.Count; i++)
-            {
-                if(isVertical == 1)
-                {
-                    if (spanTiles[i].y < posCheck)
-                    {
-                        posCheck = spanTiles[i].y;
-                        first = spanTiles[i];
-                    }
-                }
-                else
-                {
-                    if (spanTiles[i].x < posCheck)
-                    {
-                        posCheck = spanTiles[i].x;
-                        first = spanTiles[i];
-                    }
-                }
-            }
-
-            sortedTiles.Add(first);
-            spanTiles.Remove(first);
-        }
-
-        int spanCount = 0;
         int index = 0;
         int tempIndex = 0;
 
@@ -162,35 +148,50 @@ public class Region : INodeData
 
         for (int i = 1; i < sortedTiles.Count; i++)
         {
-            if (sortedTiles[i - 1].IsNeighbour(sortedTiles[i]) == false)
+            if (sortedTiles[i - 1].IsAdjacent(sortedTiles[i]) == false)
             {
                 index++;
-                continue;
             }
 
-            if(tempIndex != index)
+            if (tempIndex != index)
             {
+                if (length == 1 && x == 0 && y == 0)
+                {
+                    x = sortedTiles[i - 1].x;
+                    y = sortedTiles[i - 1].y;
+                }
+
                 hashX = Mathf.FloorToInt(x / length);
                 hashY = Mathf.FloorToInt(y / length);
 
                 hash = GenerateLinkHash(hashX, hashY, isVertical, length);
-
-                if (spans.Contains(hash) == false)
-                {
-                    spans.Add(hash);
-                }
+                spans.Add(hash);
 
                 tempIndex = index;
                 x = 0;
                 y = 0;
                 length = 1;
-
-                spanCount++;
             }
+            else
+            {
+                x += sortedTiles[i - 1].x;
+                y += sortedTiles[i - 1].y;
+                length++;
+            }
+        }
 
-            x += sortedTiles[i - 1].x;
-            y += sortedTiles[i - 1].y;
-            length++;
+        if(length == 1 && x == 0 && y == 0)
+        {
+            if(sortedTiles.Count == 1)
+            {
+                x = sortedTiles[0].x;
+                y = sortedTiles[0].y;
+            }
+            else
+            {
+                x = sortedTiles[sortedTiles.Count - 1].x;
+                y = sortedTiles[sortedTiles.Count - 1].y;
+            }
         }
 
         hashX = Mathf.FloorToInt(x / length);
@@ -198,10 +199,45 @@ public class Region : INodeData
 
         hash = GenerateLinkHash(hashX, hashY, isVertical, length);
 
-        if (spans.Contains(hash) == false)
+        if(spans.Contains(hash) == false)
         {
             spans.Add(hash);
         }
+    }
+    List<Tile> SortSpanList(List<Tile> toSort, int isVertical)
+    {
+        List<Tile> sortedTiles = new List<Tile>();
+
+        while (toSort.Count > 0)
+        {
+            Tile first = null;
+            int posCheck = 9999;
+
+            for (int i = 0; i < toSort.Count; i++)
+            {
+                if (isVertical == 1)
+                {
+                    if (toSort[i].y < posCheck)
+                    {
+                        posCheck = toSort[i].y;
+                        first = toSort[i];
+                    }
+                }
+                else
+                {
+                    if (toSort[i].x < posCheck)
+                    {
+                        posCheck = toSort[i].x;
+                        first = toSort[i];
+                    }
+                }
+            }
+
+            sortedTiles.Add(first);
+            toSort.Remove(first);
+        }
+
+        return sortedTiles;
     }
     public void Delete()
     {
@@ -226,6 +262,7 @@ public class Region : INodeData
         neighbours.Clear();
         tiles.Clear();
         spans.Clear();
+        borderTiles.Clear();
         itemsInRegion.Clear();
     }
     public void AddTile(Tile tile)
@@ -242,41 +279,45 @@ public class Region : INodeData
     {
         Tile toCheck = t.North;
 
-        if (toCheck != null && toCheck.IsObjectInstalled() == false && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this)
+        if (toCheck != null && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this)
         {
             if (northPairs.Contains(toCheck) == false)
             {
                 northPairs.Add(toCheck);
+                borderTiles.Add(toCheck);
             }
         }
 
         toCheck = t.East;
 
-        if (toCheck != null && toCheck.IsObjectInstalled() == false && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this)
-        { 
+        if (toCheck != null && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this)
+        {
             if (eastPairs.Contains(toCheck) == false)
             {
                 eastPairs.Add(toCheck);
+                borderTiles.Add(toCheck);
             }
         }
 
         toCheck = t.South;
 
-        if (toCheck != null && toCheck.IsObjectInstalled() == false && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this)
+        if (toCheck != null && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this)
         {
             if (southPairs.Contains(t) == false)
             {
                 southPairs.Add(t);
+                borderTiles.Add(t);
             }
         }
 
         toCheck = t.West;
 
-        if (toCheck != null && toCheck.IsObjectInstalled() == false && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this)
+        if (toCheck != null && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this)
         {
             if (westPairs.Contains(t) == false)
             {
                 westPairs.Add(t);
+                borderTiles.Add(t);
             }
         }
     }

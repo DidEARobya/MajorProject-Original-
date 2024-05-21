@@ -65,9 +65,17 @@ public class Cluster
             if (toCheck.tiles.Count > 0 && regions.Contains(toCheck) == false)
             {
                 regions.Add(toCheck);
-
-                toCheck.UpdateRegion();
             }
+        }
+
+        if(regions.Count == 0)
+        {
+            return;
+        }
+
+        foreach(Region region in regions)
+        {
+            region.UpdateRegion();
         }
     }
     public void UpdateRegionsNeighbours()
@@ -85,6 +93,12 @@ public class Cluster
             {
                 if (beenChecked.Contains(tiles[x, y]) == false)
                 {
+                    if (tiles[x, y].IsObjectInstalled() == true && tiles[x, y].IsAccessible() == Accessibility.IMPASSABLE)
+                    {
+                        beenChecked.Add(tiles[x, y]);
+                        continue;
+                    }
+
                     return tiles[x, y];
                 }
             }
@@ -99,9 +113,17 @@ public class Cluster
 
     void FloodFillFromTile(Tile tile, Region toCheck)
     {
-        if(tile.IsObjectInstalled() == true && tile.IsAccessible() == Accessibility.IMPASSABLE)
+        if (tile.IsObjectInstalled() == true && tile.IsAccessible() == Accessibility.IMPASSABLE)
         {
             beenChecked.Add(tile);
+            return;
+        }
+
+        if(tile.IsObjectInstalled() == true && tile.installedObject.type == InstalledObjectType.FURNITURE  && (tile.installedObject as Furniture).furnitureType == FurnitureTypes.DOOR)
+        {
+            beenChecked.Add(tile);
+            toCheck.AddTile(tile);
+
             return;
         }
 
@@ -119,13 +141,17 @@ public class Cluster
             beenChecked.Add(t);
             toCheck.AddTile(t);
 
-
             Dictionary<Tile, Direction> neighbours = t.GetNeighboursDict();
 
             foreach (Tile t2 in neighbours.Keys)
             {
-                if (t2 != null && beenChecked.Contains(t2) == false && tileset.Contains(t2) == true && t2.IsObjectInstalled() == false && tile.IsAccessible() != Accessibility.IMPASSABLE && toCheck.Contains(t2) == false)
+                if (t2 != null && beenChecked.Contains(t2) == false && tileset.Contains(t2) == true && t2.IsAccessible() != Accessibility.IMPASSABLE && toCheck.Contains(t2) == false)
                 {
+                    if(t2.installedObject != null && t2.installedObject.type == InstalledObjectType.FURNITURE && (t2.installedObject as Furniture).furnitureType == FurnitureTypes.DOOR)
+                    {
+                        continue;
+                    }
+
                     stack.Push(t2);
                 }
             }

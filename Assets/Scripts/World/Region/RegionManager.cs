@@ -28,6 +28,13 @@ public static class RegionManager
             }
         }
     }
+    public static void ClearBorderHighlights()
+    {
+        foreach (Region region in regions)
+        {
+            region.HideBorderTiles();
+        }
+    }
     public static Region GetNeighbour(int hash, Region region)
     {
         if(regionsMap.ContainsKey(hash) == false)
@@ -47,7 +54,7 @@ public static class RegionManager
     }
     public static void AddHash(int hash, Region region)
     {
-        if(regionsMap.ContainsKey(hash) && regionsMap[hash].Contains(region) == false)
+        if(regionsMap.ContainsKey(hash))
         {
             regionsMap[hash].Add(region);
             return;
@@ -103,14 +110,30 @@ public static class RegionManager
         int y = cluster.y;
 
         cluster.UpdateCluster();
-        clusters[x + 1, y].UpdateCluster();
-        clusters[x - 1, y].UpdateCluster();
-        clusters[x, y + 1].UpdateCluster();
-        clusters[x, y - 1].UpdateCluster();
+        UpdateClusterAt(x, y + 1);
+        UpdateClusterAt(x - 1, y);
+        UpdateClusterAt(x + 1, y );
+        UpdateClusterAt(x, y - 1);
 
-        foreach (Cluster c in clusters)
+        cluster.UpdateRegionsNeighbours();
+        UpdateClusterNeighboursAt(x, y + 1);
+        UpdateClusterNeighboursAt(x - 1, y);
+        UpdateClusterNeighboursAt(x + 1, y);
+        UpdateClusterNeighboursAt(x, y - 1);
+
+    }
+    static void UpdateClusterAt(int x, int y)
+    {
+        if(x >= 0 && x < clusterMapSize && y >= 0 && y < clusterMapSize)
         {
-            c.UpdateRegionsNeighbours();
+            clusters[x, y].UpdateCluster();
+        }
+    }
+    static void UpdateClusterNeighboursAt(int x, int y)
+    {
+        if (x >= 0 && x < clusterMapSize && y >= 0 && y < clusterMapSize)
+        {
+            clusters[x, y].UpdateRegionsNeighbours();
         }
     }
     public static void UpdateMaps()

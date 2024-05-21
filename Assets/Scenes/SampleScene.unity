@@ -8121,6 +8121,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 788150231}
   m_CullTransparentMesh: 1
+--- !u!1 &816798947
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 816798948}
+  m_Layer: 0
+  m_Name: RegionParent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &816798948
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 816798947}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &841308733
 GameObject:
   m_ObjectHideFlags: 0
@@ -11889,6 +11920,7 @@ MonoBehaviour:
   overlay: {fileID: 1536413769906579154, guid: 121d0411b8985b646892ec34a316bc49, type: 3}
   zoneParent: {fileID: 708725617}
   selectedParent: {fileID: 727228387}
+  regionParent: {fileID: 816798947}
 --- !u!1 &1144292349
 GameObject:
   m_ObjectHideFlags: 0
@@ -22601,5 +22633,6 @@ SceneRoots:
   - {fileID: 893152775}
   - {fileID: 708725618}
   - {fileID: 727228388}
+  - {fileID: 816798948}
   - {fileID: 349647388}
   - {fileID: 411178529}

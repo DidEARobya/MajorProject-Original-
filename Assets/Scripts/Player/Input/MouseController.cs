@@ -46,6 +46,8 @@ public class MouseController : MonoBehaviour
     public FloorTypes floorType;
 
     protected Tile tileUnderMouse;
+    protected Region highlightedRegion;
+
     protected Tile selectedTile;
 
     HashSet<Tile> selected = new HashSet<Tile>();
@@ -255,13 +257,17 @@ public class MouseController : MonoBehaviour
             camera.transform.Translate(difference);
         }
 
-        if (Input.GetKeyUp(KeyCode.Z))
+        /*if(tileUnderMouse != null && tileUnderMouse.region != highlightedRegion)
         {
-            if(tileUnderMouse.region != null)
+            highlightedRegion = tileUnderMouse.region;
+
+            if(highlightedRegion != null)
             {
-                tileUnderMouse.region.SetTiles(TerrainTypes.GOOD_SOIL, false);
+                RegionManager.ClearBorderHighlights();
+                highlightedRegion.HighlightBorderTiles(TerrainTypes.GOOD_SOIL, false);
             }
-        }
+        }*/
+
         lastMousePos = camera.ScreenToWorldPoint(Input.mousePosition);
         lastMousePos.z = 0;
 

@@ -70,6 +70,9 @@ public class Tile : InventoryOwner, ITileData
     public bool isSelected = false;
     public GameObject selectedObj = null;
 
+    public Color borderColour;
+    public bool isRegionBorder = false;
+
     public Tile(WorldGrid grid, int _x, int _y, float noiseVal = 0) : base (InventoryOwnerType.TILE)
     {
         world = grid;
@@ -322,6 +325,15 @@ public class Tile : InventoryOwner, ITileData
     {
         return neighbourTiles.ContainsKey(tile);
     }
+    public bool IsAdjacent(Tile tile)
+    {
+        if(tile == North || tile == East || tile == South || tile == West)
+        {
+            return true;
+        }
+
+        return false;
+    }
     public Tile GetTileByDirection(Direction dir)
     {
         if (neighbourDirections.ContainsKey(dir) == false)
@@ -455,6 +467,7 @@ public class TerrainTypes
 
     public static readonly TerrainTypes GOOD_SOIL = new TerrainTypes(TerrainType.GOOD_SOIL, 2, 10, 1.1f);
     public static readonly TerrainTypes POOR_SOIL = new TerrainTypes(TerrainType.POOR_SOIL, 1, 2, 0.9f);
+    public static readonly TerrainTypes GRASS = new TerrainTypes(TerrainType.GRASS, 1, 2, 0.9f);
 
     protected TerrainTypes(TerrainType _type, int _movementCost, int growthChance, float _fertilityMultiplier)
     {

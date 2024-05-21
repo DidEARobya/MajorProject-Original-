@@ -58,7 +58,7 @@ public class Plant : InstalledObject
 
         GameManager.GetWorldGrid().InvalidatePathGraph();
 
-        //RegionManager.UpdateCluster(RegionManager.GetClusterAtTile(baseTile));
+        RegionManager.UpdateCluster(RegionManager.GetClusterAtTile(baseTile));
 
         if (updateObjectCallback != null)
         {
