@@ -63,13 +63,15 @@ public static class StorageManager
         {
             Tile temp = stack.Pop();
 
-            Path_AStar path = new Path_AStar(itemTile, temp, true);
+            Path_AStar path = new Path_AStar();
+            bool isValid = path.TilePathfind(itemTile, temp, true);
 
-            if (path == null)
+            if (isValid == false)
             {
                 continue;
             }
 
+            path = null;
             return temp;
         }
 
