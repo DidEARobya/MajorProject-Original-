@@ -40,13 +40,12 @@ public class Ore : InstalledObject
         }
     }
     public override void UnInstall()
-    {
-        InventoryManager.AddToTileInventory(baseTile, OreTypes.GetComponents(oreType));
-        GameManager.GetWorldGrid().InvalidatePathGraph();
-
-        RegionManager.UpdateCluster(RegionManager.GetClusterAtTile(baseTile));
-
+    { 
         GameManager.GetInstalledSpriteController().Uninstall(this);
+
+        InventoryManager.AddToTileInventory(baseTile, OreTypes.GetComponents(oreType));
+        RegionManager.UpdateCluster(RegionManager.GetClusterAtTile(baseTile));
+        GameManager.GetWorldGrid().InvalidatePathGraph();
 
         UnityEngine.Object.Destroy(gameObject);
     }

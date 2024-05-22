@@ -51,7 +51,7 @@ public class Cluster
 
         while (beenChecked.Count != tilesSize)
         {
-            toCheck = new Region();
+            toCheck = new Region(this);
 
             Tile tile = GetUncheckedTile();
 
@@ -113,7 +113,7 @@ public class Cluster
 
     void FloodFillFromTile(Tile tile, Region toCheck)
     {
-        if (tile.IsObjectInstalled() == true && tile.IsAccessible() == Accessibility.IMPASSABLE)
+        if (tile.IsObjectInstalled() == true && tile.IsAccessible() == Accessibility.IMPASSABLE && ObjectManager.Contains(tile.installedObject) == true)
         {
             beenChecked.Add(tile);
             return;
@@ -141,11 +141,9 @@ public class Cluster
             beenChecked.Add(t);
             toCheck.AddTile(t);
 
-            Dictionary<Tile, Direction> neighbours = t.GetNeighboursDict();
-
-            foreach (Tile t2 in neighbours.Keys)
+            foreach (Tile t2 in t.GetAdjacentNeigbours())
             {
-                if (t2 != null && beenChecked.Contains(t2) == false && tileset.Contains(t2) == true && t2.IsAccessible() != Accessibility.IMPASSABLE && toCheck.Contains(t2) == false)
+                if (t2 != null && beenChecked.Contains(t2) == false && tileset.Contains(t2) == true && toCheck.Contains(t2) == false && (t2.IsAccessible() != Accessibility.IMPASSABLE || t2.installedObject == null || ObjectManager.Contains(t2.installedObject) == false))
                 {
                     if(t2.installedObject != null && t2.installedObject.type == InstalledObjectType.FURNITURE && (t2.installedObject as Furniture).furnitureType == FurnitureTypes.DOOR)
                     {

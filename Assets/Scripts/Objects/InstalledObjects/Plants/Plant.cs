@@ -75,16 +75,18 @@ public class Plant : InstalledObject
         state.StateEnd();
         states = null;
 
-        if(plantState != PlantState.SEED)
-        {
-            InventoryManager.AddToTileInventory(baseTile, PlantTypes.GetYield(plantType, plantState));
-        }
-
-        GameManager.GetWorldGrid().InvalidatePathGraph();
-
-        RegionManager.UpdateCluster(RegionManager.GetClusterAtTile(baseTile));
-
         GameManager.GetInstalledSpriteController().Uninstall(this);
+
+        if(isInstalled == true)
+        {
+            if (plantState != PlantState.SEED)
+            {
+                InventoryManager.AddToTileInventory(baseTile, PlantTypes.GetYield(plantType, plantState));
+            }
+
+            RegionManager.UpdateCluster(RegionManager.GetClusterAtTile(baseTile));
+            GameManager.GetWorldGrid().InvalidatePathGraph();
+        }
 
         UnityEngine.Object.Destroy(gameObject);
     }

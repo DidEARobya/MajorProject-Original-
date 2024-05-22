@@ -257,7 +257,7 @@ public class MouseController : MonoBehaviour
             camera.transform.Translate(difference);
         }
 
-        /*if(tileUnderMouse != null && tileUnderMouse.region != highlightedRegion)
+        /*(tileUnderMouse != null && tileUnderMouse.region != highlightedRegion)
         {
             highlightedRegion = tileUnderMouse.region;
 

@@ -59,14 +59,14 @@ public class Furniture : InstalledObject
             RemoveOnActionCallback(InstalledObjectAction.Door_UpdateAction);
         }
 
-        if(isInstalled == true)
+        GameManager.GetInstalledSpriteController().Uninstall(this);
+
+        if (isInstalled == true)
         {
-            RegionManager.UpdateCluster(RegionManager.GetClusterAtTile(baseTile));
             InventoryManager.AddToTileInventory(baseTile, FurnitureTypes.GetRequirements(furnitureType, baseMaterial));
+            RegionManager.UpdateCluster(RegionManager.GetClusterAtTile(baseTile));
             GameManager.GetWorldGrid().InvalidatePathGraph();
         }
-
-        GameManager.GetInstalledSpriteController().Uninstall(this);
 
         UnityEngine.Object.Destroy(gameObject);
     }

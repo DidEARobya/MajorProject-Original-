@@ -74,6 +74,10 @@ public static class ObjectManager
 
         installedObjects.Remove(installedObject);
     }
+    public static bool Contains(InstalledObject installedObject)
+    {
+        return installedObjects.Contains(installedObject);
+    }
     public static void SetInstallObjectCallback(Action<InstalledObject> callback)
     {
         installObjectCallback += callback;

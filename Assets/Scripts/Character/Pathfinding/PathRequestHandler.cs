@@ -30,7 +30,6 @@ public class PathRequestHandler : MonoBehaviour
     {
         if (requests.Count > 0 && isHandlingRequest == false)
         {
-            //ThreadedCompleteRequest();
             ThreadPool.QueueUserWorkItem(delegate { ThreadedCompleteRequest(); });
         }
     }
@@ -56,12 +55,14 @@ public class PathRequestHandler : MonoBehaviour
 
             CharacterController character = request.character;
 
-            Path_AStar path = new Path_AStar(character.currentTile, request.destination, true);
+            Path_AStar path = new Path_AStar();
+            bool isValid = path.TilePathfind(character.currentTile, request.destination, true);
 
-            if(path == null || (path.Length() == 0 && character.currentTile.IsNeighbour(request.destination) == false && character.currentTile != request.destination))
+            if(isValid == false || (path.Length() == 0 && character.currentTile.IsNeighbour(request.destination) == false && character.currentTile != request.destination))
             {
                 NoValidPath(character);
                 request = null;
+                path = null;
                 return;
             }
 

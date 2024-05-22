@@ -9,7 +9,7 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 
-public class Region : INodeData
+public class Region
 {
     public HashSet<Region> neighbours = new HashSet<Region>();
     public HashSet<Tile> tiles = new HashSet<Tile>();
@@ -24,9 +24,10 @@ public class Region : INodeData
     public HashSet<int> spans = new HashSet<int>();
     Dictionary<ItemTypes, int> itemsInRegion = new Dictionary<ItemTypes, int>();
 
-    public Region()
+    public Cluster inCluster;
+    public Region(Cluster _inCluster)
     {
-        
+        inCluster = _inCluster;
     }
     public void HighlightBorderTiles(TerrainTypes type, bool isNeighbour)
     {
@@ -323,6 +324,8 @@ public class Region : INodeData
     }
     public void UpdateRegion()
     {
+        FindEdges(tiles.First());
+
         itemsInRegion.Clear();
 
         foreach(Tile tile in tiles)
@@ -339,10 +342,7 @@ public class Region : INodeData
                 }
             }
         }
-
-        FindEdges(tiles.First());
     }
-
     public void UpdateDict(ItemTypes type, int amount)
     {
         if (itemsInRegion.ContainsKey(type) == false)
@@ -377,7 +377,44 @@ public class Region : INodeData
     {
         return tiles.Contains(tile);
     }
+    public int GetItemDictSize()
+    {
+        return itemsInRegion.Count;
+    }
+    public bool ContainsUnstoredItem(ItemTypes type = null)
+    {
+        if(itemsInRegion.Count == 0)
+        {
+            return false;
+        }
+        if(type != null)
+        {
+            if(itemsInRegion.ContainsKey(type) == false)
+            {
+                return false;
+            }
+        }
 
+        foreach(Tile tile in tiles)
+        {
+            if(type == null)
+            {
+                if (tile.inventory.item != null && tile.inventory.isQueried == false && tile.inventory.isStored == false)
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                if (tile.inventory.item == type && tile.inventory.isQueried == false && tile.inventory.isStored == false)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
     public Accessibility IsAccessible()
     {
         return Accessibility.ACCESSIBLE;

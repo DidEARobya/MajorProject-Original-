@@ -321,6 +321,29 @@ public class Tile : InventoryOwner, ITileData
 
         return null;
     }
+    public List<Tile> GetAdjacentNeigbours()
+    {
+        List<Tile> adjacent = new List<Tile>();
+
+        if (neighbourDirections.ContainsKey(Direction.N))
+        {
+            adjacent.Add(neighbourDirections[Direction.N]);
+        }
+        if (neighbourDirections.ContainsKey(Direction.E))
+        {
+            adjacent.Add(neighbourDirections[Direction.E]);
+        }
+        if (neighbourDirections.ContainsKey(Direction.S))
+        {
+            adjacent.Add(neighbourDirections[Direction.S]);
+        }
+        if (neighbourDirections.ContainsKey(Direction.W))
+        {
+            adjacent.Add(neighbourDirections[Direction.W]);
+        }
+
+        return adjacent;
+    }
     public bool IsNeighbour(Tile tile)
     {
         return neighbourTiles.ContainsKey(tile);
