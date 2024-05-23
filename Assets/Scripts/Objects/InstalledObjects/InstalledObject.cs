@@ -63,8 +63,14 @@ public class InstalledObject
             updateObjectCallback(obj.baseTile.East.installedObject);
         }
     }
-    public virtual void Install() { }
-    public virtual void UnInstall() { }
+    public virtual void Install() 
+    {
+        ObjectManager.AddInstalledObject(this);
+    }
+    public virtual void UnInstall() 
+    {
+        ObjectManager.RemoveInstalledObject(this);
+    }
     public virtual int GetMovementCost() { return 0; }
     public virtual string GetObjectNameToString()
     {

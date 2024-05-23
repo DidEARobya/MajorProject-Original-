@@ -29,17 +29,18 @@ public class Region
     {
         inCluster = _inCluster;
     }
-    public void HighlightBorderTiles(TerrainTypes type, bool isNeighbour)
+    public void HighlightBorderTiles(UnityEngine.Color colour, bool isNeighbour)
     {
         foreach (Tile tile in tiles)
         {
-            //if(tile.isRegionBorder == true)
-            //{
-            //    continue;
-            //}
+            if(tile.displayRegion == true)
+            {
+                continue;
+            }
 
-            //tile.isRegionBorder = true;
-            tile.SetTerrainType(type);
+            tile.displayRegion = true;
+            tile.regionColour = colour;
+            tile.UpdateVisual();
         }
 
         if(isNeighbour == true)
@@ -51,16 +52,29 @@ public class Region
         {
             if(r != null)
             {
-                r.HighlightBorderTiles(TerrainTypes.GRASS, true);
+                r.HighlightBorderTiles(UnityEngine.Color.red, true);
             }
         }
     }
-    public void HideBorderTiles()
+    public void DestroyDisplayTiles(bool isNeighbour)
     {
         foreach (Tile tile in tiles)
         {
-            tile.isRegionBorder = false;
-            tile.SetTerrainType(TerrainTypes.POOR_SOIL);
+            tile.displayRegion = false;
+            tile.UpdateVisual();
+        }
+
+        if(isNeighbour == true) 
+        { 
+            return; 
+        }
+
+        foreach (Region r in neighbours)
+        {
+            if (r != null)
+            {
+                r.DestroyDisplayTiles(true);
+            }
         }
     }
     void FindEdges(Tile tile)
@@ -255,6 +269,12 @@ public class Region
             foreach (Tile tile in tiles)
             {
                 tile.region = null;
+
+                if(tile.displayRegion == true)
+                {
+                    tile.displayRegion = false;
+                    tile.UpdateVisual();
+                }
             }
         }
 

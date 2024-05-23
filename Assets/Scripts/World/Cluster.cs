@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq.Expressions;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -113,13 +114,13 @@ public class Cluster
 
     void FloodFillFromTile(Tile tile, Region toCheck)
     {
-        if (tile.IsObjectInstalled() == true && tile.IsAccessible() == Accessibility.IMPASSABLE && ObjectManager.Contains(tile.installedObject) == true)
+        if (tile.IsAccessible() == Accessibility.IMPASSABLE)
         {
             beenChecked.Add(tile);
             return;
         }
 
-        if(tile.IsObjectInstalled() == true && tile.installedObject.type == InstalledObjectType.FURNITURE  && (tile.installedObject as Furniture).furnitureType == FurnitureTypes.DOOR)
+        if(tile.IsObjectInstalled() == true && ObjectManager.Contains(tile.installedObject) && tile.installedObject.type == InstalledObjectType.FURNITURE && (tile.installedObject as Furniture).furnitureType == FurnitureTypes.DOOR)
         {
             beenChecked.Add(tile);
             toCheck.AddTile(tile);
@@ -143,13 +144,12 @@ public class Cluster
 
             foreach (Tile t2 in t.GetAdjacentNeigbours())
             {
-                if (t2 != null && beenChecked.Contains(t2) == false && tileset.Contains(t2) == true && toCheck.Contains(t2) == false && (t2.IsAccessible() != Accessibility.IMPASSABLE || t2.installedObject == null || ObjectManager.Contains(t2.installedObject) == false))
+                if (t2.IsObjectInstalled() == true && ObjectManager.Contains(t2.installedObject) && t2.installedObject.type == InstalledObjectType.FURNITURE && (t2.installedObject as Furniture).furnitureType == FurnitureTypes.DOOR)
                 {
-                    if(t2.installedObject != null && t2.installedObject.type == InstalledObjectType.FURNITURE && (t2.installedObject as Furniture).furnitureType == FurnitureTypes.DOOR)
-                    {
-                        continue;
-                    }
-
+                    continue;
+                }
+                if (t2 != null && beenChecked.Contains(t2) == false && tileset.Contains(t2) == true && toCheck.Contains(t2) == false && (t2.IsAccessible() != Accessibility.IMPASSABLE || t2.installedObject == null))
+                {
                     stack.Push(t2);
                 }
             }

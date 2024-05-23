@@ -32,6 +32,8 @@ public class Furniture : InstalledObject
     }
     public override void Install()
     {
+        base.Install();
+
         isInstalled = true;
         baseTile.accessibility = FurnitureTypes.GetBaseAccessibility(furnitureType);
         GameManager.GetWorldGrid().InvalidatePathGraph();
@@ -54,6 +56,8 @@ public class Furniture : InstalledObject
     }
     public override void UnInstall()
     {
+        base.UnInstall();
+
         if (FurnitureTypes.GetBaseAccessibility(furnitureType) == Accessibility.DELAYED)
         {
             RemoveOnActionCallback(InstalledObjectAction.Door_UpdateAction);

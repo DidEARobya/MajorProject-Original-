@@ -62,6 +62,7 @@ public class TileSpriteController : MonoBehaviour
 
         SetZoneVisual(tileData, tileObj);
         SetSelectedVisual(tileData, tileObj);
+        SetRegionVisual(tileData, tileObj);
     }
 
     void SetZoneVisual(Tile tileData, GameObject tileObj)
@@ -121,6 +122,43 @@ public class TileSpriteController : MonoBehaviour
 
         Color colour = Color.blue;
         colour.a = 0.3f;
+        selectedRenderer.color = colour;
+    }
+
+    void SetRegionVisual(Tile tileData, GameObject tileObj)
+    {
+        if(tileData.region == null)
+        {
+            tileData.displayRegion = false;
+        }    
+
+        if (tileData.displayRegion == false)
+        {
+            if (tileData.regionDisplayObj != null)
+            {
+                Destroy(tileData.regionDisplayObj);
+                tileData.regionDisplayObj = null;
+            }
+
+            return;
+        }
+
+        if (tileData.regionDisplayObj == null)
+        {
+            GameObject obj = Instantiate(overlay);
+            obj.transform.SetParent(regionParent.transform, true);
+            obj.transform.position = tileObj.transform.position;
+
+            tileData.regionDisplayObj = obj;
+        }
+
+        SpriteRenderer selectedRenderer;
+
+        selectedRenderer = tileData.regionDisplayObj.GetComponent<SpriteRenderer>();
+        selectedRenderer.sortingLayerName = "Zones";
+
+        Color colour = tileData.regionColour;
+        colour.a = 0.1f;
         selectedRenderer.color = colour;
     }
 }

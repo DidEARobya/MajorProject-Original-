@@ -70,9 +70,9 @@ public class Tile : InventoryOwner, ITileData
     public bool isSelected = false;
     public GameObject selectedObj = null;
 
-    public Color borderColour;
-    public bool isRegionBorder = false;
-
+    public Color regionColour;
+    public bool displayRegion = false;
+    public GameObject regionDisplayObj = null;
     public Tile(WorldGrid grid, int _x, int _y, float noiseVal = 0) : base (InventoryOwnerType.TILE)
     {
         world = grid;

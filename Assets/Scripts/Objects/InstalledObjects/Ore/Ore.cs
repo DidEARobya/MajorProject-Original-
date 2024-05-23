@@ -26,6 +26,8 @@ public class Ore : InstalledObject
     }
     public override void Install()
     {
+        base.Install();
+
         isInstalled = true;
         baseTile.accessibility = OreTypes.GetBaseAccessibility(oreType);
         baseTile.installedObject = this;
@@ -40,7 +42,9 @@ public class Ore : InstalledObject
         }
     }
     public override void UnInstall()
-    { 
+    {
+        base.UnInstall();
+
         GameManager.GetInstalledSpriteController().Uninstall(this);
 
         InventoryManager.AddToTileInventory(baseTile, OreTypes.GetComponents(oreType));

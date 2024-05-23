@@ -21,8 +21,6 @@ public class InstalledSpriteController : MonoBehaviour
     {
         GameObject obj = new GameObject();
 
-        ObjectManager.AddInstalledObject(_obj);
-
         obj.transform.position = new Vector3(_obj.baseTile.x, _obj.baseTile.y);
         obj.transform.SetParent(this.transform, true);
 
@@ -41,8 +39,6 @@ public class InstalledSpriteController : MonoBehaviour
 
         obj.name = name + _obj.baseTile.x + "_" + _obj.baseTile.y;
         renderer.sprite = objSprites.GetSprite(name);
-
-        
 
         if(_obj.isInstalled == false)
         {
@@ -94,7 +90,6 @@ public class InstalledSpriteController : MonoBehaviour
     }
     public void Uninstall(InstalledObject obj)
     {
-        ObjectManager.RemoveInstalledObject(obj);
         obj.RemoveOnUpdateCallback(OnInstalledObjectChanged);
     }
 }

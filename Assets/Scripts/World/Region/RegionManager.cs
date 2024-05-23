@@ -28,11 +28,20 @@ public static class RegionManager
             }
         }
     }
-    public static void ClearBorderHighlights()
+    public static void ClearRegionDisplayAt(Region region)
+    {
+        if (region == null)
+        {
+            return;
+        }
+
+        region.DestroyDisplayTiles(false);
+    }
+    public static void ClearRegionDisplay()
     {
         foreach (Region region in regions)
         {
-            region.HideBorderTiles();
+            region.DestroyDisplayTiles(true);
         }
     }
     public static Region GetNeighbour(int hash, Region region)
