@@ -23,6 +23,12 @@ public class BFS_Search
         while (openSet.Count > 0)
         {
             Region current = openSet.Dequeue();
+
+            if (current == null)
+            {
+                continue;
+            }
+
             beenChecked.Add(current);
 
             if (item == null)
