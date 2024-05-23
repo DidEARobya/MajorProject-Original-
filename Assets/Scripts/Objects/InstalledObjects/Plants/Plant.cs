@@ -44,6 +44,8 @@ public class Plant : InstalledObject
     }
     public override void Install()
     {
+        base.Install();
+
         baseTile.accessibility = PlantTypes.GetBaseAccessibility(plantType);
         baseTile.installedObject = this;
         isInstalled = true;
@@ -58,7 +60,7 @@ public class Plant : InstalledObject
 
         GameManager.GetWorldGrid().InvalidatePathGraph();
 
-        //RegionManager.UpdateCluster(RegionManager.GetClusterAtTile(baseTile));
+        RegionManager.UpdateCluster(RegionManager.GetClusterAtTile(baseTile));
 
         if (updateObjectCallback != null)
         {
@@ -67,6 +69,8 @@ public class Plant : InstalledObject
     }
     public override void UnInstall()
     {
+        base.UnInstall();
+
         if(state.task != null)
         {
             state.task.CancelTask(false);
@@ -75,16 +79,18 @@ public class Plant : InstalledObject
         state.StateEnd();
         states = null;
 
-        if(plantState != PlantState.SEED)
-        {
-            InventoryManager.AddToTileInventory(baseTile, PlantTypes.GetYield(plantType, plantState));
-        }
-
-        GameManager.GetWorldGrid().InvalidatePathGraph();
-
-        RegionManager.UpdateCluster(RegionManager.GetClusterAtTile(baseTile));
-
         GameManager.GetInstalledSpriteController().Uninstall(this);
+
+        if(isInstalled == true)
+        {
+            if (plantState != PlantState.SEED)
+            {
+                InventoryManager.AddToTileInventory(baseTile, PlantTypes.GetYield(plantType, plantState));
+            }
+
+            RegionManager.UpdateCluster(RegionManager.GetClusterAtTile(baseTile));
+            GameManager.GetWorldGrid().InvalidatePathGraph();
+        }
 
         UnityEngine.Object.Destroy(gameObject);
     }

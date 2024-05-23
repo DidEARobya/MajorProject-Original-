@@ -11,6 +11,7 @@ public static class InventoryManager
 {
     public static List<Inventory> inventories = new List<Inventory>();
     static Action<Inventory> inventoryUpdateCallback;
+
     public static void CreateNewInventory(InventoryOwnerType type, Tile tile = null, CharacterController character = null)
     {
         Inventory inventory = new Inventory(); ;
@@ -156,69 +157,54 @@ public static class InventoryManager
             return null;
         }
 
-        float lowestDist = Mathf.Infinity;
-        Stack<Tile> tileStack = new Stack<Tile>();
+        BFS_Search search = new BFS_Search();
+        Region toCheck = search.GetClosestRegionWithItem(RegionManager.GetRegionAtTile(start), true, false, itemType);
 
-        for (int i = 0; i < inventories.Count; i++)
-        {
-            if (inventories[i].item != itemType)
-            {
-                continue;
-            }
+        search = null;
 
-            Tile temp = GameManager.GetWorldGrid().GetTile(inventories[i].owner.x, inventories[i].owner.y);
-
-            if(temp == null || temp.inventory.isQueried == true)
-            {
-                continue;
-            }
-
-            int distX = Mathf.Abs(start.x - temp.x);
-            int distY = Mathf.Abs(start.y - temp.y);
-
-            if (lowestDist > (distX + distY))
-            {
-                tileStack.Push(temp);
-                lowestDist = distX + distY;
-            }
-        }
-
-        if(tileStack.Count == 0)
+        if(toCheck == null)
         {
             return null;
         }
 
-        while(tileStack.Count > 0)
+        float lowestDist = Mathf.Infinity;
+
+        Tile closest = null;
+
+        foreach(Tile tile in toCheck.tiles)
         {
-            Tile temp = tileStack.Pop();
-
-            Path_AStar path = new Path_AStar(start, temp, true);
-
-            if (path == null)
+            if (tile.inventory.item != itemType || tile.inventory.isQueried == true)
             {
                 continue;
             }
 
-            Inventory inventory = temp.inventory;
+            int distX = Mathf.Abs(start.x - tile.x);
+            int distY = Mathf.Abs(start.y - tile.y);
 
-            if(amount == 0)
+            if (lowestDist > (distX + distY))
+            {
+                closest = tile;
+                lowestDist = distX + distY;
+            }
+        }
+
+        Inventory inventory = closest.inventory;
+
+        if (amount == 0)
+        {
+            inventory.isQueried = true;
+        }
+        else
+        {
+            inventory.queriedAmount += amount;
+
+            if (inventory.queriedAmount >= inventory.stackSize)
             {
                 inventory.isQueried = true;
             }
-            else
-            {
-                inventory.queriedAmount += amount;
-                
-                if (inventory.queriedAmount >= inventory.stackSize)
-                {
-                    inventory.isQueried = true;
-                }
-            }
-
-            return temp;
         }
 
-        return null;
+        return closest;
     }
     public static Tile GetClosestValidItem(Tile start, bool checkStored)
     {
@@ -227,59 +213,58 @@ public static class InventoryManager
             return null;
         }
 
-        float lowestDist = Mathf.Infinity;
-        Stack<Tile> tileStack = new Stack<Tile>();
+        BFS_Search search = new BFS_Search();
+        Region toCheck;
 
-        for (int i = 0; i < inventories.Count; i++)
+        if (checkStored == false)
         {
-            Tile temp = GameManager.GetWorldGrid().GetTile(inventories[i].owner.x, inventories[i].owner.y);
-
-            if (temp == null || temp.inventory.isQueried == true)
-            {
-                continue;
-            }
-
-            if(checkStored == false)
-            {
-                if(temp.inventory.isStored == true)
-                {
-                    continue;
-                }
-            }
-
-            int distX = Mathf.Abs(start.x - temp.x);
-            int distY = Mathf.Abs(start.y - temp.y);
-
-            if (lowestDist > (distX + distY))
-            {
-                tileStack.Push(temp);
-                lowestDist = distX + distY;
-            }
+            toCheck = search.GetClosestRegionWithItem(RegionManager.GetRegionAtTile(start), true, true);
         }
+        else
+        {
+            toCheck = search.GetClosestRegionWithItem(RegionManager.GetRegionAtTile(start), true);
+        }
+        
+        search = null;
 
-        if (tileStack.Count == 0)
+        if (toCheck == null)
         {
             return null;
         }
 
-        while (tileStack.Count > 0)
+        float lowestDist = Mathf.Infinity;
+        Tile closest = null;
+
+        foreach (Tile tile in toCheck.tiles)
         {
-            Tile temp = tileStack.Pop();
-
-            Path_AStar path = new Path_AStar(start, temp, true);
-
-            if (path == null)
+            if (tile.inventory.item == null || tile.inventory.isQueried == true)
             {
-                Debug.Log("null path");
+                continue;
+            }
+            if (checkStored == false && tile.inventory.isStored == true)
+            {
                 continue;
             }
 
-            temp.inventory.isQueried = true;
+            int distX = Mathf.Abs(start.x - tile.x);
+            int distY = Mathf.Abs(start.y - tile.y);
 
-            return temp;
+            if (lowestDist > (distX + distY))
+            {
+                closest = tile;
+                lowestDist = distX + distY;
+            }
         }
 
-        return null;
+        if(closest == null)
+        {
+            return null;
+        }
+
+        Inventory inventory = closest.inventory;
+        inventory.isQueried = true;
+
+        return closest;
     }
     public static void SetInventoryUpdateCallback(Action<Inventory> callback)
     {

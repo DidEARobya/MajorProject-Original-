@@ -70,6 +70,9 @@ public class Tile : InventoryOwner, ITileData
     public bool isSelected = false;
     public GameObject selectedObj = null;
 
+    public Color regionColour;
+    public bool displayRegion = false;
+    public GameObject regionDisplayObj = null;
     public Tile(WorldGrid grid, int _x, int _y, float noiseVal = 0) : base (InventoryOwnerType.TILE)
     {
         world = grid;
@@ -318,9 +321,41 @@ public class Tile : InventoryOwner, ITileData
 
         return null;
     }
+    public List<Tile> GetAdjacentNeigbours()
+    {
+        List<Tile> adjacent = new List<Tile>();
+
+        if (neighbourDirections.ContainsKey(Direction.N))
+        {
+            adjacent.Add(neighbourDirections[Direction.N]);
+        }
+        if (neighbourDirections.ContainsKey(Direction.E))
+        {
+            adjacent.Add(neighbourDirections[Direction.E]);
+        }
+        if (neighbourDirections.ContainsKey(Direction.S))
+        {
+            adjacent.Add(neighbourDirections[Direction.S]);
+        }
+        if (neighbourDirections.ContainsKey(Direction.W))
+        {
+            adjacent.Add(neighbourDirections[Direction.W]);
+        }
+
+        return adjacent;
+    }
     public bool IsNeighbour(Tile tile)
     {
         return neighbourTiles.ContainsKey(tile);
+    }
+    public bool IsAdjacent(Tile tile)
+    {
+        if(tile == North || tile == East || tile == South || tile == West)
+        {
+            return true;
+        }
+
+        return false;
     }
     public Tile GetTileByDirection(Direction dir)
     {
@@ -455,6 +490,7 @@ public class TerrainTypes
 
     public static readonly TerrainTypes GOOD_SOIL = new TerrainTypes(TerrainType.GOOD_SOIL, 2, 10, 1.1f);
     public static readonly TerrainTypes POOR_SOIL = new TerrainTypes(TerrainType.POOR_SOIL, 1, 2, 0.9f);
+    public static readonly TerrainTypes GRASS = new TerrainTypes(TerrainType.GRASS, 1, 2, 0.9f);
 
     protected TerrainTypes(TerrainType _type, int _movementCost, int growthChance, float _fertilityMultiplier)
     {

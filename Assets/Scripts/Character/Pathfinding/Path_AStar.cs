@@ -14,44 +14,20 @@ public class Path_AStar
     public Tile destination;
     bool isPlayer;
 
-    public Path_AStar(Tile start, Tile end, bool _isPlayer)
+    public Path_AStar()
+    {
+
+    }
+    public bool TilePathfind(Tile start, Tile end, bool _isPlayer)
     {
         if (start == null || end == null)
         {
-            return;
+            return false;
         }
 
         isPlayer = _isPlayer;
 
         WorldGrid world = GameManager.GetWorldGrid();
-
-        /*if (world.pathGraph == null)
-        {
-            if (end.accessibility == Accessibility.IMPASSABLE)
-            {
-                Accessibility temp = end.accessibility;
-                end.accessibility = Accessibility.ACCESSIBLE;
-
-                world.pathGraph = new Path_TileGraph(world);
-
-                end.accessibility = temp;
-            }
-        }
-        else
-        {
-            if (end.accessibility == Accessibility.IMPASSABLE)
-            {
-                Accessibility temp = end.accessibility;
-                end.accessibility = Accessibility.ACCESSIBLE;
-
-                foreach (Tile tile in end.GetNeighboursDict().Keys)
-                {
-                    tile.pathNode.neighbours = world.pathGraph.GetNeighbourNodes(tile.pathNode).ToArray();
-                }
-
-                end.accessibility = temp;
-            }
-        }*/
 
         if (world.pathGraph == null)
         {
@@ -74,7 +50,7 @@ public class Path_AStar
             if ((current.data as ITileData).GetTile().IsNeighbour(end) == true)
             {
                 path = RetraceTilePath(startNode, current);
-                return;
+                return true;
             }
 
             foreach (Node neighbour in current.neighbours)
@@ -104,7 +80,7 @@ public class Path_AStar
             }
         }
 
-        return;
+        return false;
     }
     Queue<ITileData> RetraceTilePath(Node start, Node end)
     {

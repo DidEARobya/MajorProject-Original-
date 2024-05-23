@@ -84,7 +84,7 @@ public class WorldController : MonoBehaviour
             }
         }
 
-        //RegionManager.UpdateMaps();
+        RegionManager.UpdateMaps();
     }
     public Vector2 GetWorldToCell(Vector2 pos)
     {

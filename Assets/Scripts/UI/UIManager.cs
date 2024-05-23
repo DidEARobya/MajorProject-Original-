@@ -19,6 +19,7 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI visualsText;
 
     public GameObject growZones;
+    public GameObject regions;
     public GameObject tileDetailsPanel;
     public GameObject tileActionsPanel;
 
@@ -104,6 +105,11 @@ public class UIManager : MonoBehaviour
     public void ToggleGrowZones()
     {
         growZones.SetActive(!growZones.activeSelf);
+    }
+    public void ToggleRegions()
+    {
+        GameManager.instance.mouseController.ToggleDisplayRegions();
+        regions.SetActive(!regions.activeSelf);
     }
     public void ToggleVisualsPanel()
     {

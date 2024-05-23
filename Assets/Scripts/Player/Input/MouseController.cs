@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Cinemachine;
 using TMPro;
+using System.Linq.Expressions;
 
 public enum MouseMode
 {
@@ -46,6 +47,8 @@ public class MouseController : MonoBehaviour
     public FloorTypes floorType;
 
     protected Tile tileUnderMouse;
+    protected Region highlightedRegion;
+
     protected Tile selectedTile;
 
     HashSet<Tile> selected = new HashSet<Tile>();
@@ -67,6 +70,7 @@ public class MouseController : MonoBehaviour
     private int endY;
 
     private bool isReady = false;
+    private bool displayRegions = false;
 
     bool toAdd;
     ZoneType zoneType;
@@ -207,6 +211,15 @@ public class MouseController : MonoBehaviour
 
         UpdateText();
     }
+    public void ToggleDisplayRegions()
+    {
+        displayRegions = !displayRegions;
+
+        if(displayRegions == false && highlightedRegion != null)
+        {
+            RegionManager.ClearRegionDisplayAt(highlightedRegion);
+        }
+    }
 
     void UpdateText()
     {
@@ -255,13 +268,17 @@ public class MouseController : MonoBehaviour
             camera.transform.Translate(difference);
         }
 
-        if (Input.GetKeyUp(KeyCode.Z))
+        if(displayRegions == true && tileUnderMouse != null && tileUnderMouse.region != highlightedRegion)
         {
-            if(tileUnderMouse.region != null)
+            RegionManager.ClearRegionDisplayAt(highlightedRegion);
+            highlightedRegion = tileUnderMouse.region;
+
+            if (highlightedRegion != null)
             {
-                tileUnderMouse.region.SetTiles(TerrainTypes.GOOD_SOIL, false);
+                highlightedRegion.HighlightBorderTiles(UnityEngine.Color.yellow, false);
             }
         }
+
         lastMousePos = camera.ScreenToWorldPoint(Input.mousePosition);
         lastMousePos.z = 0;
 

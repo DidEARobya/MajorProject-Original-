@@ -12,6 +12,7 @@ public class TileSpriteController : MonoBehaviour
     public GameObject overlay;
     public GameObject zoneParent;
     public GameObject selectedParent;
+    public GameObject regionParent;
 
     WorldController worldController;
     public void AssignAtlas()
@@ -61,6 +62,7 @@ public class TileSpriteController : MonoBehaviour
 
         SetZoneVisual(tileData, tileObj);
         SetSelectedVisual(tileData, tileObj);
+        SetRegionVisual(tileData, tileObj);
     }
 
     void SetZoneVisual(Tile tileData, GameObject tileObj)
@@ -97,13 +99,12 @@ public class TileSpriteController : MonoBehaviour
         {
             if (tileData.selectedObj != null)
             {
-                tileData.selectedObj.SetActive(false);
+                Destroy(tileData.selectedObj);
+                tileData.selectedObj = null;
             }
 
             return;
         }
-
-        SpriteRenderer selectedRenderer;
 
         if (tileData.selectedObj == null)
         {
@@ -112,15 +113,52 @@ public class TileSpriteController : MonoBehaviour
             obj.transform.position = tileObj.transform.position;
 
             tileData.selectedObj = obj;
-
-            selectedRenderer = tileData.selectedObj.GetComponent<SpriteRenderer>();
-            selectedRenderer.sortingLayerName = "Zones";
-
-            Color colour = Color.blue;
-            colour.a = 0.3f;
-            selectedRenderer.color = colour;
         }
 
-        tileData.selectedObj.SetActive(true);
+        SpriteRenderer selectedRenderer;
+
+        selectedRenderer = tileData.selectedObj.GetComponent<SpriteRenderer>();
+        selectedRenderer.sortingLayerName = "Zones";
+
+        Color colour = Color.blue;
+        colour.a = 0.3f;
+        selectedRenderer.color = colour;
+    }
+
+    void SetRegionVisual(Tile tileData, GameObject tileObj)
+    {
+        if(tileData.region == null)
+        {
+            tileData.displayRegion = false;
+        }    
+
+        if (tileData.displayRegion == false)
+        {
+            if (tileData.regionDisplayObj != null)
+            {
+                Destroy(tileData.regionDisplayObj);
+                tileData.regionDisplayObj = null;
+            }
+
+            return;
+        }
+
+        if (tileData.regionDisplayObj == null)
+        {
+            GameObject obj = Instantiate(overlay);
+            obj.transform.SetParent(regionParent.transform, true);
+            obj.transform.position = tileObj.transform.position;
+
+            tileData.regionDisplayObj = obj;
+        }
+
+        SpriteRenderer selectedRenderer;
+
+        selectedRenderer = tileData.regionDisplayObj.GetComponent<SpriteRenderer>();
+        selectedRenderer.sortingLayerName = "Zones";
+
+        Color colour = tileData.regionColour;
+        colour.a = 0.1f;
+        selectedRenderer.color = colour;
     }
 }

@@ -93,7 +93,6 @@ public static class TaskManager
         {
             if (character.ignoredTasks.Contains(list[i]))
             {
-                Debug.Log("Ignored");
                 continue;
             }
 
@@ -118,15 +117,17 @@ public static class TaskManager
         {
             Task task = taskStack.Pop();
 
-            Path_AStar path = new Path_AStar(start, task.tile, true);
+            Path_AStar path = new Path_AStar();
+            bool isValid = path.TilePathfind(start, task.tile, true);
 
-            if (path == null || (path.Length() == 0 && start.IsNeighbour(task.tile) == false))
+            if (isValid == false || (path.Length() == 0 && start.IsNeighbour(task.tile) == false))
             {
                 Debug.Log("No Path");
                 character.ignoredTasks.Add(task);
                 continue;
             }
 
+            path = null;
             return task;
         }
 

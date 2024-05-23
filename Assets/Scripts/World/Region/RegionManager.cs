@@ -28,6 +28,22 @@ public static class RegionManager
             }
         }
     }
+    public static void ClearRegionDisplayAt(Region region)
+    {
+        if (region == null)
+        {
+            return;
+        }
+
+        region.DestroyDisplayTiles(false);
+    }
+    public static void ClearRegionDisplay()
+    {
+        foreach (Region region in regions)
+        {
+            region.DestroyDisplayTiles(true);
+        }
+    }
     public static Region GetNeighbour(int hash, Region region)
     {
         if(regionsMap.ContainsKey(hash) == false)
@@ -47,7 +63,7 @@ public static class RegionManager
     }
     public static void AddHash(int hash, Region region)
     {
-        if(regionsMap.ContainsKey(hash) && regionsMap[hash].Contains(region) == false)
+        if(regionsMap.ContainsKey(hash))
         {
             regionsMap[hash].Add(region);
             return;
@@ -103,14 +119,30 @@ public static class RegionManager
         int y = cluster.y;
 
         cluster.UpdateCluster();
-        clusters[x + 1, y].UpdateCluster();
-        clusters[x - 1, y].UpdateCluster();
-        clusters[x, y + 1].UpdateCluster();
-        clusters[x, y - 1].UpdateCluster();
+        UpdateClusterAt(x, y + 1);
+        UpdateClusterAt(x - 1, y);
+        UpdateClusterAt(x + 1, y );
+        UpdateClusterAt(x, y - 1);
 
-        foreach (Cluster c in clusters)
+        cluster.UpdateRegionsNeighbours();
+        UpdateClusterNeighboursAt(x, y + 1);
+        UpdateClusterNeighboursAt(x - 1, y);
+        UpdateClusterNeighboursAt(x + 1, y);
+        UpdateClusterNeighboursAt(x, y - 1);
+
+    }
+    static void UpdateClusterAt(int x, int y)
+    {
+        if(x >= 0 && x < clusterMapSize && y >= 0 && y < clusterMapSize)
         {
-            c.UpdateRegionsNeighbours();
+            clusters[x, y].UpdateCluster();
+        }
+    }
+    static void UpdateClusterNeighboursAt(int x, int y)
+    {
+        if (x >= 0 && x < clusterMapSize && y >= 0 && y < clusterMapSize)
+        {
+            clusters[x, y].UpdateRegionsNeighbours();
         }
     }
     public static void UpdateMaps()
@@ -150,56 +182,4 @@ public static class RegionManager
 
         return 0;
     }
-    /*public static void SetNeighbourRegion(Region region)
-    {
-        int length = regions.GetLength(0);
-
-        int checkX = region.x;
-        int checkY = region.y + 1;
-
-        if (checkX >= 0 && checkX < length && checkY >= 0 && checkY < length)
-        {
-            region.neighbours[0] = new RegionNeighbour(regions[checkX, checkY], Direction.N);
-        }
-        else
-        {
-            region.neighbours[0] = new RegionNeighbour(null, Direction.N);
-        }
-
-        checkX = region.x + 1;
-        checkY = region.y;
-
-        if (checkX >= 0 && checkX < length && checkY >= 0 && checkY < length)
-        {
-            region.neighbours[1] = new RegionNeighbour(regions[checkX, checkY], Direction.E);
-        }
-        else
-        {
-            region.neighbours[1] = new RegionNeighbour(null, Direction.E);
-        }
-
-        checkX = region.x;
-        checkY = region.y - 1;
-
-        if (checkX >= 0 && checkX < length && checkY >= 0 && checkY < length)
-        {
-            region.neighbours[2] = new RegionNeighbour(regions[checkX, checkY], Direction.S);
-        }
-        else
-        {
-            region.neighbours[2] = new RegionNeighbour(null, Direction.S);
-        }
-
-        checkX = region.x - 1;
-        checkY = region.y;
-
-        if (checkX >= 0 && checkX < length && checkY >= 0 && checkY < length)
-        {
-            region.neighbours[3] = new RegionNeighbour(regions[checkX, checkY], Direction.W);
-        }
-        else
-        {
-            region.neighbours[3] = new RegionNeighbour(null, Direction.W);
-        }
-    }*/
 }
