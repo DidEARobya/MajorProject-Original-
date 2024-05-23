@@ -70,6 +70,7 @@ public class InstalledObject
     public virtual void UnInstall() 
     {
         ObjectManager.RemoveInstalledObject(this);
+        baseTile.installedObject = null;
     }
     public virtual int GetMovementCost() { return 0; }
     public virtual string GetObjectNameToString()

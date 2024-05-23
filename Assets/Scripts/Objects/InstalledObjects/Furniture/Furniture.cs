@@ -57,13 +57,12 @@ public class Furniture : InstalledObject
     public override void UnInstall()
     {
         base.UnInstall();
+        GameManager.GetInstalledSpriteController().Uninstall(this);
 
         if (FurnitureTypes.GetBaseAccessibility(furnitureType) == Accessibility.DELAYED)
         {
             RemoveOnActionCallback(InstalledObjectAction.Door_UpdateAction);
         }
-
-        GameManager.GetInstalledSpriteController().Uninstall(this);
 
         if (isInstalled == true)
         {
