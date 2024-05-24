@@ -167,8 +167,6 @@ public class CharacterController : InventoryOwner
 
         if (nextTile.IsAccessible() == Accessibility.IMPASSABLE)
         {
-            Debug.Log("Blocked");
-
             nextTile = currentTile;
             pathFinder = null;
             PathRequestHandler.RequestPath(this, destinationTile);

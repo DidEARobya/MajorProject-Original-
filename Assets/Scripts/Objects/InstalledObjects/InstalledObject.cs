@@ -66,6 +66,7 @@ public class InstalledObject
     public virtual void Install() 
     {
         ObjectManager.AddInstalledObject(this);
+        baseTile.installedObject = this;
     }
     public virtual void UnInstall() 
     {

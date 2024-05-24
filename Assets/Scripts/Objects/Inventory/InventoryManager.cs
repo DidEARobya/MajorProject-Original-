@@ -188,6 +188,11 @@ public static class InventoryManager
             }
         }
 
+        if(closest == null)
+        {
+            return null;
+        }
+
         Inventory inventory = closest.inventory;
 
         if (amount == 0)
