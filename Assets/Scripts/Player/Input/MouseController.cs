@@ -217,7 +217,7 @@ public class MouseController : MonoBehaviour
 
         if(displayRegions == false && highlightedRegion != null)
         {
-            RegionManager.ClearRegionDisplayAt(highlightedRegion);
+            GameManager.GetRegionManager().ClearRegionDisplayAt(highlightedRegion);
         }
     }
 
@@ -270,7 +270,7 @@ public class MouseController : MonoBehaviour
 
         if(displayRegions == true && tileUnderMouse != null && tileUnderMouse.region != highlightedRegion)
         {
-            RegionManager.ClearRegionDisplayAt(highlightedRegion);
+            GameManager.GetRegionManager().ClearRegionDisplayAt(highlightedRegion);
             highlightedRegion = tileUnderMouse.region;
 
             if (highlightedRegion != null)
@@ -573,14 +573,14 @@ public class MouseController : MonoBehaviour
                     {
                         foreach (Tile tile in temp)
                         {
-                            ZoneManager.AddTile(tile, zoneType);
+                            GameManager.GetZoneManager().AddTile(tile, zoneType);
                         }
                     }
                     else
                     {
                         foreach (Tile tile in temp)
                         {
-                            ZoneManager.RemoveTile(tile, zoneType);
+                            GameManager.GetZoneManager().RemoveTile(tile, zoneType);
                         }
                     }
                     break;

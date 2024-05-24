@@ -34,7 +34,7 @@ public class Ore : InstalledObject
 
         GameManager.GetWorldGrid().InvalidatePathGraph();
 
-        RegionManager.UpdateCluster(RegionManager.GetClusterAtTile(baseTile));
+        GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile));
 
         if (updateObjectCallback != null)
         {
@@ -48,7 +48,7 @@ public class Ore : InstalledObject
         GameManager.GetInstalledSpriteController().Uninstall(this);
 
         InventoryManager.AddToTileInventory(baseTile, OreTypes.GetComponents(oreType));
-        RegionManager.UpdateCluster(RegionManager.GetClusterAtTile(baseTile));
+        GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile));
         GameManager.GetWorldGrid().InvalidatePathGraph();
 
         UnityEngine.Object.Destroy(gameObject);
@@ -56,7 +56,7 @@ public class Ore : InstalledObject
     public void QueueMiningTask()
     {
         Task task = new MineTask(baseTile, (t) => { baseTile.UninstallObject(); }, TaskType.MINING, false, baseTile.GetInstalledObject().durability);
-        TaskManager.AddTask(task, task.taskType);
+        GameManager.GetTaskManager().AddTask(task, task.taskType);
     }
     public override string GetObjectNameToString()
     {

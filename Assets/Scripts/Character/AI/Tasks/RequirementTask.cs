@@ -109,7 +109,7 @@ public class RequirementTask : Task
             {
                 int remaining = Mathf.Abs(storedRequirements[item] - requirements[item]);
 
-                task = TaskManager.CreateHaulToJobSiteTask(this, worker, item, tile, remaining);
+                task = GameManager.GetTaskManager().CreateHaulToJobSiteTask(this, worker, item, tile, remaining);
                 break;
             }
         }

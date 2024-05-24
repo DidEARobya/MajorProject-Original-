@@ -90,11 +90,11 @@ public class Task
 
         if (isCancelled == true)
         {
-            TaskManager.AddTask(this, taskType);
+            GameManager.GetTaskManager().AddTask(this, taskType);
             return;
         }
 
-        TaskManager.RemoveTask(this, taskType);
+        GameManager.GetTaskManager().RemoveTask(this, taskType);
 
         if (taskCancelledCallback != null)
         {

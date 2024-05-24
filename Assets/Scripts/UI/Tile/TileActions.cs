@@ -45,7 +45,7 @@ public class TileActionsPanel : MonoBehaviour
             return;
         }
 
-        ZoneManager.RemoveTile(tile, tile.zone.zoneType);
+        GameManager.GetZoneManager().RemoveTile(tile, tile.zone.zoneType);
     }
     public void SetZonePlant(PlantTypes type)
     {

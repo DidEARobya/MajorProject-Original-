@@ -108,7 +108,7 @@ public class Zone
 
         if(tiles.Count == 0)
         {
-            ZoneManager.RemoveZone(this, zoneType);
+            GameManager.GetZoneManager().RemoveZone(this, zoneType);
         }
     }
 
@@ -124,7 +124,7 @@ public class Zone
         }
 
         tiles.Clear();
-        ZoneManager.RemoveZone(this, zoneType);
+        GameManager.GetZoneManager().RemoveZone(this, zoneType);
     }
     public virtual void UpdateZoneTasks()
     {

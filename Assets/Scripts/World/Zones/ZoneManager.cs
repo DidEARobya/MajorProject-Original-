@@ -5,19 +5,19 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.XR;
 
-public static class ZoneManager
+public class ZoneManager
 {
-    static HashSet<Zone> growZones = new HashSet<Zone>();
-    static HashSet<Zone> storageZones = new HashSet<Zone>();
+    HashSet<Zone> growZones = new HashSet<Zone>();
+    HashSet<Zone> storageZones = new HashSet<Zone>();
 
-    static Dictionary<ZoneType, HashSet<Zone>> zones = new Dictionary<ZoneType, HashSet<Zone>>();
+    Dictionary<ZoneType, HashSet<Zone>> zones = new Dictionary<ZoneType, HashSet<Zone>>();
 
-    public static void Init()
+    public void Init()
     {
         zones.Add(ZoneType.GROW, growZones);
         zones.Add(ZoneType.STORAGE, storageZones);
     }
-    public static void AddTile(Tile tile, ZoneType type)
+    public void AddTile(Tile tile, ZoneType type)
     {
         if(tile.zone != null && tile.zone.zoneType != type)
         {
@@ -85,7 +85,7 @@ public static class ZoneManager
         }
     }
 
-    public static void RemoveTile(Tile tile, ZoneType toRemove)
+    public void RemoveTile(Tile tile, ZoneType toRemove)
     {
         if (tile.zone == null || tile.zone.zoneType != toRemove)
         {
@@ -130,7 +130,7 @@ public static class ZoneManager
             newZone.UpdateZoneTasks();
         }
     }
-    public static void RemoveZone(Zone zone, ZoneType type)
+    public void RemoveZone(Zone zone, ZoneType type)
     {
         if (zones[type].Contains(zone) == false)
         {
@@ -139,7 +139,7 @@ public static class ZoneManager
 
         zones[type].Remove(zone);
     }
-    static void MergeZones(Zone mergeInto, Zone toMerge)
+    void MergeZones(Zone mergeInto, Zone toMerge)
     {
         foreach(Tile tile in toMerge.tiles)
         {
