@@ -55,7 +55,7 @@ public class GrowthState : State
             if(taskCreated == false)
             {
                 task = new TendTask(plant.baseTile, (t) => { delay = 0; taskCreated = false; }, TaskType.AGRICULTURE, false, 50);
-                TaskManager.AddTask(task, TaskType.AGRICULTURE);
+                GameManager.GetTaskManager().AddTask(task, TaskType.AGRICULTURE);
 
                 taskCreated = true;
             }
@@ -146,6 +146,11 @@ public class GrownState : GrowthState
     }
     public override void StateStart()
     {
+        if (plant.baseTile.zone != null && plant.baseTile.zone.zoneType == ZoneType.GROW)
+        {
+            plant.baseTile.zone.UpdateZoneTasks();
+        }
+
         delay = 0;
     }
 }

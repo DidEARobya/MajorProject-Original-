@@ -75,7 +75,7 @@ public class CharacterController : InventoryOwner
 
             if (workDelay >= 0.2f && requestedTask == false)
             {
-                TaskRequestHandler.RequestTask(this);
+                GameManager.GetTaskRequestHandler().RequestTask(this);
 
                 workDelay = 0f;
             }

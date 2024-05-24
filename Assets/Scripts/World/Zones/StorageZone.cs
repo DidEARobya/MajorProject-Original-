@@ -46,6 +46,6 @@ public class StorageZone : Zone
         }
 
         tiles.Clear();
-        ZoneManager.RemoveZone(this, zoneType);
+        GameManager.GetZoneManager().RemoveZone(this, zoneType);
     }
 }

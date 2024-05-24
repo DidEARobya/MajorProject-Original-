@@ -2,18 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class RegionManager
+public class RegionManager
 {
     static int clusterMapSize;
     public const int clusterSize = 10;
-    public static Cluster[,] clusters;
-    //Change how regions are stored
-    public static HashSet<Region> regions;
-    public static Dictionary<int, HashSet<Region>> regionsMap;
+    public  Cluster[,] clusters;
+    public  HashSet<Region> regions;
+    public  Dictionary<int, HashSet<Region>> regionsMap;
 
-    static bool hasGenerated = false;
+    bool hasGenerated = false;
 
-    public static void Init(WorldGrid grid, int size)
+    public void Init(WorldGrid grid, int size)
     {
         clusterMapSize = size;
         clusters = new Cluster[size, size];
@@ -28,7 +27,7 @@ public static class RegionManager
             }
         }
     }
-    public static void ClearRegionDisplayAt(Region region)
+    public void ClearRegionDisplayAt(Region region)
     {
         if (region == null)
         {
@@ -37,14 +36,14 @@ public static class RegionManager
 
         region.DestroyDisplayTiles(false);
     }
-    public static void ClearRegionDisplay()
+    public void ClearRegionDisplay()
     {
         foreach (Region region in regions)
         {
             region.DestroyDisplayTiles(true);
         }
     }
-    public static Region GetNeighbour(int hash, Region region)
+    public Region GetNeighbour(int hash, Region region)
     {
         if(regionsMap.ContainsKey(hash) == false)
         {
@@ -61,7 +60,7 @@ public static class RegionManager
 
         return null;
     }
-    public static void AddHash(int hash, Region region)
+    public void AddHash(int hash, Region region)
     {
         if(regionsMap.ContainsKey(hash))
         {
@@ -72,7 +71,7 @@ public static class RegionManager
         regionsMap.Add(hash, new HashSet<Region>());
         regionsMap[hash].Add(region);
     }
-    public static void RemoveHash(int hash, Region region)
+    public void RemoveHash(int hash, Region region)
     {
         if (regionsMap.ContainsKey(hash) == false)
         {
@@ -87,7 +86,7 @@ public static class RegionManager
             regionsMap.Remove(hash);
         }
     }
-    public static Region GetRegionAtTile(Tile tile)
+    public Region GetRegionAtTile(Tile tile)
     {
         Cluster cluster = GetClusterAtTile(tile);
 
@@ -101,14 +100,14 @@ public static class RegionManager
 
         return null;
     }
-    public static Cluster GetClusterAtTile(Tile tile)
+    public Cluster GetClusterAtTile(Tile tile)
     {
         int x = Mathf.FloorToInt(tile.x / clusterSize);
         int y = Mathf.FloorToInt(tile.y / clusterSize);
 
         return clusters[x, y];
     }
-    public static void UpdateCluster(Cluster cluster)
+    public void UpdateCluster(Cluster cluster)
     {
         if(hasGenerated == false)
         {
@@ -131,21 +130,21 @@ public static class RegionManager
         UpdateClusterNeighboursAt(x, y - 1);
 
     }
-    static void UpdateClusterAt(int x, int y)
+    void UpdateClusterAt(int x, int y)
     {
         if(x >= 0 && x < clusterMapSize && y >= 0 && y < clusterMapSize)
         {
             clusters[x, y].UpdateCluster();
         }
     }
-    static void UpdateClusterNeighboursAt(int x, int y)
+    void UpdateClusterNeighboursAt(int x, int y)
     {
         if (x >= 0 && x < clusterMapSize && y >= 0 && y < clusterMapSize)
         {
             clusters[x, y].UpdateRegionsNeighbours();
         }
     }
-    public static void UpdateMaps()
+    public void UpdateMaps()
     {
         foreach(Cluster cluster in clusters)
         {
@@ -159,7 +158,7 @@ public static class RegionManager
         hasGenerated = true;
     }
 
-    public static void UpdateRegionDict(Region region, ItemTypes itemType, int amount)
+    public void UpdateRegionDict(Region region, ItemTypes itemType, int amount)
     {
         if (region == null)
         {
@@ -172,7 +171,7 @@ public static class RegionManager
             return;
         }
     }
-    public static int CheckIfRegionContains(Region region, ItemTypes itemType)
+    public int CheckIfRegionContains(Region region, ItemTypes itemType)
     {
         if (itemType != null)
         {

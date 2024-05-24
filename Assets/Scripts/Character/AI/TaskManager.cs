@@ -13,19 +13,19 @@ public enum TaskType
     HAULING,
     AGRICULTURE
 }
-public static class TaskManager
+public class TaskManager
 {
-    static Dictionary<TaskType, List<Task>> taskLists = new Dictionary<TaskType, List<Task>>();
+    Dictionary<TaskType, List<Task>> taskLists = new Dictionary<TaskType, List<Task>>();
 
-    static Action<Task> taskCreatedCallback;
+    Action<Task> taskCreatedCallback;
 
-    public static void Init()
+    public void Init()
     {
         taskLists.Add(TaskType.CONSTRUCTION, new List<Task>());
         taskLists.Add(TaskType.MINING, new List<Task>());
         taskLists.Add(TaskType.AGRICULTURE, new List<Task>());
     }
-    public static void AddTask(Task task, TaskType type)
+    public void AddTask(Task task, TaskType type)
     {
         if(task == null)
         {
@@ -44,7 +44,7 @@ public static class TaskManager
             taskCreatedCallback(task);
         }
     }
-    public static void RemoveTask(Task task, TaskType type)
+    public void RemoveTask(Task task, TaskType type)
     {
         if (task == null || taskLists.ContainsKey(type) == false)
         {
@@ -56,15 +56,15 @@ public static class TaskManager
             taskLists[type].Remove(task);
         }
     }
-    public static void AddTaskCallback(Action<Task> task)
+    public void AddTaskCallback(Action<Task> task)
     {
         taskCreatedCallback += task;
     }
-    public static void RemoveTaskCallback(Action<Task> task)
+    public void RemoveTaskCallback(Action<Task> task)
     {
         taskCreatedCallback -= task;
     }
-    public static Task GetTask(TaskType type, CharacterController character)
+    public Task GetTask(TaskType type, CharacterController character)
     {
         if (taskLists[type].Count == 0)
         {
@@ -83,7 +83,7 @@ public static class TaskManager
         return task;
     }
 
-    static Task GetClosestValidTask(List<Task> list, Tile start, CharacterController character)
+    Task GetClosestValidTask(List<Task> list, Tile start, CharacterController character)
     {
         float lowestDist = Mathf.Infinity;
         Stack<Task> taskStack = new Stack<Task>();
@@ -132,12 +132,12 @@ public static class TaskManager
 
         return null;
     }
-    public static int GetQueueSize(TaskType type)
+    public int GetQueueSize(TaskType type)
     {
         return taskLists[type].Count;
     }
 
-    public static Task CreateHaulToStorageTask(CharacterController character)
+    public Task CreateHaulToStorageTask(CharacterController character)
     {
         if(StorageManager.storageTiles.Count == 0 || InventoryManager.inventories.Count == 0)
         {
@@ -164,7 +164,7 @@ public static class TaskManager
 
         return task;
     }
-    public static HaulTask CreateHaulToJobSiteTask(RequirementTask jobSite, CharacterController character, ItemTypes type, Tile toStoreAt, int amount = 0)
+    public HaulTask CreateHaulToJobSiteTask(RequirementTask jobSite, CharacterController character, ItemTypes type, Tile toStoreAt, int amount = 0)
     {
         if (InventoryManager.inventories.Count == 0)
         {

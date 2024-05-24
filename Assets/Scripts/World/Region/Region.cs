@@ -113,13 +113,13 @@ public class Region
         SortSpans(southPairs, 0);
         SortSpans(westPairs, 1);
 
-        RegionManager.regions.Add(this);
+        GameManager.GetRegionManager().regions.Add(this);
 
         if (spans.Count > 0)
         {
             foreach (int i in spans)
             {
-                RegionManager.AddHash(i, this);
+                GameManager.GetRegionManager().AddHash(i, this);
             }
         }
     }
@@ -134,9 +134,9 @@ public class Region
 
         foreach (int i in spans)
         {
-            Region neighbour = RegionManager.GetNeighbour(i, this);
+            Region neighbour = GameManager.GetRegionManager().GetNeighbour(i, this);
 
-            if(neighbour != null)
+            if(neighbour != null && neighbours.Contains(neighbour) == false)
             {
                 neighbours.Add(neighbour);
             }
@@ -214,10 +214,7 @@ public class Region
 
         hash = GenerateLinkHash(hashX, hashY, isVertical, length);
 
-        if(spans.Contains(hash) == false)
-        {
-            spans.Add(hash);
-        }
+        spans.Add(hash);
     }
     List<Tile> SortSpanList(List<Tile> toSort, int isVertical)
     {
@@ -260,7 +257,7 @@ public class Region
         {
             foreach(int i in spans)
             {
-                RegionManager.RemoveHash(i, this);
+                GameManager.GetRegionManager().RemoveHash(i, this);
             }
         }
 
@@ -278,7 +275,7 @@ public class Region
             }
         }
 
-        RegionManager.regions.Remove(this);
+        GameManager.GetRegionManager().regions.Remove(this);
 
         neighbours.Clear();
         tiles.Clear();
@@ -298,6 +295,7 @@ public class Region
     }
     void CheckIfBorder(Tile t)
     {
+
         Tile toCheck = t.North;
 
         if (toCheck != null && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this)

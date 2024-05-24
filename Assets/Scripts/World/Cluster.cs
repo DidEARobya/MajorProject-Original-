@@ -148,6 +148,7 @@ public class Cluster
                 {
                     continue;
                 }
+
                 if (t2 != null && beenChecked.Contains(t2) == false && tileset.Contains(t2) == true && toCheck.Contains(t2) == false && (t2.IsAccessible() != Accessibility.IMPASSABLE || t2.installedObject == null))
                 {
                     stack.Push(t2);

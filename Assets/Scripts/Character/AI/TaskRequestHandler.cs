@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
-public static class TaskRequestHandler
+public class TaskRequestHandler
 {
-    static Queue<CharacterController> requests = new Queue<CharacterController>();
-    static bool isHandlingRequest = false;
+    Queue<CharacterController> requests = new Queue<CharacterController>();
+    bool isHandlingRequest = false;
 
-    public static void RequestTask(CharacterController request)
+    public void RequestTask(CharacterController request)
     {
         if (requests.Contains(request))
         {
@@ -19,14 +19,14 @@ public static class TaskRequestHandler
         requests.Enqueue(request);
         return;
     }
-    public static void Update()
+    public void Update()
     {
         if (requests.Count > 0 && isHandlingRequest == false)
         {
             CompleteRequest();
         }
     }
-    static void CompleteRequest()
+    void CompleteRequest()
     {
         if (requests.Count == 0)
         {
@@ -49,11 +49,11 @@ public static class TaskRequestHandler
         {
             if (type == TaskType.HAULING)
             {
-                task = TaskManager.CreateHaulToStorageTask(request);
+                task = GameManager.GetTaskManager().CreateHaulToStorageTask(request);
             }
             else
             {
-                task = TaskManager.GetTask(type, request);
+                task = GameManager.GetTaskManager().GetTask(type, request);
             }
 
             if (task != null)

@@ -158,7 +158,7 @@ public static class InventoryManager
         }
 
         BFS_Search search = new BFS_Search();
-        Region toCheck = search.GetClosestRegionWithItem(RegionManager.GetRegionAtTile(start), true, false, itemType);
+        Region toCheck = search.GetClosestRegionWithItem(GameManager.GetRegionManager().GetRegionAtTile(start), true, false, itemType);
 
         search = null;
 
@@ -223,11 +223,11 @@ public static class InventoryManager
 
         if (checkStored == false)
         {
-            toCheck = search.GetClosestRegionWithItem(RegionManager.GetRegionAtTile(start), true, true);
+            toCheck = search.GetClosestRegionWithItem(GameManager.GetRegionManager().GetRegionAtTile(start), true, true);
         }
         else
         {
-            toCheck = search.GetClosestRegionWithItem(RegionManager.GetRegionAtTile(start), true);
+            toCheck = search.GetClosestRegionWithItem(GameManager.GetRegionManager().GetRegionAtTile(start), true);
         }
         
         search = null;

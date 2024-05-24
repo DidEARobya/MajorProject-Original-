@@ -35,17 +35,35 @@ public class GameManager : MonoBehaviour
 
     public System.Random random;
 
+    [SerializeField]
     public WorldController worldController;
+    [SerializeField]
     public TileSpriteController tileSpriteController;
+    [SerializeField]
     public InstalledSpriteController installedSpriteController;
+    [SerializeField]
     public CharacterSpriteController characterSpriteController;
+    [SerializeField]
     public InventorySpriteController inventorySpriteController;
+    [SerializeField]
     public BuildModeController buildModeController;
+    [SerializeField]
     public MouseController mouseController;
 
+    TaskManager taskManager;
+    TaskRequestHandler taskRequestHandler;
+
+    RegionManager regionManager;
+
+    ZoneManager zoneManager;
+
+    [SerializeField]
     public SpriteAtlas terrainAtlas;
+    [SerializeField]
     public SpriteAtlas floorAtlas;
+    [SerializeField]
     public SpriteAtlas itemAtlas;
+    [SerializeField]
     public SpriteAtlas objectAtlas;
 
     WorldGrid worldGrid;
@@ -72,7 +90,9 @@ public class GameManager : MonoBehaviour
         worldController.Init(tileSpriteController);
         worldGrid = worldController.worldGrid;
 
-        TaskManager.Init();
+        taskManager = new TaskManager();
+        taskManager.Init();
+        taskRequestHandler = new TaskRequestHandler();
 
         inventorySpriteController.Init();
         tileSpriteController.Init();
@@ -82,15 +102,19 @@ public class GameManager : MonoBehaviour
         mouseController.Init(worldGrid);
         buildModeController.Init();
 
-        RegionManager.Init(worldGrid, regionMapSize);
-        ZoneManager.Init();
+        regionManager = new RegionManager();
+        regionManager.Init(worldGrid, regionMapSize);
+
+        zoneManager = new ZoneManager();
+        zoneManager.Init();
+
         worldController.GenerateTerrain();
     }
     private void Update()
     {
         ObjectManager.Update(Time.deltaTime);
         CharacterManager.Update(Time.deltaTime);
-        TaskRequestHandler.Update();
+        taskRequestHandler.Update();
         PathRequestHandler.Update();
     }
     public static WorldController GetWorldController()
@@ -112,5 +136,21 @@ public class GameManager : MonoBehaviour
     public static CharacterSpriteController GetCharacterSpriteController()
     {
         return instance.characterSpriteController;
+    }
+    public static TaskManager GetTaskManager()
+    {
+        return instance.taskManager;
+    }
+    public static TaskRequestHandler GetTaskRequestHandler()
+    {
+        return instance.taskRequestHandler;
+    }
+    public static RegionManager GetRegionManager()
+    {
+        return instance.regionManager;
+    }
+    public static ZoneManager GetZoneManager()
+    {
+        return instance.zoneManager;
     }
 }
