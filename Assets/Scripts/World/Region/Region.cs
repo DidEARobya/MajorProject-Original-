@@ -26,9 +26,11 @@ public class Region
     Dictionary<ItemTypes, int> itemsInRegion = new Dictionary<ItemTypes, int>();
 
     public Cluster inCluster;
+    public bool isDoor;
     public Region(Cluster _inCluster)
     {
         inCluster = _inCluster;
+        isDoor = false;
     }
     public void HighlightTiles(UnityEngine.Color colour, bool isNeighbour)
     {
@@ -124,7 +126,7 @@ public class Region
             }
         }
     }
-    public void SetNeighbours()
+    public virtual void SetNeighbours()
     {
         if(spans.Count == 0)
         {

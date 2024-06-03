@@ -34,9 +34,9 @@ public class Cluster
         x = _x;
         y = _y;
 
-        UpdateCluster(true);
+        UpdateCluster();
     }
-    public void UpdateCluster(bool isStart = false)
+    public void UpdateCluster()
     {
         foreach(Region region in regions)
         {
