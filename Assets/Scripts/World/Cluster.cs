@@ -123,9 +123,10 @@ public class Cluster
         if(tile.IsObjectInstalled() == true && ObjectManager.Contains(tile.installedObject) && tile.installedObject.type == InstalledObjectType.FURNITURE && (tile.installedObject as Furniture).furnitureType == FurnitureTypes.DOOR)
         {
             beenChecked.Add(tile);
-            toCheck.AddTile(tile);
 
-            return;
+            DoorRegion doorRegion = new DoorRegion(this);
+            doorRegion.AddTile(tile);
+            regions.Add(doorRegion);
         }
 
         Stack<Tile> stack = new Stack<Tile>();
@@ -140,7 +141,11 @@ public class Cluster
             Tile t = stack.Pop();
 
             beenChecked.Add(t);
-            toCheck.AddTile(t);
+
+            if(t.region == null)
+            {
+                toCheck.AddTile(t);
+            }
 
             foreach (Tile t2 in t.GetAdjacentNeigbours())
             {

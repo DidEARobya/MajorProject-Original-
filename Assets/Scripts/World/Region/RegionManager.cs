@@ -123,12 +123,10 @@ public class RegionManager
         UpdateClusterAt(x + 1, y );
         UpdateClusterAt(x, y - 1);
 
-        cluster.UpdateRegionsNeighbours();
-        UpdateClusterNeighboursAt(x, y + 1);
-        UpdateClusterNeighboursAt(x - 1, y);
-        UpdateClusterNeighboursAt(x + 1, y);
-        UpdateClusterNeighboursAt(x, y - 1);
-
+        foreach (Cluster c in clusters)
+        {
+            c.UpdateRegionsNeighbours();
+        }
     }
     void UpdateClusterAt(int x, int y)
     {

@@ -275,7 +275,7 @@ public class MouseController : MonoBehaviour
 
             if (highlightedRegion != null)
             {
-                highlightedRegion.HighlightBorderTiles(UnityEngine.Color.yellow, false);
+                highlightedRegion.HighlightTiles(UnityEngine.Color.yellow, false);
             }
         }
 

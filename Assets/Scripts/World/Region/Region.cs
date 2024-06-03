@@ -8,20 +8,21 @@ using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Region
 {
     public HashSet<Region> neighbours = new HashSet<Region>();
     public HashSet<Tile> tiles = new HashSet<Tile>();
 
-    HashSet<Tile> borderTiles = new HashSet<Tile>();
+    protected HashSet<Tile> borderTiles = new HashSet<Tile>();
 
     List<Tile> northPairs = new List<Tile>();
     List<Tile> eastPairs = new List<Tile>();
     List<Tile> southPairs = new List<Tile>();
     List<Tile> westPairs = new List<Tile>();
 
-    public HashSet<int> spans = new HashSet<int>();
+    HashSet<int> spans = new HashSet<int>();
     Dictionary<ItemTypes, int> itemsInRegion = new Dictionary<ItemTypes, int>();
 
     public Cluster inCluster;
@@ -29,7 +30,7 @@ public class Region
     {
         inCluster = _inCluster;
     }
-    public void HighlightBorderTiles(UnityEngine.Color colour, bool isNeighbour)
+    public void HighlightTiles(UnityEngine.Color colour, bool isNeighbour)
     {
         foreach (Tile tile in tiles)
         {
@@ -52,7 +53,7 @@ public class Region
         {
             if(r != null)
             {
-                r.HighlightBorderTiles(UnityEngine.Color.red, true);
+                r.HighlightTiles(UnityEngine.Color.red, true);
             }
         }
     }
@@ -77,7 +78,7 @@ public class Region
             }
         }
     }
-    void FindEdges(Tile tile)
+    protected virtual void FindEdges(Tile tile)
     {
         Stack<Tile> stack = new Stack<Tile>();
         HashSet<Tile> beenChecked = new HashSet<Tile>();
@@ -129,8 +130,6 @@ public class Region
         {
             return;
         }
-
-        neighbours.Clear();
 
         foreach (int i in spans)
         {
@@ -213,12 +212,12 @@ public class Region
         hashY = Mathf.FloorToInt(y / length);
 
         hash = GenerateLinkHash(hashX, hashY, isVertical, length);
-
         spans.Add(hash);
     }
     List<Tile> SortSpanList(List<Tile> toSort, int isVertical)
     {
         List<Tile> sortedTiles = new List<Tile>();
+        List<Tile> doorTiles = new List<Tile>();
 
         while (toSort.Count > 0)
         {
@@ -245,8 +244,21 @@ public class Region
                 }
             }
 
+            if(first == null)
+            {
+                continue;
+            }
+
             sortedTiles.Add(first);
             toSort.Remove(first);
+        }
+
+        if(doorTiles.Count != 0)
+        {
+            foreach(Tile tile in doorTiles)
+            {
+                sortedTiles.Add(tile);
+            }
         }
 
         return sortedTiles;
@@ -295,10 +307,9 @@ public class Region
     }
     void CheckIfBorder(Tile t)
     {
-
         Tile toCheck = t.North;
 
-        if (toCheck != null && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this)
+        if (toCheck != null && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this && (toCheck.region as DoorRegion) == null)
         {
             if (northPairs.Contains(toCheck) == false)
             {
@@ -309,7 +320,7 @@ public class Region
 
         toCheck = t.East;
 
-        if (toCheck != null && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this)
+        if (toCheck != null && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this && (toCheck.region as DoorRegion) == null)
         {
             if (eastPairs.Contains(toCheck) == false)
             {
@@ -320,7 +331,7 @@ public class Region
 
         toCheck = t.South;
 
-        if (toCheck != null && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this)
+        if (toCheck != null && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this && (toCheck.region as DoorRegion) == null)
         {
             if (southPairs.Contains(t) == false)
             {
@@ -331,7 +342,7 @@ public class Region
 
         toCheck = t.West;
 
-        if (toCheck != null && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this)
+        if (toCheck != null && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this && (toCheck.region as DoorRegion) == null)
         {
             if (westPairs.Contains(t) == false)
             {
