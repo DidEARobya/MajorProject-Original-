@@ -86,13 +86,13 @@ public class RegionManager
             regionsMap.Remove(hash);
         }
     }
-    public Region GetRegionAtTile(Tile tile)
+    public Region GetRegionAtTile(Tile tile, bool checkImpassable = false)
     {
         Cluster cluster = GetClusterAtTile(tile);
 
         foreach(Region region in cluster.regions)
         {
-            if(region.Contains(tile))
+            if(region.Contains(tile) || (checkImpassable == true && region.impassableTiles.Contains(tile)))
             {
                 return region;
             }
@@ -117,21 +117,46 @@ public class RegionManager
         int x = cluster.x;
         int y = cluster.y;
 
-        cluster.UpdateCluster();
-        UpdateClusterAt(x, y + 1);
-        UpdateClusterAt(x - 1, y);
-        UpdateClusterAt(x + 1, y );
-        UpdateClusterAt(x, y - 1);
+        List<Cluster> toUpdateNeighbours = new List<Cluster>();
 
-        foreach (Cluster c in clusters)
+        cluster.UpdateCluster();
+        toUpdateNeighbours.Add(cluster);
+
+        UpdateClusterAt(x, y + 1, toUpdateNeighbours);
+        UpdateClusterAt(x - 1, y, toUpdateNeighbours);
+        UpdateClusterAt(x + 1, y, toUpdateNeighbours);
+        UpdateClusterAt(x, y - 1, toUpdateNeighbours);
+
+        AddClusterAt(x, y + 2, toUpdateNeighbours);
+        AddClusterAt(x - 1, y + 1, toUpdateNeighbours);
+        AddClusterAt(x + 1, y + 1, toUpdateNeighbours);
+        AddClusterAt(x - 2, y, toUpdateNeighbours);
+        AddClusterAt(x + 2, y, toUpdateNeighbours);
+        AddClusterAt(x - 1, y - 1, toUpdateNeighbours);
+        AddClusterAt(x + 1, y - 1, toUpdateNeighbours);
+        AddClusterAt(x, y - 2, toUpdateNeighbours);
+
+        foreach (Cluster c in toUpdateNeighbours)
         {
             c.UpdateRegionsNeighbours();
         }
     }
-    void UpdateClusterAt(int x, int y)
+    void AddClusterAt(int x, int y, List<Cluster> list)
+    {
+        if (x >= 0 && x < clusterMapSize && y >= 0 && y < clusterMapSize)
+        {
+            list.Add(clusters[x, y]);
+        }
+    }
+    void UpdateClusterAt(int x, int y, List<Cluster> list = null)
     {
         if(x >= 0 && x < clusterMapSize && y >= 0 && y < clusterMapSize)
         {
+            if(list != null)
+            {
+                list.Add(clusters[x, y]);
+            }
+
             clusters[x, y].UpdateCluster();
         }
     }

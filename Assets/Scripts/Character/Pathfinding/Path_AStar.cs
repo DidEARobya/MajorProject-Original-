@@ -9,7 +9,7 @@ using Unity.VisualScripting;
 
 public class Path_AStar
 {
-    Queue<ITileData> path = new Queue<ITileData>();
+    Queue<INodeData> path = new Queue<INodeData>();
 
     public Tile destination;
     bool isPlayer;
@@ -47,7 +47,7 @@ public class Path_AStar
             Node current = openSet.Dequeue();
             closedSet.Add(current);
 
-            if ((current.data as ITileData).GetTile().IsNeighbour(end) == true)
+            if (current.data.GetTile().IsNeighbour(end) == true)
             {
                 path = RetraceTilePath(startNode, current);
                 return true;
@@ -82,22 +82,73 @@ public class Path_AStar
 
         return false;
     }
-    Queue<ITileData> RetraceTilePath(Node start, Node end)
+    Queue<INodeData> RetraceTilePath(Node start, Node end)
     {
-        destination = (end.data as ITileData).GetTile();
+        destination = end.data.GetTile();
 
-        Queue<ITileData> totalPath = new Queue<ITileData>();
+        Queue<INodeData> totalPath = new Queue<INodeData>();
         Node current = end;
 
         while (current != start)
         {
-            totalPath.Enqueue((ITileData)current.data);
+            totalPath.Enqueue(current.data);
             current = current.cameFrom;
         }
 
-        return new Queue<ITileData>(totalPath.Reverse());
+        return new Queue<INodeData>(totalPath.Reverse());
     }
+    public bool IsRegionPathable(Region start, Region end, bool _isPlayer)
+    {
+        if (start == null || end == null)
+        {
+            return false;
+        }
 
+        isPlayer = _isPlayer;
+
+        HashSet<Region> closedSet = new HashSet<Region>();
+
+        SimplePriorityQueue<Region> openSet = new SimplePriorityQueue<Region>();
+        openSet.Enqueue(start, 0);
+
+        while (openSet.Count > 0)
+        {
+            Region current = openSet.Dequeue();
+            closedSet.Add(current);
+
+            if (current == end)
+            {
+                return true;
+            }
+
+            foreach (Region neighbour in current.neighbours)
+            {
+                if (closedSet.Contains(neighbour) == true)
+                {
+                    continue;
+                }
+
+                float tentativeGScore = 0;
+
+                if (tentativeGScore < neighbour.gCost || openSet.Contains(neighbour) == false)
+                {
+                    neighbour.gCost = tentativeGScore;
+                    neighbour.hCost = 0;
+
+                    if (openSet.Contains(neighbour) == false)
+                    {
+                        openSet.Enqueue(neighbour, neighbour.fCost);
+                    }
+                    else
+                    {
+                        openSet.UpdatePriority(neighbour, neighbour.fCost);
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
     float DistanceBetween(Node start, Node goal)
     {
         int distX = Mathf.Abs(start.x - goal.x);
@@ -115,6 +166,24 @@ public class Path_AStar
         }
 
         return val * goal.GetCost(isPlayer);
+    }
+    float DistanceBetween(Region start, Region goal)
+    {
+        int distX = Mathf.Abs(start.x - goal.x);
+        int distY = Mathf.Abs(start.y - goal.y);
+
+        float val = 0;
+
+        if (distX > distY)
+        {
+            val += 14 * distY + 10 * (distX - distY);
+        }
+        else
+        {
+            val += 14 * distX + 10 * (distY - distX);
+        }
+
+        return val;
     }
     public Tile DequeueNextTile()
     {

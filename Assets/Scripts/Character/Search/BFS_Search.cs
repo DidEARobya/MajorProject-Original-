@@ -79,4 +79,39 @@ public class BFS_Search
 
         return null;
     }
+    public Region GetClosestRegionWithTask(Region start, bool _isPlayer, TaskType type)
+    {
+        openSet = new Queue<Region>();
+        openSet.Enqueue(start);
+        HashSet<Region> beenChecked = new HashSet<Region>();
+
+        while (openSet.Count > 0)
+        {
+            Region current = openSet.Dequeue();
+
+            if (current == null)
+            {
+                continue;
+            }
+
+            beenChecked.Add(current);
+
+            if(current.ContainsTask(type) == true)
+            {
+                return current;
+            }
+
+            foreach (Region region in current.neighbours)
+            {
+                if (beenChecked.Contains(region))
+                {
+                    continue;
+                }
+
+                openSet.Enqueue(region);
+            }
+        }
+
+        return null;
+    }
 }

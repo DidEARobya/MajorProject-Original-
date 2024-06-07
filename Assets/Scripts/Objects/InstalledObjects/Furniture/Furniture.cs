@@ -68,7 +68,7 @@ public class Furniture : InstalledObject
         if (isInstalled == true)
         {
             InventoryManager.AddToTileInventory(baseTile, FurnitureTypes.GetRequirements(furnitureType, baseMaterial));
-            GameManager.GetRegionManager()  .UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile));
+            GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile));
             GameManager.GetWorldGrid().InvalidatePathGraph();
         }
 

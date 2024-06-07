@@ -71,7 +71,7 @@ public class TaskManager
             return null;
         }
 
-        Task task = GetClosestValidTask(taskLists[type], character.currentTile, character);
+        Task task = GetClosestValidTask(taskLists[type], character.currentTile, character, type);
 
         if (task == null)
         {
@@ -83,7 +83,7 @@ public class TaskManager
         return task;
     }
 
-    Task GetClosestValidTask(List<Task> list, Tile start, CharacterController character)
+    Task GetClosestValidTask(List<Task> list, Tile start, CharacterController character, TaskType type)
     {
         float lowestDist = Mathf.Infinity;
         Stack<Task> taskStack = new Stack<Task>();
@@ -112,14 +112,15 @@ public class TaskManager
             return null;
         }
 
-        while(taskStack.Count > 0)
+        RegionManager manager = GameManager.GetRegionManager();
+        while (taskStack.Count > 0)
         {
             Task task = taskStack.Pop();
 
             Path_AStar path = new Path_AStar();
-            bool isValid = path.TilePathfind(start, task.tile, true);
+            bool isValid = path.IsRegionPathable(manager.GetRegionAtTile(start, false), manager.GetRegionAtTile(task.tile, true), true);
 
-            if (isValid == false || (path.Length() == 0 && start.IsNeighbour(task.tile) == false))
+            if (isValid == false)
             {
                 Debug.Log("No Path");
                 character.ignoredTasks.Add(task);

@@ -17,6 +17,7 @@ public class Cluster
     HashSet<Tile> beenChecked = new HashSet<Tile>();
     public List<Region> regions = new List<Region>();
 
+    public HashSet<Tile> impassableTiles = new HashSet<Tile>();
     public Cluster(WorldGrid grid, int _x, int _y)
     {
         size = RegionManager.clusterSize;
@@ -43,6 +44,7 @@ public class Cluster
             region.Delete();
         }
 
+        impassableTiles.Clear();
         regions.Clear();
         beenChecked.Clear();
 
@@ -94,8 +96,9 @@ public class Cluster
             {
                 if (beenChecked.Contains(tiles[x, y]) == false)
                 {
-                    if (tiles[x, y].IsObjectInstalled() == true && tiles[x, y].IsAccessible() == Accessibility.IMPASSABLE)
+                    if (tiles[x, y].IsObjectInstalled() == true && ObjectManager.Contains(tiles[x, y].installedObject) && tiles[x, y].IsAccessible() == Accessibility.IMPASSABLE)
                     {
+                        impassableTiles.Add(tiles[x, y]);
                         beenChecked.Add(tiles[x, y]);
                         continue;
                     }
@@ -114,8 +117,9 @@ public class Cluster
 
     void FloodFillFromTile(Tile tile, Region toCheck)
     {
-        if (tile.IsAccessible() == Accessibility.IMPASSABLE)
+        if (tile.IsObjectInstalled() == true && ObjectManager.Contains(tile.installedObject) && tile.IsAccessible() == Accessibility.IMPASSABLE)
         {
+            impassableTiles.Add(tile);
             beenChecked.Add(tile);
             return;
         }

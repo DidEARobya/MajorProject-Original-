@@ -16,7 +16,6 @@ public class Task
     public CharacterController worker;
 
     protected Action<Task> taskCompleteCallback;
-    protected Action<Task> taskCancelledCallback;
 
     protected bool isFloor;
 
@@ -43,20 +42,11 @@ public class Task
     {
         taskCompleteCallback += _taskCompleteCallback;
     }
-
-    public void AddTaskCancelledCallback(Action<Task> _taskCancelledCallback)
-    {
-        taskCancelledCallback += _taskCancelledCallback;
-    }
     public void RemoveTaskCompleteCallback(Action<Task> _taskCompleteCallback)
     {
         taskCompleteCallback -= _taskCompleteCallback;
     }
 
-    public void RemoveTaskCancelledCallback(Action<Task> _taskCancelledCallback)
-    {
-        taskCancelledCallback -= _taskCancelledCallback;
-    }
     public virtual Task CheckTaskRequirements()
     {
         return null;
@@ -72,6 +62,7 @@ public class Task
             if (taskCompleteCallback != null)
             {
                 taskCompleteCallback(this);
+                tile.task = null;
             }
         }
     }
@@ -95,11 +86,6 @@ public class Task
         }
 
         GameManager.GetTaskManager().RemoveTask(this, taskType);
-
-        if (taskCancelledCallback != null)
-        {
-            taskCancelledCallback(this);
-        }
 
         tile.isPendingTask = false;
         tile.task = null;
