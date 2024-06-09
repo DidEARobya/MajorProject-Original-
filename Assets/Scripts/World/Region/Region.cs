@@ -24,7 +24,7 @@ public class Region
 
     public HashSet<Tile> tiles = new HashSet<Tile>();
     public HashSet<Tile> impassableTiles = new HashSet<Tile>();
-    protected HashSet<Tile> borderTiles = new HashSet<Tile>();
+    public HashSet<Tile> searchTiles = new HashSet<Tile>();
 
     List<Tile> northPairs = new List<Tile>();
     List<Tile> eastPairs = new List<Tile>();
@@ -132,7 +132,7 @@ public class Region
 
         GameManager.GetRegionManager().regions.Add(this);
 
-        if(tiles.Count == -1)
+        if(tiles.Count == 1)
         {
             return;
         }
@@ -339,9 +339,20 @@ public class Region
 
         neighbours.Clear();
         tiles.Clear();
+        impassableTiles.Clear();
+        searchTiles.Clear();
+
+        northPairs.Clear();
+        eastPairs.Clear();
+        southPairs.Clear();
+        westPairs.Clear();
+
         spans.Clear();
-        borderTiles.Clear();
+
         itemsInRegion.Clear();
+        furnitureInRegion.Clear();
+        oreInRegion.Clear();
+        plantsInRegion.Clear();
     }
     public void AddTile(Tile tile)
     {
@@ -359,49 +370,40 @@ public class Region
 
         if (toCheck != null && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this && (toCheck.region as DoorRegion) == null)
         {
-            if (northPairs.Contains(toCheck) == false)
-            {
-                northPairs.Add(toCheck);
-                borderTiles.Add(toCheck);
-            }
+            northPairs.Add(toCheck);
         }
 
         toCheck = t.East;
 
         if (toCheck != null && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this && (toCheck.region as DoorRegion) == null)
         {
-            if (eastPairs.Contains(toCheck) == false)
-            {
-                eastPairs.Add(toCheck);
-                borderTiles.Add(toCheck);
-            }
+            eastPairs.Add(toCheck);
         }
 
         toCheck = t.South;
 
         if (toCheck != null && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this && (toCheck.region as DoorRegion) == null)
         {
-            if (southPairs.Contains(t) == false)
-            {
-                southPairs.Add(t);
-                borderTiles.Add(t);
-            }
+            southPairs.Add(t);
         }
 
         toCheck = t.West;
 
         if (toCheck != null && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this && (toCheck.region as DoorRegion) == null)
         {
-            if (westPairs.Contains(t) == false)
-            {
-                westPairs.Add(t);
-                borderTiles.Add(t);
-            }
+            westPairs.Add(t);
         }
     }
     public void UpdateRegion()
     {
         FindEdges(tiles.First());
+
+        searchTiles = new HashSet<Tile>(tiles);
+
+        foreach (Tile t in impassableTiles)
+        {
+            searchTiles.Add(t);
+        }
 
         itemsInRegion.Clear();
 
@@ -557,16 +559,9 @@ public class Region
     }
     public bool ContainsTask(TaskType type)
     {
-        HashSet<Tile> toCheck = new HashSet<Tile>(tiles);
-
-        foreach(Tile t in impassableTiles)
+        foreach (Tile tile in searchTiles)
         {
-            toCheck.Add(t);
-        }
-
-        foreach (Tile tile in toCheck)
-        {
-            if(tile.task == null || tile.task.taskType != type)
+            if(tile.task == null || tile.task.taskType != type || tile.task.worker != null)
             {
                 continue;
             }
@@ -618,5 +613,23 @@ public class Region
         y = (hash >> 5) & 0xFFF;
         direction = (hash >> 4) & 0x1;
         length = hash & 0xF;
+    }
+
+    public bool ContainsValidStorage(ItemTypes type, int amount)
+    {
+        foreach(Tile tile in tiles)
+        {
+            if(tile.inventory.isStored == false)
+            {
+                continue;
+            }
+
+            if (tile.inventory.CanBeStored(type, amount) > 0)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

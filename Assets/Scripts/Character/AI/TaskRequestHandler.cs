@@ -6,6 +6,9 @@ using UnityEngine;
 public class TaskRequestHandler
 {
     Queue<CharacterController> requests = new Queue<CharacterController>();
+
+    static object requestCompleteLock = new object();
+
     bool isHandlingRequest = false;
 
     public void RequestTask(CharacterController request)
@@ -23,47 +26,50 @@ public class TaskRequestHandler
     {
         if (requests.Count > 0 && isHandlingRequest == false)
         {
-            CompleteRequest();
+            ThreadPool.QueueUserWorkItem(delegate { ThreadedCompleteRequest(); });
         }
     }
-    void CompleteRequest()
+    void ThreadedCompleteRequest()
     {
-        if (requests.Count == 0)
+        lock (requestCompleteLock)
         {
-            return;
-        }
+            if (requests.Count == 0)
+            {
+                return;
+            }
 
-        isHandlingRequest = true;
+            isHandlingRequest = true;
 
-        CharacterController request = requests.Dequeue();
+            CharacterController request = requests.Dequeue();
 
-        if (request == null)
-        {
+            if (request == null)
+            {
+                isHandlingRequest = false;
+                return;
+            }
+
+            Task task;
+
+            foreach (TaskType type in request.priorityList)
+            {
+                if (type == TaskType.HAULING)
+                {
+                    task = GameManager.GetTaskManager().CreateHaulToStorageTask(request);
+                }
+                else
+                {
+                    task = GameManager.GetTaskManager().GetTask(type, request);
+                }
+
+                if (task != null)
+                {
+                    request.taskList.Add(task);
+                    break;
+                }
+            }
+
+            request.requestedTask = false;
             isHandlingRequest = false;
-            return;
         }
-
-        Task task;
-
-        foreach (TaskType type in request.priorityList)
-        {
-            if (type == TaskType.HAULING)
-            {
-                task = GameManager.GetTaskManager().CreateHaulToStorageTask(request);
-            }
-            else
-            {
-                task = GameManager.GetTaskManager().GetTask(type, request);
-            }
-
-            if (task != null)
-            {
-                request.taskList.Add(task);
-                break;
-            }
-        }
-
-        request.requestedTask = false;
-        isHandlingRequest = false;
     }
 }

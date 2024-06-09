@@ -11,7 +11,6 @@ public class DoorRegion : Region
     }
     protected override void FindEdges(Tile tile)
     {
-        borderTiles.Add(tile);
         GameManager.GetRegionManager().regions.Add(this);
     }
     public override void SetNeighbours()

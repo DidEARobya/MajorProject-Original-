@@ -31,12 +31,22 @@ public static class StorageManager
 
     public static Tile GetClosestAcceptableInventory(Tile itemTile, ItemTypes itemType, int amount)
     {
-        Stack<Tile> stack = new Stack<Tile>();
-        float lowestDist = Mathf.Infinity;
+        BFS_Search search = new BFS_Search();
+        Region toCheck = search.GetClosestRegionWithStorage(GameManager.GetRegionManager().GetRegionAtTile(itemTile), true, itemType, amount);
 
-        foreach (Tile tile in storageTiles)
+        search = null;
+
+        if (toCheck == null)
         {
-            if(tile == null)
+            return null;
+        }
+
+        float lowestDist = Mathf.Infinity;
+        Tile closest = null;
+
+        foreach (Tile tile in toCheck.searchTiles)
+        {
+            if (tile.inventory.isStored == false || tile.inventory.CanBeStored(itemType, amount) == 0)
             {
                 continue;
             }
@@ -46,35 +56,16 @@ public static class StorageManager
 
             if (lowestDist > (distX + distY))
             {
-                if (tile.inventory.CanBeStored(itemType, amount) > 0)
-                {
-                    stack.Push(tile);
-                    lowestDist = distX + distY;
-                }
+                closest = tile;
+                lowestDist = distX + distY;
             }
         }
 
-        if (stack.Count == 0)
+        if (closest == null)
         {
             return null;
         }
 
-        while (stack.Count > 0)
-        {
-            Tile temp = stack.Pop();
-
-            Path_AStar path = new Path_AStar();
-            bool isValid = path.TilePathfind(itemTile, temp, true);
-
-            if (isValid == false)
-            {
-                continue;
-            }
-
-            path = null;
-            return temp;
-        }
-
-        return null;
+        return closest;
     }
 }

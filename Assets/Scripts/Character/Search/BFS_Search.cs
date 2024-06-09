@@ -114,4 +114,39 @@ public class BFS_Search
 
         return null;
     }
+    public Region GetClosestRegionWithStorage(Region start, bool _isPlayer, ItemTypes type, int amount)
+    {
+        openSet = new Queue<Region>();
+        openSet.Enqueue(start);
+        HashSet<Region> beenChecked = new HashSet<Region>();
+
+        while (openSet.Count > 0)
+        {
+            Region current = openSet.Dequeue();
+
+            if (current == null)
+            {
+                continue;
+            }
+
+            beenChecked.Add(current);
+
+            if (current.ContainsValidStorage(type, amount) == true)
+            {
+                return current;
+            }
+
+            foreach (Region region in current.neighbours)
+            {
+                if (beenChecked.Contains(region))
+                {
+                    continue;
+                }
+
+                openSet.Enqueue(region);
+            }
+        }
+
+        return null;
+    }
 }

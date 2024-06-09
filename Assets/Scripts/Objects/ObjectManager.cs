@@ -5,7 +5,7 @@ using UnityEngine;
 
 public static class ObjectManager
 {
-    static List<InstalledObject> installedObjects = new List<InstalledObject>();
+    static HashSet<InstalledObject> installedObjects = new HashSet<InstalledObject>();
     static Action<InstalledObject> installObjectCallback;
     public static void InstallFurniture(FurnitureTypes type, ItemTypes baseMaterial, Tile tile, bool isInstalled)
     {

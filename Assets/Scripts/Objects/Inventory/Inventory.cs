@@ -15,6 +15,8 @@ public class Inventory
     public bool isQueried = false;
     public bool isStored = false;
 
+    public int toBeStored = 0;
+
     public Inventory()
     {
 
@@ -96,6 +98,8 @@ public class Inventory
     }
     public void StoreItem(Inventory inventory, int amount)
     {
+        toBeStored -= amount;
+
         if (item != null && inventory.item != item)
         {
             return;
@@ -145,9 +149,11 @@ public class Inventory
     }
     public int StoreItem(ItemTypes _item, int amount)
     {
+        toBeStored -= amount;
+
         int toStore = CanBeStored(_item, amount);
 
-        if(toStore == 0)
+        if (toStore == 0)
         {
             return amount;
         }
@@ -180,9 +186,9 @@ public class Inventory
             return 0;
         }
 
-        if (stackSize + amount >= ItemTypes.GetMaxStackSize(_item))
+        if (stackSize + toBeStored + amount >= ItemTypes.GetMaxStackSize(_item))
         {
-            return ItemTypes.GetMaxStackSize(_item) - stackSize;
+            return ItemTypes.GetMaxStackSize(_item) - (stackSize + toBeStored);
         }
 
         return amount;
