@@ -132,11 +132,6 @@ public class Region
 
         GameManager.GetRegionManager().regions.Add(this);
 
-        if(tiles.Count == 1)
-        {
-            return;
-        }
-
         UpdateSpans();
     }
     public void UpdateSpans()
@@ -156,24 +151,6 @@ public class Region
     }
     public virtual void SetNeighbours()
     {
-        if(tiles.Count == -1)
-        {
-            Tile tile = tiles.First();
-
-            foreach (Tile t in tile.GetAdjacentNeigbours())
-            {
-                if (t.region == null)
-                {
-                    continue;
-                }
-
-                neighbours.Add(t.region);
-                t.region.neighbours.Add(this);
-            }
-
-            return;
-        }
-
         if(spans.Count == 0)
         {
             return;
