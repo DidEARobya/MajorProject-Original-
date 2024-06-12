@@ -6,13 +6,6 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 
-public enum TaskType
-{
-    CONSTRUCTION,
-    MINING,
-    HAULING,
-    AGRICULTURE
-}
 public class TaskManager
 {
     Dictionary<TaskType, List<Task>> taskLists = new Dictionary<TaskType, List<Task>>();
