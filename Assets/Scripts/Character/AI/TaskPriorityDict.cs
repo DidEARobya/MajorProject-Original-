@@ -22,7 +22,7 @@ public enum PriorityLevel
 public class TaskPriorityDict
 {
     CharacterController owner;
-    List<PriorityLevel> levelList = new List<PriorityLevel>();
+    public List<PriorityLevel> levelList = new List<PriorityLevel>();
 
     public void Init(CharacterController character)
     {
@@ -61,8 +61,16 @@ public class TaskPriorityDict
             }
 
             TaskType type = (TaskType)i;
+            Task task = null;
 
-            Task task = GameManager.GetTaskManager().GetTask(type, owner);
+            if(type == TaskType.HAULING)
+            {
+                task = GameManager.GetTaskManager().CreateHaulToStorageTask(owner);
+            }
+            else
+            {
+                task = GameManager.GetTaskManager().GetTask(type, owner);
+            }
 
             if(task != null)
             {

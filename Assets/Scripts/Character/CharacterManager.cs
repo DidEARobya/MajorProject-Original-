@@ -18,6 +18,7 @@ public static class CharacterManager
     public static CharacterController CreateCharacter(Tile tile)
     {
         CharacterController test = new CharacterController(tile);
+        GameManager.instance.uiManager.CreateCharacterWorkPanel(test);
         characters.Add(test);
 
         if (characterCreatedCallback != null)
@@ -33,6 +34,13 @@ public static class CharacterManager
         foreach (CharacterController character in characters)
         {
             character.ignoredTasks.Clear();
+        }
+    }
+    public static void DisplayWorkMenu()
+    {
+        foreach (CharacterController character in characters)
+        {
+            character.priorityDisplay.GetComponent<TaskPriorityMenu>().Display();
         }
     }
     public static void SetCharacterCreatedCallback(Action<CharacterController> callback)

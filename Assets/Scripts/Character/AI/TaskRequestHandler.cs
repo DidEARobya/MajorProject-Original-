@@ -48,24 +48,11 @@ public class TaskRequestHandler
                 return;
             }
 
-            Task task;
+            Task task =  request.priorityDict.GetTask();
 
-            foreach (TaskType type in request.priorityList)
+            if (task != null)
             {
-                if (type == TaskType.HAULING)
-                {
-                    task = GameManager.GetTaskManager().CreateHaulToStorageTask(request);
-                }
-                else
-                {
-                    task = GameManager.GetTaskManager().GetTask(type, request);
-                }
-
-                if (task != null)
-                {
-                    request.taskList.Add(task);
-                    break;
-                }
+                request.taskList.Add(task);
             }
 
             request.requestedTask = false;
