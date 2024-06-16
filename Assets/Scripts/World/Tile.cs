@@ -34,7 +34,7 @@ public enum Accessibility
     DELAYED,
     ACCESSIBLE
 }
-public class Tile : InventoryOwner, ITileData
+public class Tile : InventoryOwner, INodeData
 {
     Dictionary<Tile, Direction> neighbourTiles = new Dictionary<Tile, Direction>();
     Dictionary<Direction, Tile> neighbourDirections = new Dictionary<Direction, Tile>();
@@ -283,14 +283,14 @@ public class Tile : InventoryOwner, ITileData
     }
     public Tile GetNearestAvailableInventory(ItemTypes type, int amount)
     {
-        if(inventory.item == null || inventory.CanBeStored(type, amount) != 0)
+        if(accessibility != Accessibility.IMPASSABLE && (inventory.item == null || inventory.CanBeStored(type, amount) != 0))
         {
             return this;
         }
         
         foreach(Tile tile in neighbourTiles.Keys)
         {
-            if(tile.inventory.item == null || tile.inventory.CanBeStored(type, amount) != 0)
+            if(tile.accessibility != Accessibility.IMPASSABLE && (tile.inventory.item == null || tile.inventory.CanBeStored(type, amount) != 0))
             {
                 return tile;
             }
@@ -300,7 +300,7 @@ public class Tile : InventoryOwner, ITileData
         {
             foreach(Tile _tile in tile.neighbourTiles.Keys)
             {
-                if (_tile.inventory.item == null || _tile.inventory.CanBeStored(type, amount) != 0)
+                if (_tile.accessibility != Accessibility.IMPASSABLE && (_tile.inventory.item == null || _tile.inventory.CanBeStored(type, amount) != 0))
                 {
                     return _tile;
                 }

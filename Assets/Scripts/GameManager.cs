@@ -49,6 +49,8 @@ public class GameManager : MonoBehaviour
     public BuildModeController buildModeController;
     [SerializeField]
     public MouseController mouseController;
+    [SerializeField]
+    public UIManager uiManager;
 
     TaskManager taskManager;
     TaskRequestHandler taskRequestHandler;

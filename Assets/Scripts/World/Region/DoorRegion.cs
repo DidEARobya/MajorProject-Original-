@@ -7,32 +7,25 @@ public class DoorRegion : Region
 {
     public DoorRegion(Cluster _inCluster) : base(_inCluster)
     {
-
+        isDoor = true;
     }
     protected override void FindEdges(Tile tile)
     {
-        borderTiles.Add(tile);
         GameManager.GetRegionManager().regions.Add(this);
+    }
+    public override void SetNeighbours()
+    {
+        Tile tile = tiles.First();
 
-        if(tile.North != null && tile.North.region != null)
+        foreach (Tile t in tile.GetAdjacentNeigbours())
         {
-            neighbours.Add(tile.North.region);
-            tile.North.region.neighbours.Add(this);
-        }
-        if (tile.East != null && tile.East.region != null)
-        {
-            neighbours.Add(tile.East.region);
-            tile.East.region.neighbours.Add(this);
-        }
-        if (tile.South != null && tile.South.region != null)
-        {
-            neighbours.Add(tile.South.region);
-            tile.South.region.neighbours.Add(this);
-        }
-        if (tile.West != null && tile.West.region != null)
-        {
-            neighbours.Add(tile.West.region);
-            tile.West.region.neighbours.Add(this);
+            if(t.region == null)
+            {
+                continue;
+            }
+
+            neighbours.Add(t.region);
+            t.region.neighbours.Add(this);
         }
     }
 }

@@ -15,6 +15,9 @@ public class UIManager : MonoBehaviour
     public GameObject testPanel;
     public GameObject zonePanel;
 
+    public GameObject workPriorityPanel;
+    public GameObject characterWorkPrefab;
+
     public GameObject visualsPanel;
     public TextMeshProUGUI visualsText;
 
@@ -35,6 +38,7 @@ public class UIManager : MonoBehaviour
         panels.Add(tasksPanel);
         panels.Add(zonePanel);
         panels.Add(testPanel);
+        panels.Add(workPriorityPanel);
 
         TogglePanels(null);
         buildPanel.SetActive(false);
@@ -73,6 +77,16 @@ public class UIManager : MonoBehaviour
 
             panels[i].SetActive(false);
         }
+    }
+    public void CreateCharacterWorkPanel(CharacterController character)
+    {
+        character.priorityDisplay = Instantiate(characterWorkPrefab, workPriorityPanel.transform);
+        character.priorityDisplay.GetComponent<TaskPriorityMenu>().Init(character);
+    }
+    public void ToggleWorkPanel()
+    {
+        CharacterManager.DisplayWorkMenu();
+        TogglePanels(workPriorityPanel);
     }
     public void ToggleBuildPanel()
     {

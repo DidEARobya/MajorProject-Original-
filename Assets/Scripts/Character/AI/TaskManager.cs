@@ -6,13 +6,6 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 
-public enum TaskType
-{
-    CONSTRUCTION,
-    MINING,
-    HAULING,
-    AGRICULTURE
-}
 public class TaskManager
 {
     Dictionary<TaskType, List<Task>> taskLists = new Dictionary<TaskType, List<Task>>();
@@ -71,10 +64,30 @@ public class TaskManager
             return null;
         }
 
-        Task task = GetClosestValidTask(taskLists[type], character.currentTile, character);
+        bool taskAvailable = false;
+
+        foreach (Task t in taskLists[type])
+        {
+            if(character.ignoredTasks.Contains(t) == false)
+            {
+                taskAvailable = true;
+            }
+        }
+
+        if(taskAvailable == false)
+        {
+            return null;    
+        }
+
+        Task task = GetClosestValidTask(character.currentTile, type);
 
         if (task == null)
         {
+            foreach(Task t in taskLists[type])
+            {
+                character.ignoredTasks.Add(t);
+            }
+
             return null;
         }
 
@@ -83,54 +96,44 @@ public class TaskManager
         return task;
     }
 
-    Task GetClosestValidTask(List<Task> list, Tile start, CharacterController character)
+    Task GetClosestValidTask(Tile start, TaskType type)
     {
-        float lowestDist = Mathf.Infinity;
-        Stack<Task> taskStack = new Stack<Task>();
+        BFS_Search search = new BFS_Search();
+        Region toCheck = search.GetClosestRegionWithTask(GameManager.GetRegionManager().GetRegionAtTile(start), true, type);
 
-        for (int i = 0; i < list.Count; i++)
-        {
-            if (character.ignoredTasks.Contains(list[i]))
-            {
-                continue;
-            }
+        search = null;
 
-            Tile goal = list[i].tile;
-
-            int distX = Mathf.Abs(start.x - goal.x);
-            int distY = Mathf.Abs(start.y - goal.y);
-
-            if (lowestDist > (distX + distY))
-            {
-                taskStack.Push(list[i]);
-                lowestDist = distX + distY;
-            }
-        }
-
-        if(taskStack.Count == 0)
+        if (toCheck == null)
         {
             return null;
         }
 
-        while(taskStack.Count > 0)
+        float lowestDist = Mathf.Infinity;
+        Tile closest = null;
+
+        foreach (Tile tile in toCheck.searchTiles)
         {
-            Task task = taskStack.Pop();
-
-            Path_AStar path = new Path_AStar();
-            bool isValid = path.TilePathfind(start, task.tile, true);
-
-            if (isValid == false || (path.Length() == 0 && start.IsNeighbour(task.tile) == false))
+            if (tile.task == null || tile.task.taskType != type || tile.task.worker != null)
             {
-                Debug.Log("No Path");
-                character.ignoredTasks.Add(task);
                 continue;
             }
 
-            path = null;
-            return task;
+            int distX = Mathf.Abs(start.x - tile.x);
+            int distY = Mathf.Abs(start.y - tile.y);
+
+            if (lowestDist > (distX + distY))
+            {
+                closest = tile;
+                lowestDist = distX + distY;
+            }
         }
 
-        return null;
+        if (closest == null)
+        {
+            return null;
+        }
+
+        return closest.task;
     }
     public int GetQueueSize(TaskType type)
     {
@@ -160,6 +163,8 @@ public class TaskManager
         }
 
         int amount = toStoreAt.inventory.CanBeStored(tile.inventory.item, tile.inventory.stackSize);
+        toStoreAt.inventory.toBeStored += amount;
+
         Task task = new HaulTask(tile, (t) => { InventoryManager.DropInventory(character.inventory, toStoreAt); }, toStoreAt, (t) => { InventoryManager.PickUp(character, tile, amount); }, TaskType.HAULING);
 
         return task;

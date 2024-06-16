@@ -6,6 +6,9 @@ using UnityEngine;
 public class TaskRequestHandler
 {
     Queue<CharacterController> requests = new Queue<CharacterController>();
+
+    static object requestCompleteLock = new object();
+
     bool isHandlingRequest = false;
 
     public void RequestTask(CharacterController request)
@@ -23,47 +26,37 @@ public class TaskRequestHandler
     {
         if (requests.Count > 0 && isHandlingRequest == false)
         {
-            CompleteRequest();
+            ThreadPool.QueueUserWorkItem(delegate { ThreadedCompleteRequest(); });
         }
     }
-    void CompleteRequest()
+    void ThreadedCompleteRequest()
     {
-        if (requests.Count == 0)
+        lock (requestCompleteLock)
         {
-            return;
-        }
-
-        isHandlingRequest = true;
-
-        CharacterController request = requests.Dequeue();
-
-        if (request == null)
-        {
-            isHandlingRequest = false;
-            return;
-        }
-
-        Task task;
-
-        foreach (TaskType type in request.priorityList)
-        {
-            if (type == TaskType.HAULING)
+            if (requests.Count == 0)
             {
-                task = GameManager.GetTaskManager().CreateHaulToStorageTask(request);
+                return;
             }
-            else
+
+            isHandlingRequest = true;
+
+            CharacterController request = requests.Dequeue();
+
+            if (request == null)
             {
-                task = GameManager.GetTaskManager().GetTask(type, request);
+                isHandlingRequest = false;
+                return;
             }
+
+            Task task =  request.priorityDict.GetTask();
 
             if (task != null)
             {
                 request.taskList.Add(task);
-                break;
             }
-        }
 
-        request.requestedTask = false;
-        isHandlingRequest = false;
+            request.requestedTask = false;
+            isHandlingRequest = false;
+        }
     }
 }

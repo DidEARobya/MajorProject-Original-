@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Xml.Linq;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEditor;
@@ -12,10 +13,18 @@ using UnityEngine.UIElements;
 
 public class Region
 {
-    public HashSet<Region> neighbours = new HashSet<Region>();
-    public HashSet<Tile> tiles = new HashSet<Tile>();
+    public int x;
+    public int y;
 
-    protected HashSet<Tile> borderTiles = new HashSet<Tile>();
+    public float gCost;
+    public float hCost;
+    public float fCost;
+
+    public HashSet<Region> neighbours = new HashSet<Region>();
+
+    public HashSet<Tile> tiles = new HashSet<Tile>();
+    public HashSet<Tile> impassableTiles = new HashSet<Tile>();
+    public HashSet<Tile> searchTiles = new HashSet<Tile>();
 
     List<Tile> northPairs = new List<Tile>();
     List<Tile> eastPairs = new List<Tile>();
@@ -23,12 +32,18 @@ public class Region
     List<Tile> westPairs = new List<Tile>();
 
     HashSet<int> spans = new HashSet<int>();
+
     Dictionary<ItemTypes, int> itemsInRegion = new Dictionary<ItemTypes, int>();
+    Dictionary<FurnitureTypes, int> furnitureInRegion = new Dictionary<FurnitureTypes, int>();
+    Dictionary<OreTypes, int> oreInRegion = new Dictionary<OreTypes, int>();
+    Dictionary<PlantTypes, int> plantsInRegion = new Dictionary<PlantTypes, int>();
 
     public Cluster inCluster;
+    public bool isDoor;
     public Region(Cluster _inCluster)
     {
         inCluster = _inCluster;
+        isDoor = false;
     }
     public void HighlightTiles(UnityEngine.Color colour, bool isNeighbour)
     {
@@ -101,9 +116,21 @@ public class Region
                     continue;
                 }
 
+                if(t2.IsObjectInstalled() == true)
+                {
+                    UpdateDict(t2.installedObject);
+
+                    if(t2.IsAccessible() == Accessibility.IMPASSABLE)
+                    {
+                        impassableTiles.Add(t2);
+                    }
+                }
+
                 CheckIfBorder(t);
             }
         }
+
+        GameManager.GetRegionManager().regions.Add(this);
 
         UpdateSpans();
     }
@@ -114,8 +141,6 @@ public class Region
         SortSpans(southPairs, 0);
         SortSpans(westPairs, 1);
 
-        GameManager.GetRegionManager().regions.Add(this);
-
         if (spans.Count > 0)
         {
             foreach (int i in spans)
@@ -124,7 +149,7 @@ public class Region
             }
         }
     }
-    public void SetNeighbours()
+    public virtual void SetNeighbours()
     {
         if(spans.Count == 0)
         {
@@ -291,9 +316,20 @@ public class Region
 
         neighbours.Clear();
         tiles.Clear();
+        impassableTiles.Clear();
+        searchTiles.Clear();
+
+        northPairs.Clear();
+        eastPairs.Clear();
+        southPairs.Clear();
+        westPairs.Clear();
+
         spans.Clear();
-        borderTiles.Clear();
+
         itemsInRegion.Clear();
+        furnitureInRegion.Clear();
+        oreInRegion.Clear();
+        plantsInRegion.Clear();
     }
     public void AddTile(Tile tile)
     {
@@ -311,66 +347,64 @@ public class Region
 
         if (toCheck != null && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this && (toCheck.region as DoorRegion) == null)
         {
-            if (northPairs.Contains(toCheck) == false)
-            {
-                northPairs.Add(toCheck);
-                borderTiles.Add(toCheck);
-            }
+            northPairs.Add(toCheck);
         }
 
         toCheck = t.East;
 
         if (toCheck != null && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this && (toCheck.region as DoorRegion) == null)
         {
-            if (eastPairs.Contains(toCheck) == false)
-            {
-                eastPairs.Add(toCheck);
-                borderTiles.Add(toCheck);
-            }
+            eastPairs.Add(toCheck);
         }
 
         toCheck = t.South;
 
         if (toCheck != null && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this && (toCheck.region as DoorRegion) == null)
         {
-            if (southPairs.Contains(t) == false)
-            {
-                southPairs.Add(t);
-                borderTiles.Add(t);
-            }
+            southPairs.Add(t);
         }
 
         toCheck = t.West;
 
         if (toCheck != null && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this && (toCheck.region as DoorRegion) == null)
         {
-            if (westPairs.Contains(t) == false)
-            {
-                westPairs.Add(t);
-                borderTiles.Add(t);
-            }
+            westPairs.Add(t);
         }
     }
     public void UpdateRegion()
     {
         FindEdges(tiles.First());
 
+        searchTiles = new HashSet<Tile>(tiles);
+
+        foreach (Tile t in impassableTiles)
+        {
+            searchTiles.Add(t);
+        }
+
         itemsInRegion.Clear();
+
+        int _x = 0;
+        int _y = 0;
 
         foreach(Tile tile in tiles)
         {
+            _x += tile.x;
+            _y += tile.y;
+
             if(tile.inventory.item != null)
             {
-                if (itemsInRegion.ContainsKey(tile.inventory.item) == false)
-                {
-                    itemsInRegion.Add(tile.inventory.item, tile.inventory.stackSize);
-                }
-                else
-                {
-                    itemsInRegion[tile.inventory.item] += tile.inventory.stackSize;
-                }
+                UpdateDict(tile.inventory.item, tile.inventory.stackSize);
+            }
+
+            if(tile.IsObjectInstalled() == true)
+            {
+                UpdateDict(tile.installedObject);
             }
         }
+
+        x = Mathf.RoundToInt(_x / tiles.Count);
+        y = Mathf.RoundToInt(_y / tiles.Count);
     }
     public void UpdateDict(ItemTypes type, int amount)
     {
@@ -391,6 +425,62 @@ public class Region
         if (itemsInRegion[type] <= 0)
         {
             itemsInRegion.Remove(type);
+        }
+    }
+    public void UpdateDict(InstalledObject obj)
+    {
+        switch(obj.type)
+        {
+            case InstalledObjectType.FURNITURE:
+
+                if (furnitureInRegion.ContainsKey((obj as Furniture).furnitureType) == false)
+                {
+                    furnitureInRegion.Add((obj as Furniture).furnitureType, 1);
+                    return;
+                }
+
+                furnitureInRegion[(obj as Furniture).furnitureType] += 1;
+
+                if (furnitureInRegion[(obj as Furniture).furnitureType] <= 0)
+                {
+                    furnitureInRegion.Remove((obj as Furniture).furnitureType);
+                }
+
+                break;
+
+            case InstalledObjectType.ORE:
+
+                if (oreInRegion.ContainsKey((obj as Ore).oreType) == false)
+                {
+                    oreInRegion.Add((obj as Ore).oreType, 1);
+                    return;
+                }
+
+                oreInRegion[(obj as Ore).oreType] += 1;
+
+                if (oreInRegion[(obj as Ore).oreType] <= 0)
+                {
+                    oreInRegion.Remove((obj as Ore).oreType);
+                }
+
+                break;
+
+            case InstalledObjectType.PLANT:
+
+                if (plantsInRegion.ContainsKey((obj as Plant).plantType) == false)
+                {
+                    plantsInRegion.Add((obj as Plant).plantType, 1);
+                    return;
+                }
+
+                plantsInRegion[(obj as Plant).plantType] += 1;
+
+                if (plantsInRegion[(obj as Plant).plantType] <= 0)
+                {
+                    plantsInRegion.Remove((obj as Plant).plantType);
+                }
+
+                break;
         }
     }
     public int Contains(ItemTypes type)
@@ -444,22 +534,50 @@ public class Region
 
         return false;
     }
-    public Accessibility IsAccessible()
+    public bool ContainsTask(TaskType type)
     {
-        return Accessibility.ACCESSIBLE;
-    }
-    public int GetCost(bool isPlayer)
-    {
-        return 0;
-    }
-    public void SetNode(Node node)
-    {
+        foreach (Tile tile in searchTiles)
+        {
+            if(tile.task == null || tile.task.taskType != type || tile.task.worker != null)
+            {
+                continue;
+            }
 
-    }
+            return true;
+        }
 
-    public Region GetRegion()
+        return false;
+    }
+    public Task GetClosestTask(TaskType type, Tile start)
     {
-        return this;
+        HashSet<Tile> toCheck = new HashSet<Tile>(tiles);
+
+        foreach (Tile t in impassableTiles)
+        {
+            toCheck.Add(t);
+        }
+
+        float lowestDist = Mathf.Infinity;
+        Task closest = null;
+
+        foreach (Tile tile in toCheck)
+        {
+            if (tile.task == null || tile.task.taskType != type || tile.task.worker != null)
+            {
+                continue;
+            }
+
+            int distX = Mathf.Abs(start.x - tile.x);
+            int distY = Mathf.Abs(start.y - tile.y);
+
+            if (lowestDist > (distX + distY))
+            {
+                closest = tile.task;
+                lowestDist = distX + distY;
+            }
+        }
+
+        return closest;
     }
     public int GenerateLinkHash(int x, int y, int direction, int length)
     {
@@ -472,5 +590,23 @@ public class Region
         y = (hash >> 5) & 0xFFF;
         direction = (hash >> 4) & 0x1;
         length = hash & 0xF;
+    }
+
+    public bool ContainsValidStorage(ItemTypes type, int amount)
+    {
+        foreach(Tile tile in tiles)
+        {
+            if(tile.inventory.isStored == false)
+            {
+                continue;
+            }
+
+            if (tile.inventory.CanBeStored(type, amount) > 0)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

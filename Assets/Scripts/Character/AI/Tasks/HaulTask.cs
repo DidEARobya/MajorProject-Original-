@@ -54,6 +54,8 @@ public class HaulTask : Task
                 {
                     taskCompleteCallback(this);
                 }
+
+                storageTile.task = null;
             }
         }
     }

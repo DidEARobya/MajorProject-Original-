@@ -42,7 +42,7 @@ public static class InventoryManager
         UpdateCallback(inventory);
     }
     public static void AddToTileInventory(ItemTypes type, Tile tile, int amount)
-    {
+    {   
         int excess = tile.inventory.StoreItem(type, amount);
 
         if(excess != 0)

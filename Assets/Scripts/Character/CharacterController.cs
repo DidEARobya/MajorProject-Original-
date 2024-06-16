@@ -36,7 +36,9 @@ public class CharacterController : InventoryOwner
 
     Action<CharacterController> characterUpdateCallback;
     
-    public List<TaskType> priorityList = new List<TaskType>(); 
+    public List<TaskType> priorityList = new List<TaskType>();
+    public TaskPriorityDict priorityDict;
+    public GameObject priorityDisplay;
 
     public bool requestedTask;
     public bool requestedPath;
@@ -52,6 +54,9 @@ public class CharacterController : InventoryOwner
         priorityList.Add(TaskType.MINING);
         priorityList.Add(TaskType.AGRICULTURE);
         priorityList.Add(TaskType.HAULING);
+
+        priorityDict = new TaskPriorityDict();
+        priorityDict.Init(this);
     }
     public void SetCharacterObj(GameObject obj)
     {
