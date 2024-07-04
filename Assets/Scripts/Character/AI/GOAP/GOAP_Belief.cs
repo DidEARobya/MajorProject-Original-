@@ -5,10 +5,10 @@ using UnityEngine;
 
 public class BeliefFactory
 {
-    readonly CharacterController agent;
+    readonly GOAP_Agent agent;
     readonly Dictionary<string, GOAP_Belief> beliefs;
 
-    public BeliefFactory(CharacterController _agent, Dictionary<string, GOAP_Belief> _beliefs)
+    public BeliefFactory(GOAP_Agent _agent, Dictionary<string, GOAP_Belief> _beliefs)
     {
         agent = _agent;
         beliefs = _beliefs;

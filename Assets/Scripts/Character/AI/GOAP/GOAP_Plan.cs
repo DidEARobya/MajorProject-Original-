@@ -5,12 +5,12 @@ using UnityEngine;
 
 public interface IGoapPlanner
 {
-    GOAP_Plan Plan(CharacterController agent, HashSet<GOAP_Goal> goals, GOAP_Goal lastGoal = null);
+    GOAP_Plan Plan(GOAP_Agent agent, HashSet<GOAP_Goal> goals, GOAP_Goal lastGoal = null);
 }
 
 public class GOAP_Planner : IGoapPlanner
 {
-    public GOAP_Plan Plan(CharacterController agent, HashSet<GOAP_Goal> goals, GOAP_Goal lastGoal = null)
+    public GOAP_Plan Plan(GOAP_Agent agent, HashSet<GOAP_Goal> goals, GOAP_Goal lastGoal = null)
     {
         List<GOAP_Goal> orderedGoals = goals
         .Where(g => g.desiredEffects.Any(b => !b.Evaluate()))
@@ -30,9 +30,9 @@ public class GOAP_Planner : IGoapPlanner
 
                 Stack<GOAP_Action> actionStack = new Stack<GOAP_Action>();
 
-                while(goalNode.leaves.Count > 0)
+                while(goalNode.neighbours.Count > 0)
                 {
-                    GOAP_Node cheapestLeaf = goalNode.leaves.OrderBy(leaf => leaf.cost).First();
+                    GOAP_Node cheapestLeaf = goalNode.neighbours.OrderBy(leaf => leaf.cost).First();
                     goalNode = cheapestLeaf;
                     actionStack.Push(cheapestLeaf.action);
                 }
@@ -71,7 +71,7 @@ public class GOAP_Planner : IGoapPlanner
 
                 if(FindPath(newNode, newAvailableActions))
                 {
-                    parent.leaves.Add(newNode);
+                    parent.neighbours.Add(newNode);
                     newRequiredEffects.ExceptWith(newNode.action.preconditions);
                 }
 
@@ -90,17 +90,17 @@ public class GOAP_Node
     public GOAP_Node parent;
     public GOAP_Action action;
     public HashSet<GOAP_Belief> requiredEffects;
-    public List<GOAP_Node> leaves;
+    public HashSet<GOAP_Node> neighbours;
     public int cost;
 
-    public bool IsDead => leaves.Count == 0 && action == null;
+    public bool IsDead => neighbours.Count == 0 && action == null;
 
     public GOAP_Node(GOAP_Node _parent, GOAP_Action _action, HashSet<GOAP_Belief> effects, int _cost)
     {
         parent = _parent;
         action = _action;
         requiredEffects = effects;
-        leaves = new List<GOAP_Node>();
+        neighbours = new HashSet<GOAP_Node>();
         cost = _cost;
     }
 }

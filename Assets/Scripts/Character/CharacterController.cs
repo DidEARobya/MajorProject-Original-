@@ -19,7 +19,7 @@ public class CharacterController : InventoryOwner
 
     public GameObject characterObj;
     public Inventory inventory;
-
+     
     public Tile currentTile;
     public Tile nextTile;
     public Tile destinationTile;
@@ -34,7 +34,7 @@ public class CharacterController : InventoryOwner
     public Task activeTask;
     public List<Task> taskList = new List<Task>();
 
-    float workDelay = 0f;
+    //float workDelay = 0f;
     public HashSet<Task> ignoredTasks = new HashSet<Task>(); 
 
     Action<CharacterController> characterUpdateCallback;
@@ -43,19 +43,10 @@ public class CharacterController : InventoryOwner
     public TaskPriorityDict priorityDict;
     public GameObject priorityDisplay;
 
+    GOAP_Agent goapAgent;
+
     public bool requestedTask;
     public bool requestedPath;
-
-    GOAP_Goal lastGoal;
-    public GOAP_Goal currentGoal;
-    public GOAP_Plan actionPlan;
-    public GOAP_Action currentAction;
-
-    public Dictionary<string, GOAP_Belief> beliefs;
-    public HashSet<GOAP_Action> actions;
-    public HashSet<GOAP_Goal> goals;
-
-    IGoapPlanner goalPlanner;
 
     public CharacterController(Tile tile) : base (InventoryOwnerType.CHARACTER)
     {
@@ -63,13 +54,8 @@ public class CharacterController : InventoryOwner
         nextTile = currentTile;
         destinationTile = currentTile;
 
+        goapAgent = new GOAP_Agent(this);
         InventoryManager.CreateNewInventory(ownerType, null, this);
-
-        SetupBeliefs();
-        SetupActions();
-        SetupGoals();
-
-        goalPlanner = new GOAP_Planner();
 
         priorityList.Add(TaskType.CONSTRUCTION);
         priorityList.Add(TaskType.MINING);
@@ -79,90 +65,13 @@ public class CharacterController : InventoryOwner
         priorityDict = new TaskPriorityDict();
         priorityDict.Init(this);
     }
-
-    void SetupBeliefs()
-    {
-        beliefs = new Dictionary<string, GOAP_Belief>();
-
-        BeliefFactory factory = new BeliefFactory(this, beliefs);
-
-        factory.AddBelief("Nothing", () => false);
-        factory.AddBelief("Idle", () => pathFinder == null);
-        factory.AddBelief("Moving", () => pathFinder != null);
-        factory.AddBelief("Working", () => taskList.Count != 0);
-    }
-
-    void SetupActions()
-    {
-        actions = new HashSet<GOAP_Action>();
-
-        actions.Add(new GOAP_Action.Builder("Relax").WithStrategy(new IdleStrategy(5)).AddEffect(beliefs["Nothing"]).Build());
-        actions.Add(new GOAP_Action.Builder("Work").WithStrategy(new WorkStrategy(this)).AddEffect(beliefs["Working"]).Build());
-    }
-
-    void SetupGoals()
-    {
-        goals = new HashSet<GOAP_Goal>();
-
-        goals.Add(new GOAP_Goal.Builder("Nothing").WithPriority(1).AddDesiredEffect(beliefs["Nothing"]).Build());
-        goals.Add(new GOAP_Goal.Builder("Work").WithPriority(1).AddDesiredEffect(beliefs["Working"]).Build());
-    }
     public void SetCharacterObj(GameObject obj)
     {
         characterObj = obj;
     }
-    void CalculatePlan()
-    {
-        int priorityLevel = currentGoal?.priority ?? 0;
-
-        HashSet<GOAP_Goal> goalsToCheck = goals;
-
-        if(currentGoal != null)
-        {
-            goalsToCheck = new HashSet<GOAP_Goal>(goals.Where(g => g.priority > priorityLevel));
-        }
-
-        GOAP_Plan potentialPlan = goalPlanner.Plan(this, goalsToCheck, lastGoal);
-
-        Debug.Log(potentialPlan.goal.name);
-
-        if(potentialPlan != null)
-        {
-            actionPlan = potentialPlan;
-        }
-    }
     public void Update(float deltaTime)
     {
-        if(currentAction == null)
-        {
-            CalculatePlan();
-
-            if(actionPlan != null && actionPlan.actions.Count > 0) 
-            { 
-                pathFinder = null;
-
-                currentGoal = actionPlan.goal;
-                currentAction = actionPlan.actions.Pop();
-                currentAction.Start();
-            }
-        }
-
-        if(actionPlan != null && currentAction != null)
-        {
-            currentAction.Update(deltaTime);
-
-            if(currentAction.Complete)
-            {
-                currentAction.Stop();
-                currentAction = null;
-
-                if(actionPlan.actions.Count == 0)
-                {
-                    lastGoal = currentGoal;
-                    currentGoal = null;
-                }
-            }
-        }
+        goapAgent.Update(deltaTime);
 
         if (requestedPath == true)
         {
@@ -185,48 +94,6 @@ public class CharacterController : InventoryOwner
         }
 
         if (DoWork(deltaTime) == true)
-        {
-            return;
-        }
-
-        if (requestedPath == false && pathFinder == null && activeTask != null)
-        {
-            if (activeTask.taskType == TaskType.HAULING)
-            {
-                activeTask.CancelTask(false);
-            }
-            else
-            {
-                activeTask.CancelTask(true, true);
-            }
-        }
-        return;
-
-        if (activeTask == null && taskList.Count == 0)
-        {
-            workDelay += deltaTime;
-
-            if (workDelay >= 0.2f && requestedTask == false)
-            {
-                GameManager.GetTaskRequestHandler().RequestTask(this);
-
-                workDelay = 0f;
-            }
-
-            return;
-        }
-
-        if(activeTask == null)
-        {
-            if (taskList.Count == 0)
-            {
-                return;
-            }
-
-            SetActiveTask(taskList[0], false);
-        }
-
-        if(DoWork(deltaTime) == true)
         {
             return;
         }
@@ -386,3 +253,44 @@ public class CharacterController : InventoryOwner
         Debug.Log("Ending Wrong Task");
     }
 }
+
+//if (activeTask == null && taskList.Count == 0)
+//{
+//    workDelay += deltaTime;
+
+//    if (workDelay >= 0.2f && requestedTask == false)
+//    {
+//        GameManager.GetTaskRequestHandler().RequestTask(this);
+
+//        workDelay = 0f;
+//    }
+
+//    return;
+//}
+
+//if(activeTask == null)
+//{
+//    if (taskList.Count == 0)
+//    {
+//        return;
+//    }
+
+//    SetActiveTask(taskList[0], false);
+//}
+
+//if(DoWork(deltaTime) == true)
+//{
+//    return;
+//}
+
+//if (requestedPath == false && pathFinder == null && activeTask != null)
+//{
+//    if (activeTask.taskType == TaskType.HAULING)
+//    {
+//        activeTask.CancelTask(false);
+//    }
+//    else
+//    {
+//        activeTask.CancelTask(true, true);
+//    }
+//}
