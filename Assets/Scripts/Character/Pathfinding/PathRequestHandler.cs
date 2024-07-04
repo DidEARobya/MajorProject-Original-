@@ -12,9 +12,9 @@ public class PathRequestHandler : MonoBehaviour
 
     static bool isHandlingRequest = false;
 
-    public static void RequestPath(CharacterController character, Tile destination)
+    public static void RequestPath(CharacterController character, Tile destination, bool acceptNeighbours)
     {
-        PathRequest request = new PathRequest(character, destination);  
+        PathRequest request = new PathRequest(character, destination, acceptNeighbours);  
         
         if (requests.Contains(request))
         {
@@ -55,7 +55,7 @@ public class PathRequestHandler : MonoBehaviour
             CharacterController character = request.character;
 
             Path_AStar path = new Path_AStar();
-            bool isValid = path.TilePathfind(character.currentTile, request.destination, true);
+            bool isValid = path.TilePathfind(character.currentTile, request.destination, true, request.acceptNeighbours);
 
             if(isValid == false || (path.Length() == 0 && character.currentTile.IsNeighbour(request.destination) == false && character.currentTile != request.destination))
             {
@@ -98,10 +98,11 @@ public class PathRequest
 {
     public CharacterController character;
     public Tile destination;
-
-    public PathRequest(CharacterController _character, Tile _tile)
+    public bool acceptNeighbours;
+    public PathRequest(CharacterController _character, Tile _tile, bool _acceptNeighbours)
     {
         character = _character;
         destination = _tile;
+        acceptNeighbours = _acceptNeighbours;
     }
 }

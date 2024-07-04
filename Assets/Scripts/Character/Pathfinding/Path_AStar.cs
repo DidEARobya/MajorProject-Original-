@@ -18,7 +18,7 @@ public class Path_AStar
     {
 
     }
-    public bool TilePathfind(Tile start, Tile end, bool _isPlayer)
+    public bool TilePathfind(Tile start, Tile end, bool _isPlayer, bool acceptNeighbours)
     {
         if (start == null || end == null)
         {
@@ -47,10 +47,21 @@ public class Path_AStar
             Node current = openSet.Dequeue();
             closedSet.Add(current);
 
-            if (current.data.GetTile().IsNeighbour(end) == true)
+            if(acceptNeighbours == false)
             {
-                path = RetraceTilePath(startNode, current);
-                return true;
+                if (current.data.GetTile() == end)
+                {
+                    path = RetraceTilePath(startNode, current);
+                    return true;
+                }
+            }
+            else
+            {
+                if (current.data.GetTile().IsNeighbour(end) == true)
+                {
+                    path = RetraceTilePath(startNode, current);
+                    return true;
+                }
             }
 
             foreach (Node neighbour in current.neighbours)

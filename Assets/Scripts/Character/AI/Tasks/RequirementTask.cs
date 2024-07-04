@@ -118,7 +118,7 @@ public class RequirementTask : Task
         {
             if(CheckIfRequirementsFulfilled() == true)
             {
-                PathRequestHandler.RequestPath(worker, tile);
+                PathRequestHandler.RequestPath(worker, tile, true);
                 return;
             }
 

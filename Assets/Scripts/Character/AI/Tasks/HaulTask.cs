@@ -20,7 +20,7 @@ public class HaulTask : Task
     public override void InitTask(CharacterController character)
     {
         base.InitTask(character);
-        PathRequestHandler.RequestPath(worker, tile);
+        PathRequestHandler.RequestPath(worker, tile, true);
     }
     public override void DoWork(float workTime)
     {
@@ -36,7 +36,7 @@ public class HaulTask : Task
                 {
                     if (pathRequested == false)
                     {
-                        PathRequestHandler.RequestPath(worker, storageTile);
+                        PathRequestHandler.RequestPath(worker, storageTile, true);
                         pathRequested = true;
                     }
 

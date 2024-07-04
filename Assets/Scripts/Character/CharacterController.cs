@@ -1,7 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Experimental.AI;
 
 public class CharacterController : InventoryOwner
 {
@@ -42,6 +45,18 @@ public class CharacterController : InventoryOwner
 
     public bool requestedTask;
     public bool requestedPath;
+
+    GOAP_Goal lastGoal;
+    public GOAP_Goal currentGoal;
+    public GOAP_Plan actionPlan;
+    public GOAP_Action currentAction;
+
+    public Dictionary<string, GOAP_Belief> beliefs;
+    public HashSet<GOAP_Action> actions;
+    public HashSet<GOAP_Goal> goals;
+
+    IGoapPlanner goalPlanner;
+
     public CharacterController(Tile tile) : base (InventoryOwnerType.CHARACTER)
     {
         currentTile = tile;
@@ -49,6 +64,12 @@ public class CharacterController : InventoryOwner
         destinationTile = currentTile;
 
         InventoryManager.CreateNewInventory(ownerType, null, this);
+
+        SetupBeliefs();
+        SetupActions();
+        SetupGoals();
+
+        goalPlanner = new GOAP_Planner();
 
         priorityList.Add(TaskType.CONSTRUCTION);
         priorityList.Add(TaskType.MINING);
@@ -58,13 +79,92 @@ public class CharacterController : InventoryOwner
         priorityDict = new TaskPriorityDict();
         priorityDict.Init(this);
     }
+
+    void SetupBeliefs()
+    {
+        beliefs = new Dictionary<string, GOAP_Belief>();
+
+        BeliefFactory factory = new BeliefFactory(this, beliefs);
+
+        factory.AddBelief("Nothing", () => false);
+        factory.AddBelief("Idle", () => pathFinder == null);
+        factory.AddBelief("Moving", () => pathFinder != null);
+        factory.AddBelief("Working", () => taskList.Count != 0);
+    }
+
+    void SetupActions()
+    {
+        actions = new HashSet<GOAP_Action>();
+
+        actions.Add(new GOAP_Action.Builder("Relax").WithStrategy(new IdleStrategy(5)).AddEffect(beliefs["Nothing"]).Build());
+        actions.Add(new GOAP_Action.Builder("Work").WithStrategy(new WorkStrategy(this)).AddEffect(beliefs["Working"]).Build());
+    }
+
+    void SetupGoals()
+    {
+        goals = new HashSet<GOAP_Goal>();
+
+        goals.Add(new GOAP_Goal.Builder("Nothing").WithPriority(1).AddDesiredEffect(beliefs["Nothing"]).Build());
+        goals.Add(new GOAP_Goal.Builder("Work").WithPriority(1).AddDesiredEffect(beliefs["Working"]).Build());
+    }
     public void SetCharacterObj(GameObject obj)
     {
         characterObj = obj;
     }
+    void CalculatePlan()
+    {
+        int priorityLevel = currentGoal?.priority ?? 0;
+
+        HashSet<GOAP_Goal> goalsToCheck = goals;
+
+        if(currentGoal != null)
+        {
+            goalsToCheck = new HashSet<GOAP_Goal>(goals.Where(g => g.priority > priorityLevel));
+        }
+
+        GOAP_Plan potentialPlan = goalPlanner.Plan(this, goalsToCheck, lastGoal);
+
+        Debug.Log(potentialPlan.goal.name);
+
+        if(potentialPlan != null)
+        {
+            actionPlan = potentialPlan;
+        }
+    }
     public void Update(float deltaTime)
     {
-        if(requestedPath == true)
+        if(currentAction == null)
+        {
+            CalculatePlan();
+
+            if(actionPlan != null && actionPlan.actions.Count > 0) 
+            { 
+                pathFinder = null;
+
+                currentGoal = actionPlan.goal;
+                currentAction = actionPlan.actions.Pop();
+                currentAction.Start();
+            }
+        }
+
+        if(actionPlan != null && currentAction != null)
+        {
+            currentAction.Update(deltaTime);
+
+            if(currentAction.Complete)
+            {
+                currentAction.Stop();
+                currentAction = null;
+
+                if(actionPlan.actions.Count == 0)
+                {
+                    lastGoal = currentGoal;
+                    currentGoal = null;
+                }
+            }
+        }
+
+        if (requestedPath == true)
         {
             return;
         }
@@ -73,6 +173,34 @@ public class CharacterController : InventoryOwner
         {
             TraversePath(deltaTime);
         }
+
+        if (activeTask == null)
+        {
+            if (taskList.Count == 0)
+            {
+                return;
+            }
+
+            SetActiveTask(taskList[0], false);
+        }
+
+        if (DoWork(deltaTime) == true)
+        {
+            return;
+        }
+
+        if (requestedPath == false && pathFinder == null && activeTask != null)
+        {
+            if (activeTask.taskType == TaskType.HAULING)
+            {
+                activeTask.CancelTask(false);
+            }
+            else
+            {
+                activeTask.CancelTask(true, true);
+            }
+        }
+        return;
 
         if (activeTask == null && taskList.Count == 0)
         {
@@ -174,7 +302,7 @@ public class CharacterController : InventoryOwner
         {
             nextTile = currentTile;
             pathFinder = null;
-            PathRequestHandler.RequestPath(this, destinationTile);
+            PathRequestHandler.RequestPath(this, destinationTile, true);
             return;
         }
 
