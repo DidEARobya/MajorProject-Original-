@@ -33,9 +33,9 @@ public class GOAP_Belief
     Func<bool> condition = () => false;
     Tile location = null;
 
-    GOAP_Belief(string name)
+    GOAP_Belief(string _name)
     {
-
+        name = _name;
     }
 
     public bool Evaluate()

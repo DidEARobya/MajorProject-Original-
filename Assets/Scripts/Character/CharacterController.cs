@@ -34,7 +34,6 @@ public class CharacterController : InventoryOwner
     public Task activeTask;
     public List<Task> taskList = new List<Task>();
 
-    //float workDelay = 0f;
     public HashSet<Task> ignoredTasks = new HashSet<Task>(); 
 
     Action<CharacterController> characterUpdateCallback;
@@ -44,6 +43,7 @@ public class CharacterController : InventoryOwner
     public GameObject priorityDisplay;
 
     GOAP_Agent goapAgent;
+    GOAP_Sensor taskSensor;
 
     public bool requestedTask;
     public bool requestedPath;
@@ -55,6 +55,7 @@ public class CharacterController : InventoryOwner
         destinationTile = currentTile;
 
         goapAgent = new GOAP_Agent(this);
+        taskSensor = new GOAP_Sensor(this, goapAgent);
         InventoryManager.CreateNewInventory(ownerType, null, this);
 
         priorityList.Add(TaskType.CONSTRUCTION);
@@ -72,6 +73,7 @@ public class CharacterController : InventoryOwner
     public void Update(float deltaTime)
     {
         goapAgent.Update(deltaTime);
+        taskSensor.Update(deltaTime);
 
         if (requestedPath == true)
         {
@@ -80,34 +82,8 @@ public class CharacterController : InventoryOwner
 
         if (pathFinder != null || currentTile != nextTile)
         {
+            goapAgent.stamina -= 0.25f * deltaTime;
             TraversePath(deltaTime);
-        }
-
-        if (activeTask == null)
-        {
-            if (taskList.Count == 0)
-            {
-                return;
-            }
-
-            SetActiveTask(taskList[0], false);
-        }
-
-        if (DoWork(deltaTime) == true)
-        {
-            return;
-        }
-
-        if (requestedPath == false && pathFinder == null && activeTask != null)
-        {
-            if (activeTask.taskType == TaskType.HAULING)
-            {
-                activeTask.CancelTask(false);
-            }
-            else
-            {
-                activeTask.CancelTask(true, true);
-            }
         }
     }
     public void SetActiveTask(Task task, bool requeue)
@@ -127,21 +103,6 @@ public class CharacterController : InventoryOwner
         activeTask.AddTaskCompleteCallback(EndTask);
 
         activeTask.InitTask(this);
-    }
-    bool DoWork(float deltaTime)
-    {
-        if(activeTask == null)
-        {
-            return false;
-        }
-
-        if(destinationTile == currentTile)
-        {
-            activeTask.DoWork(deltaTime);
-            return true;
-        }
-
-        return false;
     }
     void TraversePath(float deltaTime)
     {
@@ -253,44 +214,3 @@ public class CharacterController : InventoryOwner
         Debug.Log("Ending Wrong Task");
     }
 }
-
-//if (activeTask == null && taskList.Count == 0)
-//{
-//    workDelay += deltaTime;
-
-//    if (workDelay >= 0.2f && requestedTask == false)
-//    {
-//        GameManager.GetTaskRequestHandler().RequestTask(this);
-
-//        workDelay = 0f;
-//    }
-
-//    return;
-//}
-
-//if(activeTask == null)
-//{
-//    if (taskList.Count == 0)
-//    {
-//        return;
-//    }
-
-//    SetActiveTask(taskList[0], false);
-//}
-
-//if(DoWork(deltaTime) == true)
-//{
-//    return;
-//}
-
-//if (requestedPath == false && pathFinder == null && activeTask != null)
-//{
-//    if (activeTask.taskType == TaskType.HAULING)
-//    {
-//        activeTask.CancelTask(false);
-//    }
-//    else
-//    {
-//        activeTask.CancelTask(true, true);
-//    }
-//}

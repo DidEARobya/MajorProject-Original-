@@ -47,6 +47,8 @@ public class GOAP_Planner : IGoapPlanner
 
     bool FindPath(GOAP_Node parent, HashSet<GOAP_Action> actions)
     {
+        var orderedByCost = actions.OrderBy(a => a.cost);
+
         foreach(GOAP_Action action in actions)
         {
             HashSet<GOAP_Belief> requiredEffects = parent.requiredEffects;

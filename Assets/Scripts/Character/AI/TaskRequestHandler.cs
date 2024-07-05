@@ -48,10 +48,11 @@ public class TaskRequestHandler
                 return;
             }
 
-            Task task =  request.priorityDict.GetTask();
+            Task task = request.priorityDict.GetTask();
 
             if (task != null)
             {
+                task.worker = request;
                 request.taskList.Add(task);
             }
 
