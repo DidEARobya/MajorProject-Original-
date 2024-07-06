@@ -151,7 +151,7 @@ public class WanderStrategy : IActionStrategy
     public bool CanPerform => !Complete;
     public bool Complete
     {
-        get { return character.requestedPath == false && character.pathFinder == null && agent.isSocialising == false; }
+        get { return character.taskList.Count != 0 || (character.requestedPath == false && character.pathFinder == null && agent.isSocialising == false); }
         private set { }
     }
 

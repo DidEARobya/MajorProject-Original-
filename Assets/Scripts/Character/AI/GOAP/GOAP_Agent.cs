@@ -12,6 +12,8 @@ public class GOAP_Agent
     public Tile currentTile => character.currentTile;
     List<Task> taskList => character.taskList;
 
+    GOAP_Sensor taskSensor;
+
     GOAP_Goal lastGoal;
     public GOAP_Goal currentGoal;
     public GOAP_Plan actionPlan;
@@ -34,6 +36,7 @@ public class GOAP_Agent
         SetupActions();
         SetupGoals();
 
+        taskSensor = new GOAP_Sensor(character, this);
         goalPlanner = new GOAP_Planner();
     }
     void SetupBeliefs()
@@ -73,6 +76,11 @@ public class GOAP_Agent
     }
     public void Update(float deltaTime)
     {
+        if(stamina >= 30)
+        {
+            taskSensor.Update(deltaTime);
+        }
+
         if (currentAction == null)
         {
             CalculatePlan();

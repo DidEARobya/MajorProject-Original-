@@ -43,7 +43,6 @@ public class CharacterController : InventoryOwner
     public GameObject priorityDisplay;
 
     GOAP_Agent goapAgent;
-    GOAP_Sensor taskSensor;
 
     public bool requestedTask;
     public bool requestedPath;
@@ -55,7 +54,6 @@ public class CharacterController : InventoryOwner
         destinationTile = currentTile;
 
         goapAgent = new GOAP_Agent(this);
-        taskSensor = new GOAP_Sensor(this, goapAgent);
         InventoryManager.CreateNewInventory(ownerType, null, this);
 
         priorityList.Add(TaskType.CONSTRUCTION);
@@ -73,7 +71,6 @@ public class CharacterController : InventoryOwner
     public void Update(float deltaTime)
     {
         goapAgent.Update(deltaTime);
-        taskSensor.Update(deltaTime);
 
         if (requestedPath == true)
         {

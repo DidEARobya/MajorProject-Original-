@@ -15,7 +15,7 @@ public class GOAP_Sensor
         character = _character;
         agent = _agent;
 
-        scanInterval = 1.0f;
+        scanInterval = 0.1f;
         timer = 0.0f;
     }
 
