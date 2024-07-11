@@ -166,7 +166,7 @@ public class WanderStrategy : IActionStrategy
     {
         Tile start = character.currentTile;
 
-        Tile tile = GameManager.GetWorldGrid().GetRandomTileWithRadius(start, radius);
+        Tile tile = GameManager.GetWorldGrid().GetRandomTileUsingRadius(start, radius);
 
         if(tile == null)
         {

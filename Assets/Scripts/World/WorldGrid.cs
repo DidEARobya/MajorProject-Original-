@@ -52,7 +52,7 @@ public class WorldGrid
 
         return tiles[x, y];
     }
-    public Tile GetRandomTileWithRadius(Tile start, int radius)
+    public Tile GetRandomTileUsingRadius(Tile start, int radius)
     {
         List<Tile> validTiles = new List<Tile>();
         HashSet<Tile> beenChecked = new HashSet<Tile>();

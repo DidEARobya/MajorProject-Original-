@@ -26,37 +26,39 @@ public class HaulTask : Task
     {
         taskTime -= workTime * worker.workSpeed;
 
-        if (taskTime <= 0)
+        if (taskTime > 0)
         {
-            if (isGathering == true)
+            return;
+        }
+
+        if (isGathering == true)
+        {
+            tile.isPendingTask = false;
+
+            if (gatherCompleteCallback != null)
             {
-                tile.isPendingTask = false;
-
-                if (gatherCompleteCallback != null)
+                if (pathRequested == false)
                 {
-                    if (pathRequested == false)
-                    {
-                        PathRequestHandler.RequestPath(worker, storageTile, true);
-                        pathRequested = true;
-                    }
-
-                    isGathering = false;
-                    taskTime = 1;
-
-                    gatherCompleteCallback(this);
-                }
-            }
-            else
-            {
-                storageTile.isPendingTask = false;
-
-                if (taskCompleteCallback != null)
-                {
-                    taskCompleteCallback(this);
+                    PathRequestHandler.RequestPath(worker, storageTile, true);
+                    pathRequested = true;
                 }
 
-                storageTile.task = null;
+                isGathering = false;
+                taskTime = 1;
+
+                gatherCompleteCallback(this);
             }
+        }
+        else
+        {
+            storageTile.isPendingTask = false;
+
+            if (taskCompleteCallback != null)
+            {
+                taskCompleteCallback(this);
+            }
+
+            storageTile.task = null;
         }
     }
     public override void CancelTask(bool isCancelled, bool toIgnore = false)

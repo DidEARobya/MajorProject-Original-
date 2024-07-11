@@ -280,15 +280,3 @@ public static class InventoryManager
         inventoryUpdateCallback -= callback;
     }
 }
-
-public struct TilePathPair
-{
-    public Tile tile;
-    public Path_AStar path;
-
-    public TilePathPair(Tile _tile, Path_AStar _path)
-    {
-        tile = _tile;
-        path = _path;
-    }
-}
