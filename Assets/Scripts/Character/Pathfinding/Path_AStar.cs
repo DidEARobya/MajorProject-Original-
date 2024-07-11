@@ -18,7 +18,7 @@ public class Path_AStar
     {
 
     }
-    public bool TilePathfind(Tile start, Tile end, bool _isPlayer)
+    public bool TilePathfind(Tile start, Tile end, bool _isPlayer, bool acceptNeighbours)
     {
         if (start == null || end == null)
         {
@@ -47,10 +47,21 @@ public class Path_AStar
             Node current = openSet.Dequeue();
             closedSet.Add(current);
 
-            if (current.data.GetTile().IsNeighbour(end) == true)
+            if(acceptNeighbours == false)
             {
-                path = RetraceTilePath(startNode, current);
-                return true;
+                if (current.data.GetTile() == end)
+                {
+                    path = RetraceTilePath(startNode, current);
+                    return true;
+                }
+            }
+            else
+            {
+                if (current.data.GetTile().IsNeighbour(end) == true)
+                {
+                    path = RetraceTilePath(startNode, current);
+                    return true;
+                }
             }
 
             foreach (Node neighbour in current.neighbours)
@@ -167,24 +178,6 @@ public class Path_AStar
 
         return val * goal.GetCost(isPlayer);
     }
-    float DistanceBetween(Region start, Region goal)
-    {
-        int distX = Mathf.Abs(start.x - goal.x);
-        int distY = Mathf.Abs(start.y - goal.y);
-
-        float val = 0;
-
-        if (distX > distY)
-        {
-            val += 14 * distY + 10 * (distX - distY);
-        }
-        else
-        {
-            val += 14 * distX + 10 * (distY - distX);
-        }
-
-        return val;
-    }
     public Tile DequeueNextTile()
     {
         if(path.Count == 0)
@@ -204,23 +197,3 @@ public class Path_AStar
         return path.Count;
     }
 }
-
-/*Queue<INodeData> SimplifyPath(List<INodeData> path)
-{
-    Queue<INodeData> waypoints = new Queue<INodeData>();
-    Vector2 oldDir = Vector2.zero;
-
-    for(int i = 1; i < path.Count; i++)
-    {
-        Vector2 newDir = new Vector2(path[i - 1].GetTile().x - path[i].GetTile().x, path[i - 1].GetTile().y - path[i].GetTile().y);
-
-        if(newDir != oldDir)
-        {
-            waypoints.Enqueue(path[i - 1]);
-        }
-
-        oldDir = newDir;
-    }
-
-    return waypoints;
-}*/

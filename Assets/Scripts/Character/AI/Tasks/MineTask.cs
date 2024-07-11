@@ -11,7 +11,7 @@ public class MineTask : Task
     public override void InitTask(CharacterController character)
     {
         base.InitTask(character);
-        PathRequestHandler.RequestPath(worker, tile);
+        PathRequestHandler.RequestPath(worker, tile, true);
     }
     public override void DoWork(float workTime)
     {

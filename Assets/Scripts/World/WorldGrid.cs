@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -51,7 +52,45 @@ public class WorldGrid
 
         return tiles[x, y];
     }
+    public Tile GetRandomTileUsingRadius(Tile start, int radius)
+    {
+        List<Tile> validTiles = new List<Tile>();
+        HashSet<Tile> beenChecked = new HashSet<Tile>();
 
+        Stack<Tile> stack = new Stack<Tile>();
+        stack.Push(start);
+
+        while(stack.Count > 0)
+        {
+            Tile tile = stack.Pop();
+            beenChecked.Add(tile);
+
+            foreach (Tile t2 in tile.GetAdjacentNeigbours())
+            {
+                if(t2.accessibility == Accessibility.IMPASSABLE || beenChecked.Contains(t2) == true)
+                {
+                    continue;
+                }
+
+                float distX = MathF.Pow(t2.x - start.x, 2);
+                float distY = MathF.Pow(t2.y - start.y, 2);
+                float distance = MathF.Sqrt(distX + distY);
+
+                if(distance <= radius)
+                {
+                    stack.Push(t2);
+                    validTiles.Add(t2);
+                }
+            }
+        }
+
+        if(validTiles.Count == 0)
+        {
+            return start;
+        }
+
+        return validTiles[UnityEngine.Random.Range(0, validTiles.Count)];
+    }
     public void InvalidatePathGraph()
     {
         CharacterManager.ResetCharacterTaskIgnores();
