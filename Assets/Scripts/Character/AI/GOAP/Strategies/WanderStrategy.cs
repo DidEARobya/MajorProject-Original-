@@ -33,7 +33,7 @@ public class WanderStrategy : IActionStrategy
             return;
         }
 
-        PathRequestHandler.RequestPath(character, tile, false);
+        //PathRequestHandler.RequestPath(character, tile, false);
     }
     public void Stop()
     {

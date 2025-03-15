@@ -91,17 +91,41 @@ public class RegionManager
 
         return _clusters[x, y];
     }
-    public void UpdateCluster(Cluster cluster)
+    public void UpdateCluster(Cluster cluster, Tile updatedTile)
     {
         if (_hasGenerated == false)
         {
             return;
         }
 
+        bool updateSurrounding = false;
+
+        if(updatedTile != null)
+        {
+            foreach(Tile tile in updatedTile.GetAdjacentNeigbours())
+            {
+                if(tile.region == null || tile.region._inCluster == cluster)
+                {
+                    continue;
+                }
+
+                updateSurrounding = true;
+            }
+        }
+        else
+        {
+            updateSurrounding = true;
+        }
+
         int x = cluster.x;
         int y = cluster.y;
 
         cluster.UpdateCluster();
+
+        if (updateSurrounding == false)
+        {
+            return;
+        }
 
         UpdateClusterAt(x, y + 1);
         UpdateClusterAt(x - 1, y);

@@ -43,7 +43,7 @@ public class Furniture : InstalledObject
             baseTile.zone.RemoveTile(baseTile); 
         }
 
-        GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile));
+        GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile), baseTile);
 
         if (FurnitureTypes.GetBaseAccessibility(furnitureType) == Accessibility.DELAYED)
         {
@@ -68,7 +68,7 @@ public class Furniture : InstalledObject
         if (isInstalled == true)
         {
             InventoryManager.AddToTileInventory(baseTile, FurnitureTypes.GetRequirements(furnitureType, baseMaterial));
-            GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile));
+            GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile), baseTile);
             GameManager.GetWorldGrid().InvalidatePathGraph();
         }
 

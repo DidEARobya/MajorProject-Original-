@@ -34,7 +34,7 @@ public class Ore : InstalledObject
 
         GameManager.GetWorldGrid().InvalidatePathGraph();
 
-        GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile));
+        GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile), baseTile);
 
         if (updateObjectCallback != null)
         {
@@ -49,7 +49,7 @@ public class Ore : InstalledObject
         if (isInstalled == true)
         {
             InventoryManager.AddToTileInventory(baseTile, OreTypes.GetComponents(oreType));
-            GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile));
+            GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile), baseTile);
             GameManager.GetWorldGrid().InvalidatePathGraph();
         }
 

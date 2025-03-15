@@ -60,7 +60,7 @@ public class Plant : InstalledObject
 
         GameManager.GetWorldGrid().InvalidatePathGraph();
 
-        GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile));
+        GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile), baseTile);
 
         if (updateObjectCallback != null)
         {
@@ -93,7 +93,7 @@ public class Plant : InstalledObject
                 baseTile.zone.UpdateZoneTasks();
             }
 
-            GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile));
+            GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile), baseTile);
             GameManager.GetWorldGrid().InvalidatePathGraph();
         }
 

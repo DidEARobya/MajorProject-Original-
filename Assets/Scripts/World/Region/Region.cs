@@ -32,7 +32,7 @@ public class Region
     private Dictionary<OreTypes, int> _oreInRegion = new Dictionary<OreTypes, int>();
     private Dictionary<PlantTypes, int> _plantsInRegion = new Dictionary<PlantTypes, int>();
 
-    private Cluster _inCluster;
+    public Cluster _inCluster;
     public bool isDoor;
     public Region(Cluster inCluster)
     {
