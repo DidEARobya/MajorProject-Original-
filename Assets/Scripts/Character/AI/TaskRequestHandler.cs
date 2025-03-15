@@ -5,13 +5,13 @@ using UnityEngine;
 
 public class TaskRequestHandler
 {
-    Queue<CharacterController> requests = new Queue<CharacterController>();
+    static Queue<CharacterController> requests = new Queue<CharacterController>();
 
     static object requestCompleteLock = new object();
 
-    bool isHandlingRequest = false;
+    static bool isHandlingRequest = false;
 
-    public void RequestTask(CharacterController request)
+    public static void RequestTask(CharacterController request)
     {
         if (requests.Contains(request))
         {
@@ -22,14 +22,14 @@ public class TaskRequestHandler
         requests.Enqueue(request);
         return;
     }
-    public void Update()
+    public static void Update()
     {
         if (requests.Count > 0 && isHandlingRequest == false)
         {
             ThreadPool.QueueUserWorkItem(delegate { ThreadedCompleteRequest(); });
         }
     }
-    void ThreadedCompleteRequest()
+    static void ThreadedCompleteRequest()
     {
         lock (requestCompleteLock)
         {

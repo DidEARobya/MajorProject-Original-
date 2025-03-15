@@ -48,6 +48,7 @@ public class InstalledObject
     {
         ObjectManager.RemoveInstalledObject(this);
         baseTile.installedObject = null;
+        baseTile.accessibility = Accessibility.ACCESSIBLE;
     }
     public virtual int GetMovementCost() { return 0; }
     public virtual string GetObjectNameToString()

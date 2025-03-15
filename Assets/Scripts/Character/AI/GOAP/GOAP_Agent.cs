@@ -1,9 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Unity.VisualScripting;
 using UnityEditor;
+using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 
 public class GOAP_Agent
@@ -24,6 +26,8 @@ public class GOAP_Agent
     public HashSet<GOAP_Goal> goals;
 
     IGoapPlanner goalPlanner;
+
+    int planFailCounter;
 
     public bool isSocialising = false;
 
@@ -76,7 +80,7 @@ public class GOAP_Agent
     }
     public void Update(float deltaTime)
     {
-        if(stamina >= 30)
+        if (stamina >= 30)
         {
             taskSensor.Update(deltaTime);
         }
@@ -117,6 +121,24 @@ public class GOAP_Agent
                 }
             }
         }
+
+        if (currentAction == null)
+        {
+            planFailCounter += 1;
+            
+            if(planFailCounter > 1)
+            {
+                Reset();
+            }
+        }
+        else
+        {
+            planFailCounter = 0;
+        }
+    }
+    void Reset()
+    {
+        goalPlanner = new GOAP_Planner();
     }
     void CalculatePlan()
     {
@@ -133,7 +155,6 @@ public class GOAP_Agent
 
         if (potentialPlan != null)
         {
-            Debug.Log(potentialPlan.goal.name);
             actionPlan = potentialPlan;
         }
     }

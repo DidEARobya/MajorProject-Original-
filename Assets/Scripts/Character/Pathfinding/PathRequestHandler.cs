@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
-public class PathRequestHandler : MonoBehaviour
+public class PathRequestHandler
 {
     static Queue<PathRequest> requests = new Queue<PathRequest>();
 
@@ -47,7 +47,6 @@ public class PathRequestHandler : MonoBehaviour
 
             if (request.character == null || request.destination == null)
             {
-                request = null;
                 isHandlingRequest = false;
                 return;
             } 
@@ -55,12 +54,17 @@ public class PathRequestHandler : MonoBehaviour
             CharacterController character = request.character;
 
             Path_AStar path = new Path_AStar();
-            bool isValid = path.TilePathfind(character.currentTile, request.destination, true, request.acceptNeighbours);
 
-            if(isValid == false || (path.Length() == 0 && character.currentTile.IsNeighbour(request.destination) == false && character.currentTile != request.destination))
+            if(path.IsRegionPathable(character.currentTile.region, request.destination.region, request.destination, true) == false)
             {
                 NoValidPath(character);
-                request = null;
+                path = null;
+                return;
+            }
+
+            if (path.TilePathfind(character.currentTile, request.destination, true, request.acceptNeighbours) == false)
+            {
+                NoValidPath(character);
                 path = null;
                 return;
             }
@@ -70,7 +74,6 @@ public class PathRequestHandler : MonoBehaviour
             character.requestedPath = false;
 
             isHandlingRequest = false;
-            request = null;
         }
     }
     static void NoValidPath(CharacterController character)
@@ -94,7 +97,7 @@ public class PathRequestHandler : MonoBehaviour
         character.requestedPath = false;
     }
 }
-public class PathRequest
+public struct PathRequest
 {
     public CharacterController character;
     public Tile destination;

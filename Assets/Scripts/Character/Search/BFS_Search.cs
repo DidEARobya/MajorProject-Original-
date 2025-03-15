@@ -66,7 +66,7 @@ public class BFS_Search
                 }
             }
 
-            foreach(Region region in current.neighbours)
+            foreach(Region region in current.GetNeighbours())
             {
                 if (beenChecked.Contains(region))
                 {
@@ -101,7 +101,7 @@ public class BFS_Search
                 return current;
             }
 
-            foreach (Region region in current.neighbours)
+            foreach (Region region in current.GetNeighbours())
             {
                 if (beenChecked.Contains(region))
                 {
@@ -136,7 +136,7 @@ public class BFS_Search
                 return current;
             }
 
-            foreach (Region region in current.neighbours)
+            foreach (Region region in current.GetNeighbours())
             {
                 if (beenChecked.Contains(region))
                 {

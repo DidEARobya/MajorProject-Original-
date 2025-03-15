@@ -7,20 +7,20 @@ using System.Linq;
 
 public class Path_TileGraph
 {
-    public Node[,] nodes;
+    private Node[,] _nodes;
     public Path_TileGraph(WorldGrid grid)
     {
-        nodes = new Node[grid.mapSize, grid.mapSize];
+        _nodes = new Node[grid.mapSize, grid.mapSize];
 
         for(int x = 0; x < grid.mapSize; x++)
         {
             for (int y = 0; y < grid.mapSize; y++)
             {
-                nodes[x, y] = new Node(grid.GetTile(x, y), x, y);
+                _nodes[x, y] = new Node(grid.GetTile(x, y), x, y);
             }
         }
 
-        foreach (Node node in nodes)
+        foreach (Node node in _nodes)
         {
             node.neighbours = GetNeighbourNodes(node).ToArray();
         }
@@ -30,7 +30,7 @@ public class Path_TileGraph
     {
         List<Node> neighbours = new List<Node>();
 
-        int length = nodes.GetLength(0);
+        int length = _nodes.GetLength(0);
 
         for(int x = -1; x <= 1;  x++)
         {
@@ -46,9 +46,9 @@ public class Path_TileGraph
 
                 if(checkX >= 0 && checkX < length && checkY >= 0 && checkY < length)
                 {
-                    if (nodes[checkX, checkY].data.IsAccessible() != Accessibility.IMPASSABLE && isClippingCorner(node, nodes[checkX, checkY]) == false)
+                    if (_nodes[checkX, checkY].data.IsAccessible() != Accessibility.IMPASSABLE && isClippingCorner(node, _nodes[checkX, checkY]) == false)
                     {
-                        neighbours.Add(nodes[checkX, checkY]);
+                        neighbours.Add(_nodes[checkX, checkY]);
                     }
                 }
             }
@@ -63,12 +63,12 @@ public class Path_TileGraph
 
         if(Mathf.Abs(dirX) + Mathf.Abs(dirY) == 2)
         {
-            if(nodes[current.x - dirX, current.y].data.IsAccessible() == Accessibility.IMPASSABLE)
+            if(_nodes[current.x - dirX, current.y].data.IsAccessible() == Accessibility.IMPASSABLE)
             {
                 return true;
             }
 
-            if (nodes[current.x, current.y - dirY].data.IsAccessible() == Accessibility.IMPASSABLE)
+            if (_nodes[current.x, current.y - dirY].data.IsAccessible() == Accessibility.IMPASSABLE)
             {
                 return true;
             }

@@ -30,7 +30,7 @@ public class GOAP_Sensor
 
         if(timer > scanInterval)
         {
-            GameManager.GetTaskRequestHandler().RequestTask(character);
+            TaskRequestHandler.RequestTask(character);
             timer = 0.0f;
         }
     }

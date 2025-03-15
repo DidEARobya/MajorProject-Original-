@@ -217,7 +217,7 @@ public class MouseController : MonoBehaviour
 
         if(displayRegions == false && highlightedRegion != null)
         {
-            GameManager.GetRegionManager().ClearRegionDisplayAt(highlightedRegion);
+            highlightedRegion.DestroyDisplayTiles(false);
         }
     }
 
@@ -233,7 +233,7 @@ public class MouseController : MonoBehaviour
             return;
         }
 
-        if(Input.GetKeyUp(KeyCode.Tab))
+        if (Input.GetKeyUp(KeyCode.Tab))
         {
             SetToSelect();
         }
@@ -270,7 +270,11 @@ public class MouseController : MonoBehaviour
 
         if(displayRegions == true && tileUnderMouse != null && tileUnderMouse.region != highlightedRegion)
         {
-            GameManager.GetRegionManager().ClearRegionDisplayAt(highlightedRegion);
+            if(highlightedRegion != null)
+            {
+                highlightedRegion.DestroyDisplayTiles(false);
+            }
+
             highlightedRegion = tileUnderMouse.region;
 
             if (highlightedRegion != null)
