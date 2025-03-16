@@ -28,7 +28,7 @@ public class BuildModeController : MonoBehaviour
     {
         grid = GameManager.GetWorldGrid();
     }
-    public void Build(HashSet<Tile> tiles, BuildMode mode, FurnitureTypes toBuild = null, ItemTypes material = null)
+    public void Build(HashSet<Tile> tiles, BuildMode mode, string toBuild = "")
     {
         foreach (Tile tile in tiles)
         {
@@ -38,14 +38,14 @@ public class BuildModeController : MonoBehaviour
             {
                 if(GameManager.instance.devMode == true)
                 {
-                    ObjectManager.InstallFurniture(toBuild, material, tile, true);
+                    ObjectManager.InstallBuilding(toBuild, tile, true);
                     continue;
                 }
 
-                ObjectManager.InstallFurniture(toBuild, material, tile, false);
+                ObjectManager.InstallBuilding(toBuild, tile, false);
                 InstalledObject obj = tile.GetInstalledObject();
 
-                task = new RequirementTask(tile, (t) => { obj.Install(); }, TaskType.CONSTRUCTION, FurnitureTypes.GetRequirements(toBuild, material), false, FurnitureTypes.GetConstructionTime(toBuild));
+                task = new RequirementTask(tile, (t) => { obj.Install(); }, TaskType.CONSTRUCTION, BuildingDataHandler.GetInstance().GetBuildingData(toBuild).GetRequirements(), false);
                 GameManager.GetTaskManager().AddTask(task, task.taskType);
             }
         }  

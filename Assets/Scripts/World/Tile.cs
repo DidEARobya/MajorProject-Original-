@@ -1,8 +1,11 @@
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Runtime.Serialization;
 
 public enum TerrainType
 {
@@ -28,10 +31,14 @@ public enum Direction
     W,
     NW
 }
+[JsonConverter(typeof(StringEnumConverter))]
 public enum Accessibility
 {
+    [EnumMember(Value = "IMPASSABLE")]
     IMPASSABLE,
+    [EnumMember(Value = "DELAYED")]
     DELAYED,
+    [EnumMember(Value = "ACCESSIBLE")]
     ACCESSIBLE
 }
 public class Tile : InventoryOwner, INodeData
@@ -281,7 +288,7 @@ public class Tile : InventoryOwner, INodeData
 
         return Accessibility.ACCESSIBLE;
     }
-    public Tile GetNearestAvailableInventory(ItemTypes type, int amount)
+    public Tile GetNearestAvailableInventory(ItemData type, int amount)
     {
         if(accessibility != Accessibility.IMPASSABLE && (inventory.item == null || inventory.CanBeStored(type, amount) != 0))
         {
@@ -544,7 +551,7 @@ public class FloorTypes
     {
         return type.movementCost;
     }
-    public static Dictionary<ItemTypes, int> GetRequirements(FloorTypes type)
+    public static Dictionary<ItemData, int> GetRequirements(FloorTypes type)
     {
         if(type.requirements == null)
         {

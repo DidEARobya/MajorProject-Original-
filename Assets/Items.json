@@ -1,0 +1,17 @@
+{
+    "Items":
+    [
+        {
+            "type": "WOOD",
+            "maxStackSize": 50
+        },
+        {
+            "type": "STONE",
+            "maxStackSize": 50
+        },
+        {
+            "type": "IRON",
+            "maxStackSize": 50
+        }
+    ]
+}

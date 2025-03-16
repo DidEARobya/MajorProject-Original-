@@ -51,20 +51,7 @@ public class MenuDropdown : MonoBehaviour
             return;
         }
 
-        switch(type)
-        {
-            case ItemType.WOOD:
-            uiObject.SetType(ItemTypes.WOOD); 
-            break;
-
-            case ItemType.STONE:
-            uiObject.SetType(ItemTypes.STONE);
-            break;
-
-            case ItemType.IRON:
-            uiObject.SetType(ItemTypes.IRON);
-            break;
-        }
+        uiObject.SetType(type);
     }
     public void SetType(PlantType type)
     {

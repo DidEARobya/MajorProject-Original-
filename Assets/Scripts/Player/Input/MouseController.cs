@@ -42,8 +42,8 @@ public class MouseController : MonoBehaviour
     public MouseMode mouseMode;
     public BuildMode buildMode;
 
-    public FurnitureTypes toBuild;
-    public ItemTypes toBuildMaterial;
+   public string toBuild;
+    public ItemData toBuildMaterial;
     public FloorTypes floorType;
 
     protected Tile tileUnderMouse;
@@ -113,14 +113,13 @@ public class MouseController : MonoBehaviour
         selectedTile = null;
         selectedTileDisplay.SetActive(false);
     }
-    public void SetObject(FurnitureTypes obj, ItemTypes material, MouseMode mode)
+    public void SetObject(string building, MouseMode mode)
     {
         ResetSelected();
 
         buildMode = BuildMode.OBJECT;
         mouseMode = mode;
-        toBuild = obj;
-        toBuildMaterial = material;
+        toBuild = building;
 
         UpdateText();
     }
@@ -151,7 +150,7 @@ public class MouseController : MonoBehaviour
 
         UpdateText();
     }
-    public void SetFloor(FloorTypes floor, ItemTypes material, MouseMode mode)
+    public void SetFloor(FloorTypes floor, ItemData material, MouseMode mode)
     {
         ResetSelected();
 
@@ -590,7 +589,7 @@ public class MouseController : MonoBehaviour
                     break;
 
                 case BuildMode.OBJECT:
-                    buildModeController.Build(temp, buildMode, toBuild, toBuildMaterial);
+                    buildModeController.Build(temp, buildMode, toBuild);
                     break;
 
                 case BuildMode.FLOOR:

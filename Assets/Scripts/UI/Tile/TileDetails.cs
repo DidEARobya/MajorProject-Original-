@@ -45,7 +45,7 @@ public class TileDetails : MonoBehaviour
 
         if(tile.inventory.item != null)
         {
-            inventoryText.text = "Contains: " + ItemTypes.GetItemType(tile.inventory.item).ToString() + ", " + tile.inventory.stackSize.ToString();
+            inventoryText.text = "Contains: " + tile.inventory.item.type.ToString() + ", " + tile.inventory.stackSize.ToString();
         }
         else
         {

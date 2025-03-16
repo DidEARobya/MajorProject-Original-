@@ -5491,7 +5491,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.4142011, y: -2.2823799, z: 10}
+  m_LocalPosition: {x: -1.4142033, y: -2.2823799, z: 10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6811,6 +6811,8 @@ GameObject:
   - component: {fileID: 679595936}
   - component: {fileID: 679595937}
   - component: {fileID: 679595935}
+  - component: {fileID: 679595938}
+  - component: {fileID: 679595939}
   m_Layer: 0
   m_Name: WorldScripts
   m_TagString: Untagged
@@ -6888,6 +6890,32 @@ MonoBehaviour:
   itemAtlas: {fileID: 100100200, guid: 7b825b793e5610b48bdadaa604dd3f48, type: 3}
   objectAtlas: {fileID: 100100200, guid: 9c2d035d71f8e704aa6f3f9b135b89e3, type: 3}
   menu: {fileID: 1283964120}
+--- !u!114 &679595938
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 679595934}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdb0dbfdc640e4c41a213293b18891d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fileName: Buildings.json
+--- !u!114 &679595939
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 679595934}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aba4d586e95c0274988c18543bee9453, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fileName: Items.json
 --- !u!1 &681979518
 GameObject:
   m_ObjectHideFlags: 0
@@ -13781,6 +13809,9 @@ MonoBehaviour:
   tileDetails: {fileID: 1391099792}
   mouseMode: 1
   buildMode: 0
+  toBuildMaterial:
+    type: 0
+    maxStackSize: 0
   selectedTileDisplay: {fileID: 1071083058}
   tileOutline: {fileID: 1071695410}
   modeText: {fileID: 1784090622}

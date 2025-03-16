@@ -1,15 +1,18 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public static class ObjectManager
 {
+    private static BuildingDataHandler _buildingDataHandler;
+
     static HashSet<InstalledObject> installedObjects = new HashSet<InstalledObject>();
     static Action<InstalledObject> installObjectCallback;
-    public static void InstallFurniture(FurnitureTypes type, ItemTypes baseMaterial, Tile tile, bool isInstalled)
+    public static void InstallBuilding(string name, Tile tile, bool isInstalled)
     {
-        InstalledObject obj = Furniture.PlaceObject(type, baseMaterial, tile, isInstalled);
+        InstalledObject obj = Building.PlaceObject(_buildingDataHandler.GetBuildingData(name), tile, isInstalled);
 
         if (obj == null)
         {
@@ -55,6 +58,10 @@ public static class ObjectManager
         {
             obj.Update(deltaTime);
         }
+    }
+    public static void SetBuildingDataHandler(BuildingDataHandler buildingHandler)
+    {
+        _buildingDataHandler = buildingHandler;
     }
     public static void AddInstalledObject(InstalledObject installedObject)
     {

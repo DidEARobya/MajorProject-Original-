@@ -41,7 +41,7 @@ public static class InventoryManager
 
         UpdateCallback(inventory);
     }
-    public static void AddToTileInventory(ItemTypes type, Tile tile, int amount)
+    public static void AddToTileInventory(ItemData type, Tile tile, int amount)
     {   
         int excess = tile.inventory.StoreItem(type, amount);
 
@@ -59,14 +59,14 @@ public static class InventoryManager
         UpdateCallback(tile.inventory);
         CharacterManager.ResetCharacterTaskIgnores();
     }
-    public static void AddToTileInventory(Tile tile, Dictionary<ItemTypes, int> toDrop)
+    public static void AddToTileInventory(Tile tile, Dictionary<ItemData, int> toDrop)
     {
         if(toDrop == null)
         {
             return;
         }
 
-        foreach (ItemTypes type in toDrop.Keys)
+        foreach (ItemData type in toDrop.Keys)
         {
             AddToTileInventory(type, tile, toDrop[type]);
         }
@@ -150,7 +150,7 @@ public static class InventoryManager
             inventory.isQueried = false;
         }
     }
-    public static Tile GetClosestValidItem(Tile start, ItemTypes itemType, int amount = 0)
+    public static Tile GetClosestValidItem(Tile start, ItemData itemType, int amount = 0)
     {
         if(inventories.Count == 0)
         {

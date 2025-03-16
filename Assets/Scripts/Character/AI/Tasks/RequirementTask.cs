@@ -11,18 +11,18 @@ using UnityEngine.TextCore.Text;
 
 public class RequirementTask : Task
 {
-    public Dictionary<ItemTypes, int> requirements;
-    public Dictionary<ItemTypes, int> storedRequirements;
+    public Dictionary<ItemData, int> requirements;
+    public Dictionary<ItemData, int> storedRequirements;
 
     FloorTypes floorType;
 
     bool isInitialised = false;
 
-    public RequirementTask(Tile _tile, Action<Task> _taskCompleteCallback, TaskType type, Dictionary<ItemTypes, int> _requirements, bool _isFloor, float _taskTime = 1) : base(_tile, _taskCompleteCallback, type, _isFloor, _taskTime)
+    public RequirementTask(Tile _tile, Action<Task> _taskCompleteCallback, TaskType type, Dictionary<ItemData, int> _requirements, bool _isFloor, float _taskTime = 1) : base(_tile, _taskCompleteCallback, type, _isFloor, _taskTime)
     {
         requirements = _requirements;
 
-        storedRequirements = new Dictionary<ItemTypes, int>();
+        storedRequirements = new Dictionary<ItemData, int>();
 
         if(isFloor == true)
         {
@@ -98,7 +98,7 @@ public class RequirementTask : Task
     {
         HaulTask task = null;
 
-        foreach (ItemTypes item in requirements.Keys)
+        foreach (ItemData item in requirements.Keys)
         {
             if (storedRequirements.ContainsKey(item) == false)
             {

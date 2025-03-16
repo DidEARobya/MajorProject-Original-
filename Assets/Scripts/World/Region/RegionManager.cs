@@ -149,7 +149,7 @@ public class RegionManager
         _hasGenerated = true;
     }
 
-    public void UpdateRegionDict(Region region, ItemTypes itemType, int amount)
+    public void UpdateRegionDict(Region region, ItemData itemType, int amount)
     {
         if (region == null)
         {
@@ -162,7 +162,7 @@ public class RegionManager
             return;
         }
     }
-    public int CheckIfRegionContains(Region region, ItemTypes itemType)
+    public int CheckIfRegionContains(Region region, ItemData itemType)
     {
         if (itemType != null)
         {

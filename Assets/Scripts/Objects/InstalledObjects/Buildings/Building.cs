@@ -1,22 +1,28 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
-public class Furniture : InstalledObject
+public class Building : InstalledObject
 {
-    public FurnitureTypes furnitureType;
-    public ItemTypes baseMaterial;
+    public ItemData baseMaterial;
+    private BuildingData _data;
 
-    static public Furniture PlaceObject(FurnitureTypes _type, ItemTypes _baseMaterial, Tile tile, bool _isInstalled)
+    static public Building PlaceObject(BuildingData data, Tile tile, bool _isInstalled)
     {
-        Furniture obj = new Furniture();
+        if(data == null)
+        {
+            Debug.LogError("FAILED TO FIND BUILDINGDATA");
+            return null;
+        }
+
+        Building obj = new Building();
         obj.type = InstalledObjectType.FURNITURE;
 
         obj.baseTile = tile;
-        obj.furnitureType = _type;
-        obj.baseMaterial = _baseMaterial;
-        obj.durability = FurnitureTypes.GetDurability(_type, obj.baseMaterial);
-        obj.hasRelativeRotation = FurnitureTypes.HasRelativeRotation(_type);
+        obj.durability = data.durability;
+        obj.hasRelativeRotation = data.hasRelativeRotation;
+        obj._data = data;
 
         if (tile.InstallObject(obj) == false)
         {
@@ -35,7 +41,7 @@ public class Furniture : InstalledObject
         base.Install();
 
         isInstalled = true;
-        baseTile.accessibility = FurnitureTypes.GetBaseAccessibility(furnitureType);
+        baseTile.accessibility = _data.baseAccessibility;
         GameManager.GetWorldGrid().InvalidatePathGraph();
 
         if (baseTile.accessibility == Accessibility.IMPASSABLE && baseTile.zone != null)
@@ -45,7 +51,7 @@ public class Furniture : InstalledObject
 
         GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile), baseTile);
 
-        if (FurnitureTypes.GetBaseAccessibility(furnitureType) == Accessibility.DELAYED)
+        if (_data.baseAccessibility == Accessibility.DELAYED)
         {
             AddOnActionCallback(InstalledObjectAction.Door_UpdateAction);
         }
@@ -60,14 +66,14 @@ public class Furniture : InstalledObject
         base.UnInstall();
         GameManager.GetInstalledSpriteController().Uninstall(this);
 
-        if (FurnitureTypes.GetBaseAccessibility(furnitureType) == Accessibility.DELAYED)
+        if (_data.baseAccessibility == Accessibility.DELAYED)
         {
             RemoveOnActionCallback(InstalledObjectAction.Door_UpdateAction);
         }
 
         if (isInstalled == true)
         {
-            InventoryManager.AddToTileInventory(baseTile, FurnitureTypes.GetRequirements(furnitureType, baseMaterial));
+            InventoryManager.AddToTileInventory(baseTile, _data.GetRequirements());
             GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile), baseTile);
             GameManager.GetWorldGrid().InvalidatePathGraph();
         }
@@ -76,10 +82,11 @@ public class Furniture : InstalledObject
     }
     public override string GetObjectNameToString()
     {
-        return ItemTypes.GetItemType(baseMaterial).ToString() + "_" + FurnitureTypes.GetObjectType(furnitureType).ToString();
+        return _data.name;
     }
     public override int GetMovementCost()
     {
-        return FurnitureTypes.GetMovementCost(furnitureType);
+        //Edit
+        return 1;
     }
 }

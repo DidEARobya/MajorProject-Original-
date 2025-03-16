@@ -1,0 +1,65 @@
+{
+    "Items":
+    [
+        {
+            "name": "WOOD_WALL",
+            "type": "WALL",
+            "durability": 400,
+            "constructionTime": 50.0, 
+            "baseAccessibility": "IMPASSABLE",
+            "hasRelativeRotation": false,
+            "requirementsItems":["WOOD"],
+            "requirementsAmounts":[4]
+        },
+        {
+            "name": "STONE_WALL",
+            "type": "WALL",
+            "durability": 500,
+            "constructionTime": 75.0, 
+            "baseAccessibility": "IMPASSABLE",
+            "hasRelativeRotation": false,
+            "requirementsItems":["STONE"],
+            "requirementsAmounts":[4]
+        },
+        {
+            "name": "IRON_WALL",
+            "type": "WALL",
+            "durability": 600,
+            "constructionTime": 100.0, 
+            "baseAccessibility": "IMPASSABLE",
+            "hasRelativeRotation": false,
+            "requirementsItems":["IRON", "WOOD"],
+            "requirementsAmounts":[4, 2]
+        },
+        {
+            "name": "WOOD_DOOR",
+            "type": "DOOR",
+            "durability": 300,
+            "constructionTime": 60.0, 
+            "baseAccessibility": "DELAYED",
+            "hasRelativeRotation": true,
+            "requirementsItems":["WOOD", "IRON"],
+            "requirementsAmounts":[3, 1]
+        },
+        {
+            "name": "STONE_DOOR",
+            "type": "DOOR",
+            "durability": 400,
+            "constructionTime": 85.0, 
+            "baseAccessibility": "DELAYED",
+            "hasRelativeRotation": true,
+            "requirementsItems":["STONE", "IRON"],
+            "requirementsAmounts":[3, 1]
+        },
+        {
+            "name": "IRON_DOOR",
+            "type": "DOOR",
+            "durability": 500,
+            "constructionTime": 110.0, 
+            "baseAccessibility": "DELAYED",
+            "hasRelativeRotation": true,
+            "requirementsItems":["IRON"],
+            "requirementsAmounts":[4]
+        }
+    ]
+}

@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 
 public class Inventory
 {
-    public ItemTypes item;
+    public ItemData item;
     public InventoryOwner owner;
     public GameObject inventoryObject;
 
@@ -68,7 +68,7 @@ public class Inventory
             item = inventory.item;
         }
 
-        int toTake = ItemTypes.GetMaxStackSize(item) - stackSize;
+        int toTake = item.maxStackSize - stackSize;
 
         if(toTake >= inventory.stackSize)
         {
@@ -147,7 +147,7 @@ public class Inventory
         stackSize = 0;
         queriedAmount = 0;
     }
-    public int StoreItem(ItemTypes _item, int amount)
+    public int StoreItem(ItemData _item, int amount)
     {
         toBeStored -= amount;
 
@@ -174,7 +174,7 @@ public class Inventory
 
         return toReturn;
     }
-    public int CanBeStored(ItemTypes _item, int amount)
+    public int CanBeStored(ItemData _item, int amount)
     {
         if(_item == null)
         {
@@ -186,9 +186,9 @@ public class Inventory
             return 0;
         }
 
-        if (stackSize + toBeStored + amount >= ItemTypes.GetMaxStackSize(_item))
+        if (stackSize + toBeStored + amount >= _item.maxStackSize)
         {
-            return ItemTypes.GetMaxStackSize(_item) - (stackSize + toBeStored);
+            return _item.maxStackSize - (stackSize + toBeStored);
         }
 
         return amount;

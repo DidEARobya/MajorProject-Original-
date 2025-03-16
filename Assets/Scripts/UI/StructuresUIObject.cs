@@ -17,12 +17,12 @@ public class StructuresUIObject : UIObject, IButtonClickHandler
     MouseController mouseController;
     public UIObjectType objectType;
 
-    ItemTypes itemType;
+    ItemType itemType;
 
     // Start is called before the first frame update
     void Start()
     {
-        itemType = ItemTypes.WOOD;
+        itemType = ItemType.WOOD;
         mouseController = GameManager.instance.mouseController;
         UpdateDisplay();
     }
@@ -31,31 +31,29 @@ public class StructuresUIObject : UIObject, IButtonClickHandler
         switch(objectType)
         {
             case UIObjectType.WALL:
-            mouseController.SetObject(FurnitureTypes.WALL, itemType, MouseMode.ROW);
+            mouseController.SetObject(itemType.ToString() + "_WALL", MouseMode.ROW);
             break;
 
-            case UIObjectType.DOOR:
-            mouseController.SetObject(FurnitureTypes.DOOR, itemType, MouseMode.SINGLE);
+           case UIObjectType.DOOR:
+            mouseController.SetObject(itemType.ToString() + "_DOOR", MouseMode.SINGLE);
             break;
 
             case UIObjectType.FLOOR:
 
-                ItemType type = ItemTypes.GetItemType(itemType);
-
-                switch(type)
-                {
-                    case ItemType.WOOD:
-                        mouseController.SetFloor(FloorTypes.WOOD, itemType, MouseMode.AREA);
-                        break;
-                    case ItemType.STONE:
-                        mouseController.SetFloor(FloorTypes.STONE, itemType, MouseMode.AREA);
-                        break;
-                }
+                //switch(itemType)
+                //{
+                //    case ItemType.WOOD:
+                //        mouseController.SetFloor(FloorTypes.WOOD, itemType, MouseMode.AREA);
+                //        break;
+                //    case ItemType.STONE:
+                //        mouseController.SetFloor(FloorTypes.STONE, itemType, MouseMode.AREA);
+                //        break;
+                //}
 
             break;
         }
     }
-    public override void SetType(ItemTypes type)
+    public override void SetType(ItemType type)
     {
         typeMenu.SetActive(false);
 
@@ -70,7 +68,7 @@ public class StructuresUIObject : UIObject, IButtonClickHandler
     }
     private void UpdateDisplay()
     {
-        nameText.text = ItemTypes.GetItemType(itemType).ToString() + " " + objectType.ToString();
-        image.sprite = atlas.GetSprite(ItemTypes.GetItemType(itemType).ToString() + "_" + objectType.ToString());
+        nameText.text = itemType.ToString() + " " + objectType.ToString();
+        image.sprite = atlas.GetSprite(itemType.ToString() + "_" + objectType.ToString());
     }
 }

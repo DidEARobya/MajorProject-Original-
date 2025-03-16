@@ -29,7 +29,7 @@ public static class StorageManager
         storageTiles.Remove(tile);
     }
 
-    public static Tile GetClosestAcceptableInventory(Tile itemTile, ItemTypes itemType, int amount)
+    public static Tile GetClosestAcceptableInventory(Tile itemTile, ItemData itemType, int amount)
     {
         BFS_Search search = new BFS_Search();
         Region toCheck = search.GetClosestRegionWithStorage(GameManager.GetRegionManager().GetRegionAtTile(itemTile), true, itemType, amount);

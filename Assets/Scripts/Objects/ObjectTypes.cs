@@ -1,13 +1,19 @@
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 
+[JsonConverter(typeof(StringEnumConverter))]
 public enum FurnitureType
 {
+    [EnumMember(Value = "WALL")]
     WALL,
+    [EnumMember(Value = "DOOR")]
     DOOR
 }
 public enum OreType
@@ -19,79 +25,15 @@ public enum PlantType
 {
     OAK_TREE
 }
+[JsonConverter(typeof(StringEnumConverter))]
 public enum ItemType
 {
+    [EnumMember(Value = "WOOD")]
     WOOD,
+    [EnumMember(Value = "STONE")]
     STONE,
+    [EnumMember(Value = "IRON")]
     IRON
-}
-public class FurnitureTypes
-{
-    protected readonly FurnitureType type;
-    protected readonly int movementCost;
-    protected readonly int constructionTime;
-    protected readonly Dictionary<ItemTypes, int> durabilities;
-
-    protected readonly ConstructionRequirements requirements;
-    protected readonly int baseMaterialAmount;
-
-    protected readonly Accessibility baseAccessibility;
-
-    protected readonly int width = 1;
-    protected readonly int height = 1;
-
-    protected readonly bool hasRelativeRotation;
-
-    public static readonly FurnitureTypes WALL = new FurnitureTypes(FurnitureType.WALL, 100, 50, new Dictionary<ItemTypes, int>() { { ItemTypes.WOOD, 300 }, { ItemTypes.STONE, 400 }, { ItemTypes.IRON, 500 } }, Accessibility.IMPASSABLE, false, 4);
-    public static readonly FurnitureTypes DOOR = new FurnitureTypes(FurnitureType.DOOR, 4, 100, new Dictionary<ItemTypes, int>() { { ItemTypes.WOOD, 300 }, { ItemTypes.STONE, 400 }, { ItemTypes.IRON, 500 } }, Accessibility.DELAYED, true, 4);
-
-    protected FurnitureTypes(FurnitureType _type, int _movementCost, int _constructionTime, Dictionary<ItemTypes, int> _durabilities, Accessibility _baseAccessibility, bool relativeRotation, int _baseMaterialAmount, ConstructionRequirements _requirements = null)
-    {
-        type = _type;
-        movementCost = _movementCost;
-        constructionTime = _constructionTime;
-        durabilities = _durabilities;
-        baseAccessibility = _baseAccessibility;
-        baseMaterialAmount = _baseMaterialAmount;
-        requirements = _requirements;
-        hasRelativeRotation = relativeRotation;
-    }
-    public static FurnitureType GetObjectType(FurnitureTypes type)
-    {
-        return type.type;
-    }
-    public static int GetMovementCost(FurnitureTypes type)
-    {
-        return type.movementCost;
-    }
-    public static int GetConstructionTime(FurnitureTypes type)
-    {
-        return type.constructionTime;
-    }
-    public static int GetDurability(FurnitureTypes type, ItemTypes material)
-    {
-        return type.durabilities[material];
-    }
-    public static bool HasRelativeRotation(FurnitureTypes type)
-    {
-        return type.hasRelativeRotation;
-    }
-    public static Accessibility GetBaseAccessibility(FurnitureTypes type)
-    {
-        return type.baseAccessibility;
-    }
-    public static Dictionary<ItemTypes, int> GetRequirements(FurnitureTypes type, ItemTypes material)
-    {
-        if(type.requirements == null)
-        {
-            return new Dictionary<ItemTypes, int>() { { material, type.baseMaterialAmount } };
-        }
-
-        Dictionary<ItemTypes, int> toReturn = new Dictionary<ItemTypes, int>(ConstructionRequirements.GetRequirements(type.requirements));
-        toReturn.Add(material, type.baseMaterialAmount);
-
-        return toReturn;
-    }
 }
 public class OreTypes
 {
@@ -133,7 +75,7 @@ public class OreTypes
     {
         return type.baseAccessibility;
     }
-    public static Dictionary<ItemTypes, int> GetComponents(OreTypes type)
+    public static Dictionary<ItemData, int> GetComponents(OreTypes type)
     {
         return OreComponents.GetComponents(type.components);
     }
@@ -195,47 +137,8 @@ public class PlantTypes
     {
         return type.baseAccessibility;
     }
-    public static Dictionary<ItemTypes, int> GetYield(PlantTypes type, PlantState state)
+    public static Dictionary<ItemData, int> GetYield(PlantTypes type, PlantState state)
     {
         return CropYields.GetYield(type.yield, state);
-    }
-}
-public class ItemTypes
-{
-    protected readonly ItemType type;
-    protected readonly int movementCost;
-
-    protected readonly int width = 1;
-    protected readonly int height = 1;
-
-    protected readonly int maxStackSize;
-
-    public static readonly ItemTypes WOOD = new ItemTypes(ItemType.WOOD, 50);
-    public static readonly ItemTypes STONE = new ItemTypes(ItemType.STONE, 50);
-    public static readonly ItemTypes IRON = new ItemTypes(ItemType.IRON, 50);
-
-    protected ItemTypes(ItemType _type, int _maxStackSize, int _movementCost = 0)
-    {
-        type = _type;
-        movementCost = _movementCost;
-        maxStackSize = _maxStackSize;
-    }
-
-    public static ItemType GetItemType(ItemTypes type)
-    {
-        return type.type;
-    }
-    public static int GetMovementCost(ItemTypes type)
-    {
-        return type.movementCost;
-    }
-    public static int GetMaxStackSize(ItemTypes type)
-    {
-        if(type == null)
-        {
-            return 0;
-        }
-
-        return type.maxStackSize;
     }
 }

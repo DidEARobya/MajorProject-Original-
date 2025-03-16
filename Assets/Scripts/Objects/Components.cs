@@ -2,36 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ConstructionRequirements
-{
-    protected readonly FurnitureTypes type;
-    protected readonly Dictionary<ItemTypes, int> requirements;
-    protected ConstructionRequirements(FurnitureTypes _type, Dictionary<ItemTypes, int> _requirements)
-    {
-        type = _type;
-        requirements = _requirements;
-    }
-
-    public static Dictionary<ItemTypes, int> GetRequirements(ConstructionRequirements type)
-    {
-        return type.requirements;
-    }
-}
 public class OreComponents
 {
     protected readonly OreTypes type;
-    protected readonly Dictionary<ItemTypes, int> components;
+    protected readonly Dictionary<ItemData, int> components;
 
-    public static readonly OreComponents STONE = new OreComponents(OreTypes.STONE_ORE, new Dictionary<ItemTypes, int>() { { ItemTypes.STONE, 8 } });
-    public static readonly OreComponents IRON = new OreComponents(OreTypes.IRON_ORE, new Dictionary<ItemTypes, int>() { { ItemTypes.IRON, 5 } });
+    public static readonly OreComponents STONE = new OreComponents(OreTypes.STONE_ORE, new Dictionary<ItemData, int>() {  });
+    public static readonly OreComponents IRON = new OreComponents(OreTypes.IRON_ORE, new Dictionary<ItemData, int>() { } );
 
-    protected OreComponents(OreTypes _type, Dictionary<ItemTypes, int> _components)
+    protected OreComponents(OreTypes _type, Dictionary<ItemData, int> _components)
     {
         type = _type;
         components = _components;
     }
 
-    public static Dictionary<ItemTypes, int> GetComponents(OreComponents type)
+    public static Dictionary<ItemData, int> GetComponents(OreComponents type)
     {
         return type.components;
     }
@@ -39,13 +24,13 @@ public class OreComponents
 public class CropYields
 {
     protected readonly PlantTypes type;
-    protected readonly Dictionary<ItemTypes, int> lowYield;
-    protected readonly Dictionary<ItemTypes, int> highYield;
-    protected readonly Dictionary<ItemTypes, int> matureYield;
+    protected readonly Dictionary<ItemData, int> lowYield;
+    protected readonly Dictionary<ItemData, int> highYield;
+    protected readonly Dictionary<ItemData, int> matureYield;
 
-    public static readonly CropYields OAK_TREE = new CropYields(PlantTypes.OAK_TREE, new Dictionary<ItemTypes, int>() { { ItemTypes.WOOD, 4 } }, new Dictionary<ItemTypes, int>() { { ItemTypes.WOOD, 8 } }, new Dictionary<ItemTypes, int>() { { ItemTypes.WOOD, 16 } });
+    public static readonly CropYields OAK_TREE = new CropYields(PlantTypes.OAK_TREE, new Dictionary<ItemData, int>() { }, new Dictionary<ItemData, int>() { }, new Dictionary<ItemData, int>() { });
 
-    protected CropYields(PlantTypes _type, Dictionary<ItemTypes, int> _lowYield, Dictionary<ItemTypes, int> _highYield, Dictionary<ItemTypes, int> _matureYield)
+    protected CropYields(PlantTypes _type, Dictionary<ItemData, int> _lowYield, Dictionary<ItemData, int> _highYield, Dictionary<ItemData, int> _matureYield)
     {
         type = _type;
         lowYield = _lowYield;
@@ -53,7 +38,7 @@ public class CropYields
         matureYield = _matureYield;
     }
 
-    public static Dictionary<ItemTypes, int> GetYield(CropYields type, PlantState state)
+    public static Dictionary<ItemData, int> GetYield(CropYields type, PlantState state)
     {
         switch(state)
         {
@@ -73,18 +58,18 @@ public class CropYields
 public class FloorRequirements
 {
     protected readonly FloorTypes type;
-    protected readonly Dictionary<ItemTypes, int> requirements;
+    protected readonly Dictionary<ItemData, int> requirements;
 
-    public static readonly FloorRequirements WOOD = new FloorRequirements(FloorTypes.WOOD, new Dictionary<ItemTypes, int>() { { ItemTypes.WOOD, 2 } });
-    public static readonly FloorRequirements STONE = new FloorRequirements(FloorTypes.STONE, new Dictionary<ItemTypes, int>() { { ItemTypes.STONE, 2 } });
+    public static readonly FloorRequirements WOOD = new FloorRequirements(FloorTypes.WOOD, new Dictionary<ItemData, int>() {  });
+    public static readonly FloorRequirements STONE = new FloorRequirements(FloorTypes.STONE, new Dictionary<ItemData, int>() {  });
 
-    protected FloorRequirements(FloorTypes _type, Dictionary<ItemTypes, int> _requirements)
+    protected FloorRequirements(FloorTypes _type, Dictionary<ItemData, int> _requirements)
     {
         type = _type;
         requirements = _requirements;
     }
 
-    public static Dictionary<ItemTypes, int> GetRequirements(FloorRequirements type)
+    public static Dictionary<ItemData, int> GetRequirements(FloorRequirements type)
     {
         return type.requirements;
     }

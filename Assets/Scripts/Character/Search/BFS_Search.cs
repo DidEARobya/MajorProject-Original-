@@ -14,7 +14,7 @@ public class BFS_Search
     public BFS_Search()
     {
     }
-    public Region GetClosestRegionWithItem(Region start, bool _isPlayer, bool checkIfStored = false, ItemTypes item = null)
+    public Region GetClosestRegionWithItem(Region start, bool _isPlayer, bool checkIfStored = false, ItemData item = null)
     {
         openSet = new Queue<Region>();
         openSet.Enqueue(start);
@@ -114,7 +114,7 @@ public class BFS_Search
 
         return null;
     }
-    public Region GetClosestRegionWithStorage(Region start, bool _isPlayer, ItemTypes type, int amount)
+    public Region GetClosestRegionWithStorage(Region start, bool _isPlayer, ItemData type, int amount)
     {
         openSet = new Queue<Region>();
         openSet.Enqueue(start);

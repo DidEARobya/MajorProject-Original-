@@ -18,7 +18,7 @@ public class UIObject : MonoBehaviour
     {
         DisplayMaterialMenu();
     }
-    public virtual void SetType(ItemTypes type)
+    public virtual void SetType(ItemType type)
     {
 
     }

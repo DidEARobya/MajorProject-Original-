@@ -27,8 +27,8 @@ public class Region
 
     private HashSet<int> _spans = new HashSet<int>();
 
-    private Dictionary<ItemTypes, int> _itemsInRegion = new Dictionary<ItemTypes, int>();
-    private Dictionary<FurnitureTypes, int> _furnitureInRegion = new Dictionary<FurnitureTypes, int>();
+    private Dictionary<ItemData, int> _itemsInRegion = new Dictionary<ItemData, int>();
+    //private Dictionary<FurnitureTypes, int> _furnitureInRegion = new Dictionary<FurnitureTypes, int>();
     private Dictionary<OreTypes, int> _oreInRegion = new Dictionary<OreTypes, int>();
     private Dictionary<PlantTypes, int> _plantsInRegion = new Dictionary<PlantTypes, int>();
 
@@ -116,7 +116,7 @@ public class Region
                 float temp = Time.realtimeSinceStartup;
                 if (t2.IsObjectInstalled() == true)
                 {
-                    UpdateDict(t2.installedObject);
+                    //UpdateDict(t2.installedObject);
 
                     if(t2.IsAccessible() == Accessibility.IMPASSABLE)
                     {
@@ -293,7 +293,7 @@ public class Region
         _spans.Clear();
 
         _itemsInRegion.Clear();
-        _furnitureInRegion.Clear();
+        //_furnitureInRegion.Clear();
         _oreInRegion.Clear();
         _plantsInRegion.Clear();
     }
@@ -367,13 +367,13 @@ public class Region
 
             if (tile.IsObjectInstalled() == true)
             {
-                UpdateDict(tile.installedObject);
+               // UpdateDict(tile.installedObject);
             }
 
             searchTiles.Add(tile);
         }
     }
-    public void UpdateDict(ItemTypes type, int amount)
+    public void UpdateDict(ItemData type, int amount)
     {
         if (_itemsInRegion.ContainsKey(type) == false)
         {
@@ -394,23 +394,23 @@ public class Region
             _itemsInRegion.Remove(type);
         }
     }
-    public void UpdateDict(InstalledObject obj)
+    /*public void UpdateDict(InstalledObject obj)
     {
         switch(obj.type)
         {
             case InstalledObjectType.FURNITURE:
 
-                if (_furnitureInRegion.ContainsKey((obj as Furniture).furnitureType) == false)
+                if (_furnitureInRegion.ContainsKey((obj as Building).furnitureType) == false)
                 {
-                    _furnitureInRegion.Add((obj as Furniture).furnitureType, 1);
+                    _furnitureInRegion.Add((obj as Building).furnitureType, 1);
                     return;
                 }
 
-                _furnitureInRegion[(obj as Furniture).furnitureType] += 1;
+                _furnitureInRegion[(obj as Building).furnitureType] += 1;
 
-                if (_furnitureInRegion[(obj as Furniture).furnitureType] <= 0)
+                if (_furnitureInRegion[(obj as Building).furnitureType] <= 0)
                 {
-                    _furnitureInRegion.Remove((obj as Furniture).furnitureType);
+                    _furnitureInRegion.Remove((obj as Building).furnitureType);
                 }
 
                 break;
@@ -449,8 +449,8 @@ public class Region
 
                 break;
         }
-    }
-    public int Contains(ItemTypes type)
+    }*/
+    public int Contains(ItemData type)
     {
         if (_itemsInRegion.ContainsKey(type) == false)
         {
@@ -467,7 +467,7 @@ public class Region
     {
         return _itemsInRegion.Count;
     }
-    public bool ContainsUnstoredItem(ItemTypes type = null)
+    public bool ContainsUnstoredItem(ItemData type = null)
     {
         if(_itemsInRegion.Count == 0)
         {
@@ -560,7 +560,7 @@ public class Region
         length = hash & 0xF;
     }
 
-    public bool ContainsValidStorage(ItemTypes type, int amount)
+    public bool ContainsValidStorage(ItemData type, int amount)
     {
         foreach(Tile tile in tiles)
         {
