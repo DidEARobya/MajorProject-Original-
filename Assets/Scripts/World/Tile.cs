@@ -13,11 +13,14 @@ public enum TerrainType
     GOOD_SOIL,
     POOR_SOIL,
 }
+[JsonConverter(typeof(StringEnumConverter))]
 public enum FloorType
 {
     NONE,
     TASK_FLOOR,
+    [EnumMember(Value = "WOOD_FLOOR")]
     WOOD_FLOOR,
+    [EnumMember(Value = "STONE_FLOOR")]
     STONE_FLOOR
 }
 public enum Direction
@@ -50,7 +53,7 @@ public class Tile : InventoryOwner, INodeData
     public Node pathNode;
 
     public TerrainTypes terrainType = TerrainTypes.GOOD_SOIL;
-    public FloorTypes floorType = FloorTypes.NONE;
+    public FloorType floorType = FloorType.NONE;
 
     public InstalledObject installedObject;
 
@@ -146,22 +149,19 @@ public class Tile : InventoryOwner, INodeData
 
         UpdateVisual();
     }
-    public void SetFloorType(FloorTypes floor)
+    public void SetFloorType(FloorType floor)
     {
         if (floorType == floor)
         {
             return;
         }
 
-        FloorType oldType = FloorTypes.GetFloorType(floorType);
-        FloorType newType = FloorTypes.GetFloorType(floor);
+        FloorType oldType = floorType;
+        FloorType newType = floor;
 
-        if (oldType != FloorType.NONE || oldType != FloorType.TASK_FLOOR)
+        if (oldType != FloorType.NONE && newType != FloorType.TASK_FLOOR && oldType != FloorType.TASK_FLOOR)
         {
-            if(newType != FloorType.TASK_FLOOR)
-            {
-                InventoryManager.AddToTileInventory(this, FloorTypes.GetRequirements(floorType));
-            }
+            InventoryManager.AddToTileInventory(this, ThingsDataHandler.GetFloorData(oldType).GetRequirements());
         }
 
         if (accessibility == Accessibility.IMPASSABLE && zone != null && zone.zoneType == ZoneType.GROW)
@@ -232,13 +232,13 @@ public class Tile : InventoryOwner, INodeData
 
         int cost = 0;
 
-        if(floorType == FloorTypes.NONE)
+        if(floorType == FloorType.NONE)
         {
             cost += TerrainTypes.GetMovementCost(terrainType);
         }
         else
         {
-            cost += FloorTypes.GetMovementCost(floorType);
+            cost += ThingsDataHandler.GetFloorData(floorType).movementCost;
         }
 
         if(installedObject != null && installedObject.isInstalled)
@@ -522,42 +522,5 @@ public class TerrainTypes
     public static float GetFertilityMultiplier(TerrainTypes type)
     {
         return type.fertilityMultiplier;
-    }
-}
-public class FloorTypes
-{
-    protected readonly FloorType type;
-    protected readonly int movementCost;
-
-    protected readonly FloorRequirements requirements;
-
-    public static readonly FloorTypes NONE = new FloorTypes(FloorType.NONE, 0, null);
-    public static readonly FloorTypes TASK = new FloorTypes(FloorType.TASK_FLOOR, 0, null);
-    public static readonly FloorTypes WOOD = new FloorTypes(FloorType.WOOD_FLOOR, 1, FloorRequirements.WOOD);
-    public static readonly FloorTypes STONE = new FloorTypes(FloorType.STONE_FLOOR, 1, FloorRequirements.STONE);
-
-    protected FloorTypes(FloorType _type, int _movementCost, FloorRequirements _requirements)
-    {
-        type = _type;
-        movementCost = _movementCost;
-        requirements = _requirements;
-    }
-
-    public static FloorType GetFloorType(FloorTypes type)
-    {
-        return type.type;
-    }
-    public static int GetMovementCost(FloorTypes type)
-    {
-        return type.movementCost;
-    }
-    public static Dictionary<ItemData, int> GetRequirements(FloorTypes type)
-    {
-        if(type.requirements == null)
-        {
-            return null;
-        }
-
-        return FloorRequirements.GetRequirements(type.requirements);
     }
 }

@@ -32,8 +32,8 @@ public class GrowthState : State
 	}
     public override void StateStart()
 	{
-        growthRate = PlantTypes.GetGrowthRate(plant.plantType) * TerrainTypes.GetFertilityMultiplier(plant.baseTile.terrainType);
-        needsTending = PlantTypes.GetNeedsTending(plant.plantType);
+        growthRate = plant._data.growthRate * TerrainTypes.GetFertilityMultiplier(plant.baseTile.terrainType);
+        needsTending = plant._data.needsTending;
         delay = 0;
         growth = 0;
 

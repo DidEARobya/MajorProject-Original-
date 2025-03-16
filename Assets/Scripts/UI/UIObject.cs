@@ -22,7 +22,7 @@ public class UIObject : MonoBehaviour
     {
 
     }
-    public virtual void SetType(PlantTypes type)
+    public virtual void SetType(PlantType type)
     {
 
     }

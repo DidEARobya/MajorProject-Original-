@@ -46,7 +46,7 @@ public class WorldController : MonoBehaviour
                 tileData.SetGameObject(tileObj);
                 tileData.SetTileChangedCallback((tile) => { tileSpriteController.OnTileTypeChange(tile, tileObj); });
 
-                tileSpriteController.SetTileSprite(tileObj, TerrainTypes.GetTerrainType(tileData.terrainType), FloorTypes.GetFloorType(tileData.floorType));
+                tileSpriteController.SetTileSprite(tileObj, TerrainTypes.GetTerrainType(tileData.terrainType), tileData.floorType);
             }
         }
     }
@@ -64,11 +64,11 @@ public class WorldController : MonoBehaviour
                 {
                     if(rand < 70)
                     {
-                        ObjectManager.SpawnOre(OreTypes.STONE_ORE, worldGrid.GetTile(x, y));
+                        ObjectManager.SpawnOre(OreType.STONE_ORE, worldGrid.GetTile(x, y));
                     }
                     else
                     {
-                        ObjectManager.SpawnOre(OreTypes.IRON_ORE, worldGrid.GetTile(x, y));
+                        ObjectManager.SpawnOre(OreType.IRON_ORE, worldGrid.GetTile(x, y));
                     }
                 }
                 else
@@ -78,7 +78,7 @@ public class WorldController : MonoBehaviour
                     if(rand < TerrainTypes.GetGrowthChance(tile.terrainType))
                     {
                         PlantState state = (PlantState)Utility.GetRandomNumber(0, 4);
-                        ObjectManager.SpawnPlant(PlantTypes.OAK_TREE, tile, state);
+                        ObjectManager.SpawnPlant(PlantType.OAK_TREE, tile, state);
                     }
                 }
             }

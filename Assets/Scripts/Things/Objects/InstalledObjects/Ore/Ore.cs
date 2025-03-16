@@ -1,19 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Ore : InstalledObject
 {
-    public OreTypes oreType;
+    public OreData _data;
 
-    static public Ore PlaceObject(OreTypes _type, Tile tile)
+    static public Ore PlaceObject(OreType type, Tile tile)
     {
         Ore obj = new Ore();
         obj.type = InstalledObjectType.ORE;
 
+        obj._data = ThingsDataHandler.GetOreData(type);
         obj.baseTile = tile;
-        obj.oreType = _type;
-        obj.durability = OreTypes.GetDurability(_type);
+        obj.durability = obj._data.durability;
 
         if (tile.InstallObject(obj) == false)
         {
@@ -29,7 +30,7 @@ public class Ore : InstalledObject
         base.Install();
 
         isInstalled = true;
-        baseTile.accessibility = OreTypes.GetBaseAccessibility(oreType);
+        baseTile.accessibility = Accessibility.IMPASSABLE;
         baseTile.installedObject = this;
 
         GameManager.GetWorldGrid().InvalidatePathGraph();
@@ -48,7 +49,7 @@ public class Ore : InstalledObject
 
         if (isInstalled == true)
         {
-            InventoryManager.AddToTileInventory(baseTile, OreTypes.GetComponents(oreType));
+            InventoryManager.AddToTileInventory(ThingsDataHandler.GetItemData(_data.resourceType), baseTile, Utility.GetRandomNumber(_data.yieldMin, _data.yieldMax));
             GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile), baseTile);
             GameManager.GetWorldGrid().InvalidatePathGraph();
         }
@@ -62,10 +63,6 @@ public class Ore : InstalledObject
     }
     public override string GetObjectNameToString()
     {
-        return OreTypes.GetObjectType(oreType).ToString();
-    }
-    public override int GetMovementCost()
-    {
-        return OreTypes.GetMovementCost(oreType);
+        return _data.type.ToString();
     }
 }

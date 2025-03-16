@@ -77,6 +77,7 @@ public class WorkStrategy : IActionStrategy
     {
         if (character.activeTask == null)
         {
+            Debug.Log("NO TASK WORKING");
             return false;
         }
 
@@ -85,6 +86,11 @@ public class WorkStrategy : IActionStrategy
             agent.stamina -= 2 * deltaTime;
             character.activeTask.DoWork(deltaTime);
             return true;
+        }
+        else
+        {
+            //Debug.Log("DESTINATION: " + character.destinationTile.x + "," + character.destinationTile.y);
+            //Debug.Log("CURRENT: " + character.currentTile.x + "," + character.currentTile.y);
         }
 
         return false;

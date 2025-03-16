@@ -28,9 +28,9 @@ public class Region
     private HashSet<int> _spans = new HashSet<int>();
 
     private Dictionary<ItemData, int> _itemsInRegion = new Dictionary<ItemData, int>();
-    //private Dictionary<FurnitureTypes, int> _furnitureInRegion = new Dictionary<FurnitureTypes, int>();
-    private Dictionary<OreTypes, int> _oreInRegion = new Dictionary<OreTypes, int>();
-    private Dictionary<PlantTypes, int> _plantsInRegion = new Dictionary<PlantTypes, int>();
+    private Dictionary<BuildingData, int> _buildingsInRegion = new Dictionary<BuildingData, int>();
+    private Dictionary<OreData, int> _oreInRegion = new Dictionary<OreData, int>();
+    private Dictionary<PlantData, int> _plantsInRegion = new Dictionary<PlantData, int>();
 
     public Cluster _inCluster;
     public bool isDoor;
@@ -293,7 +293,7 @@ public class Region
         _spans.Clear();
 
         _itemsInRegion.Clear();
-        //_furnitureInRegion.Clear();
+        _buildingsInRegion.Clear();
         _oreInRegion.Clear();
         _plantsInRegion.Clear();
     }
@@ -367,7 +367,7 @@ public class Region
 
             if (tile.IsObjectInstalled() == true)
             {
-               // UpdateDict(tile.installedObject);
+                UpdateDict(tile.installedObject);
             }
 
             searchTiles.Add(tile);
@@ -394,62 +394,62 @@ public class Region
             _itemsInRegion.Remove(type);
         }
     }
-    /*public void UpdateDict(InstalledObject obj)
+    public void UpdateDict(InstalledObject obj)
     {
         switch(obj.type)
         {
             case InstalledObjectType.FURNITURE:
 
-                if (_furnitureInRegion.ContainsKey((obj as Building).furnitureType) == false)
+                if (_buildingsInRegion.ContainsKey((obj as Building)._data) == false)
                 {
-                    _furnitureInRegion.Add((obj as Building).furnitureType, 1);
+                    _buildingsInRegion.Add((obj as Building)._data, 1);
                     return;
                 }
 
-                _furnitureInRegion[(obj as Building).furnitureType] += 1;
+                _buildingsInRegion[(obj as Building)._data] += 1;
 
-                if (_furnitureInRegion[(obj as Building).furnitureType] <= 0)
+                if (_buildingsInRegion[(obj as Building)._data] <= 0)
                 {
-                    _furnitureInRegion.Remove((obj as Building).furnitureType);
+                    _buildingsInRegion.Remove((obj as Building)._data);
                 }
 
                 break;
 
             case InstalledObjectType.ORE:
 
-                if (_oreInRegion.ContainsKey((obj as Ore).oreType) == false)
+                if (_oreInRegion.ContainsKey((obj as Ore)._data) == false)
                 {
-                    _oreInRegion.Add((obj as Ore).oreType, 1);
+                    _oreInRegion.Add((obj as Ore)._data, 1);
                     return;
                 }
 
-                _oreInRegion[(obj as Ore).oreType] += 1;
+                _oreInRegion[(obj as Ore)._data] += 1;
 
-                if (_oreInRegion[(obj as Ore).oreType] <= 0)
+                if (_oreInRegion[(obj as Ore)._data] <= 0)
                 {
-                    _oreInRegion.Remove((obj as Ore).oreType);
+                    _oreInRegion.Remove((obj as Ore)._data);
                 }
 
                 break;
 
             case InstalledObjectType.PLANT:
 
-                if (_plantsInRegion.ContainsKey((obj as Plant).plantType) == false)
+                if (_plantsInRegion.ContainsKey((obj as Plant)._data) == false)
                 {
-                    _plantsInRegion.Add((obj as Plant).plantType, 1);
+                    _plantsInRegion.Add((obj as Plant)._data, 1);
                     return;
                 }
 
-                _plantsInRegion[(obj as Plant).plantType] += 1;
+                _plantsInRegion[(obj as Plant)._data] += 1;
 
-                if (_plantsInRegion[(obj as Plant).plantType] <= 0)
+                if (_plantsInRegion[(obj as Plant)._data] <= 0)
                 {
-                    _plantsInRegion.Remove((obj as Plant).plantType);
+                    _plantsInRegion.Remove((obj as Plant)._data);
                 }
 
                 break;
         }
-    }*/
+    }
     public int Contains(ItemData type)
     {
         if (_itemsInRegion.ContainsKey(type) == false)

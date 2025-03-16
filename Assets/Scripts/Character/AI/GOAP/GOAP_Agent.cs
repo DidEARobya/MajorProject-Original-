@@ -114,7 +114,7 @@ public class GOAP_Agent
                 currentAction.Stop();
                 currentAction = null;
 
-                if (actionPlan.actions.Count == 0)
+                if (actionPlan == null || actionPlan.actions.Count == 0)
                 {
                     lastGoal = currentGoal;
                     currentGoal = null;
@@ -125,7 +125,7 @@ public class GOAP_Agent
         if (currentAction == null)
         {
             planFailCounter += 1;
-            
+
             if(planFailCounter > 1)
             {
                 Reset();

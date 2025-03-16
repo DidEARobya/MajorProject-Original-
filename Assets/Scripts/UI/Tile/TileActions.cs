@@ -10,7 +10,7 @@ public class TileActionsPanel : MonoBehaviour
     public GameObject removeGrowZonePanel;
     public GameObject removeStorageZonePanel;
 
-    PlantTypes plantType;
+    PlantType plantType;
 
     public void Init(Tile _tile)
     {
@@ -47,7 +47,7 @@ public class TileActionsPanel : MonoBehaviour
 
         GameManager.GetZoneManager().RemoveTile(tile, tile.zone.zoneType);
     }
-    public void SetZonePlant(PlantTypes type)
+    public void SetZonePlant(PlantType type)
     {
         if (tile == null || tile.zone == null || tile.zone.zoneType != ZoneType.GROW)
         {

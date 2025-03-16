@@ -6,7 +6,7 @@ using UnityEngine;
 public class Building : InstalledObject
 {
     public ItemData baseMaterial;
-    private BuildingData _data;
+    public BuildingData _data;
 
     static public Building PlaceObject(BuildingData data, Tile tile, bool _isInstalled)
     {

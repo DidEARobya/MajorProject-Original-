@@ -4,20 +4,20 @@ using UnityEngine;
 
 public class Plant : InstalledObject
 {
-    public PlantTypes plantType;
+    public PlantData _data;
     public PlantState plantState;
 
     public GrowthState state;
     public Dictionary<PlantState, GrowthState> states;
 
-    static public Plant PlaceObject(PlantTypes _type, Tile tile, PlantState state)
+    static public Plant PlaceObject(PlantType _type, Tile tile, PlantState state)
     {
         Plant obj = new Plant();
         obj.type = InstalledObjectType.PLANT;
 
+        obj._data = ThingsDataHandler.GetPlantData(_type);
         obj.baseTile = tile;
-        obj.plantType = _type;
-        obj.durability = PlantTypes.GetDurability(_type);
+        obj.durability = obj._data.durability;
 
         obj.states = new Dictionary<PlantState, GrowthState>();
         obj.plantState = state;
@@ -46,7 +46,7 @@ public class Plant : InstalledObject
     {
         base.Install();
 
-        baseTile.accessibility = PlantTypes.GetBaseAccessibility(plantType);
+        baseTile.accessibility = Accessibility.ACCESSIBLE;
         baseTile.installedObject = this;
         isInstalled = true;
 
@@ -85,7 +85,7 @@ public class Plant : InstalledObject
         {
             if (plantState != PlantState.SEED)
             {
-                InventoryManager.AddToTileInventory(baseTile, PlantTypes.GetYield(plantType, plantState));
+                InventoryManager.AddToTileInventory(baseTile, _data.GetYield(plantState));
             }
 
             if (baseTile.zone != null)
@@ -101,11 +101,11 @@ public class Plant : InstalledObject
     }
     public override string GetObjectNameToString()
     {
-        return PlantTypes.GetObjectType(plantType).ToString();
+        return _data.type.ToString();
     }
     public override int GetMovementCost()
     {
-        return PlantTypes.GetMovementCost(plantType);
+        return _data.movementCost;
     }
     public void SetState(PlantState _state)
     {

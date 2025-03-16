@@ -5491,7 +5491,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.4142033, y: -2.2823799, z: 10}
+  m_LocalPosition: {x: -1.414204, y: -2.2823799, z: 10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6812,7 +6812,6 @@ GameObject:
   - component: {fileID: 679595937}
   - component: {fileID: 679595935}
   - component: {fileID: 679595938}
-  - component: {fileID: 679595939}
   m_Layer: 0
   m_Name: WorldScripts
   m_TagString: Untagged
@@ -6899,23 +6898,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 679595934}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fdb0dbfdc640e4c41a213293b18891d9, type: 3}
+  m_Script: {fileID: 11500000, guid: adf19a09c71d05342b6acd6a0098d3d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fileName: Buildings.json
---- !u!114 &679595939
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 679595934}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aba4d586e95c0274988c18543bee9453, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fileName: Items.json
+  buildingsFileName: Buildings.json
+  itemsFileName: Items.json
+  oreFileName: Ores.json
+  plantFileName: Plants.json
+  floorFileName: Floors.json
 --- !u!1 &681979518
 GameObject:
   m_ObjectHideFlags: 0
@@ -13809,9 +13799,11 @@ MonoBehaviour:
   tileDetails: {fileID: 1391099792}
   mouseMode: 1
   buildMode: 0
+  toBuild: 
   toBuildMaterial:
     type: 0
     maxStackSize: 0
+  floorType: 0
   selectedTileDisplay: {fileID: 1071083058}
   tileOutline: {fileID: 1071695410}
   modeText: {fileID: 1784090622}
@@ -15934,6 +15926,22 @@ PrefabInstance:
     - target: {fileID: 1190356567305075874, guid: 66cc19b3bda1af14e8ad900a07f91f21, type: 3}
       propertyPath: m_Name
       value: OAK_TREE
+      objectReference: {fileID: 0}
+    - target: {fileID: 1529765419682440724, guid: 66cc19b3bda1af14e8ad900a07f91f21, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1529765419682440724, guid: 66cc19b3bda1af14e8ad900a07f91f21, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1529765419682440724, guid: 66cc19b3bda1af14e8ad900a07f91f21, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 752062502}
+    - target: {fileID: 1529765419682440724, guid: 66cc19b3bda1af14e8ad900a07f91f21, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2307118813836580828, guid: 66cc19b3bda1af14e8ad900a07f91f21, type: 3}
       propertyPath: m_Pivot.x

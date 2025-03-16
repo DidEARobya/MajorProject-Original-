@@ -32,7 +32,7 @@ public class TileDetails : MonoBehaviour
         posText.text = "x: " + tile.x + ", y: " + tile.y;
 
         terrainText.text = "Terrain: " + TerrainTypes.GetTerrainType(tile.terrainType).ToString();
-        floorText.text = "Floor: " + FloorTypes.GetFloorType(tile.floorType).ToString();
+        floorText.text = "Floor: " + tile.floorType.ToString();
 
         if(tile.IsObjectInstalled() == true)
         {

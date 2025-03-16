@@ -14,7 +14,7 @@ public class RequirementTask : Task
     public Dictionary<ItemData, int> requirements;
     public Dictionary<ItemData, int> storedRequirements;
 
-    FloorTypes floorType;
+    FloorType floorType;
 
     bool isInitialised = false;
 
@@ -27,7 +27,7 @@ public class RequirementTask : Task
         if(isFloor == true)
         {
             floorType = tile.floorType;
-            tile.SetFloorType(FloorTypes.TASK);
+            tile.SetFloorType(FloorType.TASK_FLOOR);
         }
     }
     public override void InitTask(CharacterController character)

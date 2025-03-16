@@ -45,7 +45,7 @@ public class BuildModeController : MonoBehaviour
                 ObjectManager.InstallBuilding(toBuild, tile, false);
                 InstalledObject obj = tile.GetInstalledObject();
 
-                task = new RequirementTask(tile, (t) => { obj.Install(); }, TaskType.CONSTRUCTION, BuildingDataHandler.GetInstance().GetBuildingData(toBuild).GetRequirements(), false);
+                task = new RequirementTask(tile, (t) => { obj.Install(); }, TaskType.CONSTRUCTION, ThingsDataHandler.GetBuildingData(toBuild).GetRequirements(), false);
                 GameManager.GetTaskManager().AddTask(task, task.taskType);
             }
         }  
@@ -107,7 +107,7 @@ public class BuildModeController : MonoBehaviour
             }
         }
     }
-    public void BuildFloor(HashSet<Tile> tiles, FloorTypes floorType)
+    public void BuildFloor(HashSet<Tile> tiles, FloorType floorType)
     {
         foreach (Tile tile in tiles)
         {
@@ -121,7 +121,7 @@ public class BuildModeController : MonoBehaviour
                     continue;
                 }
 
-                task = new RequirementTask(tile, (t) => { tile.SetFloorType(floorType); }, TaskType.CONSTRUCTION, FloorTypes.GetRequirements(FloorTypes.WOOD), true, 0.3f);
+                task = new RequirementTask(tile, (t) => { tile.SetFloorType(floorType); }, TaskType.CONSTRUCTION, ThingsDataHandler.GetFloorData(floorType).GetRequirements(), true, 0.3f);
                 GameManager.GetTaskManager().AddTask(task, task.taskType);
             }
         }
@@ -130,20 +130,20 @@ public class BuildModeController : MonoBehaviour
     {
         foreach (Tile tile in tiles)
         {
-            if (tile.floorType == FloorTypes.NONE)
+            if (tile.floorType == FloorType.NONE)
             {
                 continue;
             }
 
             if (GameManager.instance.devMode == true)
             {
-                tile.SetFloorType(FloorTypes.NONE);
+                tile.SetFloorType(FloorType.NONE);
                 continue;
             }
 
             Task task;
 
-            task = new DestroyTask(tile, (t) => { tile.SetFloorType(FloorTypes.NONE); }, TaskType.CONSTRUCTION, true, 50);
+            task = new DestroyTask(tile, (t) => { tile.SetFloorType(FloorType.NONE); }, TaskType.CONSTRUCTION, true, 50);
             GameManager.GetTaskManager().AddTask(task, task.taskType);
         }
     }

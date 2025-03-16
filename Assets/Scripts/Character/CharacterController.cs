@@ -107,6 +107,8 @@ public class CharacterController : InventoryOwner
         {
             if (currentTile != nextTile)
             {
+                Debug.Log("YERP");
+
                 Move(deltaTime);
             }
 
@@ -119,6 +121,11 @@ public class CharacterController : InventoryOwner
 
             if (nextTile == null)
             {
+                if(currentTile != destinationTile)
+                {
+                    PathRequestHandler.RequestPath(this, destinationTile, true);
+                }
+
                 return;
             }
         }

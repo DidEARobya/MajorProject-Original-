@@ -6,13 +6,11 @@ using UnityEngine;
 
 public static class ObjectManager
 {
-    private static BuildingDataHandler _buildingDataHandler;
-
     static HashSet<InstalledObject> installedObjects = new HashSet<InstalledObject>();
     static Action<InstalledObject> installObjectCallback;
     public static void InstallBuilding(string name, Tile tile, bool isInstalled)
     {
-        InstalledObject obj = Building.PlaceObject(_buildingDataHandler.GetBuildingData(name), tile, isInstalled);
+        InstalledObject obj = Building.PlaceObject(ThingsDataHandler.GetBuildingData(name), tile, isInstalled);
 
         if (obj == null)
         {
@@ -24,7 +22,7 @@ public static class ObjectManager
             installObjectCallback(obj);
         }
     }
-    public static void SpawnOre(OreTypes type, Tile tile)
+    public static void SpawnOre(OreType type, Tile tile)
     {
         InstalledObject obj = Ore.PlaceObject(type, tile);
 
@@ -38,7 +36,7 @@ public static class ObjectManager
             installObjectCallback(obj);
         }
     }
-    public static void SpawnPlant(PlantTypes type, Tile tile, PlantState state)
+    public static void SpawnPlant(PlantType type, Tile tile, PlantState state)
     {
         InstalledObject obj = Plant.PlaceObject(type, tile, state);
 
@@ -58,10 +56,6 @@ public static class ObjectManager
         {
             obj.Update(deltaTime);
         }
-    }
-    public static void SetBuildingDataHandler(BuildingDataHandler buildingHandler)
-    {
-        _buildingDataHandler = buildingHandler;
     }
     public static void AddInstalledObject(InstalledObject installedObject)
     {

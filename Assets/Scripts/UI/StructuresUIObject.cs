@@ -40,15 +40,15 @@ public class StructuresUIObject : UIObject, IButtonClickHandler
 
             case UIObjectType.FLOOR:
 
-                //switch(itemType)
-                //{
-                //    case ItemType.WOOD:
-                //        mouseController.SetFloor(FloorTypes.WOOD, itemType, MouseMode.AREA);
-                //        break;
-                //    case ItemType.STONE:
-                //        mouseController.SetFloor(FloorTypes.STONE, itemType, MouseMode.AREA);
-                //        break;
-                //}
+                switch(itemType)
+                {
+                    case ItemType.WOOD:
+                        mouseController.SetFloor(FloorType.WOOD_FLOOR, MouseMode.AREA);
+                        break;
+                    case ItemType.STONE:
+                        mouseController.SetFloor(FloorType.STONE_FLOOR, MouseMode.AREA);
+                        break;
+                }
 
             break;
         }

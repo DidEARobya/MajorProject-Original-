@@ -44,7 +44,7 @@ public class MouseController : MonoBehaviour
 
    public string toBuild;
     public ItemData toBuildMaterial;
-    public FloorTypes floorType;
+    public FloorType floorType;
 
     protected Tile tileUnderMouse;
     protected Region highlightedRegion;
@@ -150,14 +150,13 @@ public class MouseController : MonoBehaviour
 
         UpdateText();
     }
-    public void SetFloor(FloorTypes floor, ItemData material, MouseMode mode)
+    public void SetFloor(FloorType floor, MouseMode mode)
     {
         ResetSelected();
 
         buildMode = BuildMode.FLOOR;
         mouseMode = mode;
         floorType = floor;
-        toBuildMaterial = material;
 
         UpdateText();
     }
