@@ -103,6 +103,10 @@ public class Plant : InstalledObject
     {
         return _data.type.ToString();
     }
+    public override string GetObjectSpriteName(bool updateNeighbours)
+    {
+        return GetObjectNameToString() + "_" + plantState.ToString();
+    }
     public override int GetMovementCost()
     {
         return _data.movementCost;

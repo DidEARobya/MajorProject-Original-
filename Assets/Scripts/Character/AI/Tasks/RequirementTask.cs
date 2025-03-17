@@ -2,12 +2,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
+using TreeEditor;
 using Unity.VisualScripting;
 using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
+using UnityEngine.Tilemaps;
 
 public class RequirementTask : Task
 {
@@ -27,7 +30,19 @@ public class RequirementTask : Task
         if(isFloor == true)
         {
             floorType = tile.floorType;
-            tile.SetFloorType(FloorType.TASK_FLOOR);
+            AddTaskCompleteCallback((t) => { if (tile.taskDisplayObject != null) { GameObject.Destroy(tile.taskDisplayObject); }; });
+
+            if (tile.taskDisplayObject == null)
+            {
+                tile.taskDisplayObject = new GameObject();
+                tile.taskDisplayObject.transform.SetParent(tile.tileObj.transform, true);
+                tile.taskDisplayObject.name = "TASK";
+                tile.taskDisplayObject.transform.position = tile.tileObj.transform.position;
+
+                SpriteRenderer taskRenderer = tile.taskDisplayObject.AddComponent<SpriteRenderer>();
+                taskRenderer.sprite = GameManager.GetTileSpriteController().GetFloorSprite(FloorType.TASK_FLOOR);
+                taskRenderer.sortingLayerName = "Foreground";
+            }
         }
     }
     public override void InitTask(CharacterController character)
@@ -147,7 +162,10 @@ public class RequirementTask : Task
 
             if (isFloor == true)
             {
-                tile.SetFloorType(floorType);
+                if (tile.taskDisplayObject != null)
+                {
+                    GameObject.Destroy(tile.taskDisplayObject);
+                }
             }
             else if (tile.installedObject != null)
             {

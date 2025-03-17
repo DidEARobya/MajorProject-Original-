@@ -55,6 +55,10 @@ public class InstalledObject
     {
         return " ";
     }
+    public virtual string GetObjectSpriteName(bool updateNeighbours)
+    {
+        return GetObjectNameToString();
+    }
     public void AddOnActionCallback(Action<InstalledObject, float> callback)
     {
         updateActionCallback += callback;

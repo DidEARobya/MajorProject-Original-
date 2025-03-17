@@ -84,6 +84,8 @@ public class Tile : InventoryOwner, INodeData
     public Color regionColour;
     public bool displayRegion = false;
     public GameObject regionDisplayObj = null;
+
+    public GameObject taskDisplayObject = null;
     public Tile(WorldGrid grid, int _x, int _y, float noiseVal = 0) : base (InventoryOwnerType.TILE)
     {
         world = grid;

@@ -28,17 +28,27 @@ public class InstalledSpriteController : MonoBehaviour
 
         SpriteRenderer renderer = obj.AddComponent<SpriteRenderer>();
 
-        string name = _obj.GetObjectNameToString();
-
-        if (_obj.type == InstalledObjectType.PLANT)
+        string name;
+        
+        if(_obj.type == InstalledObjectType.FURNITURE)
         {
-            name += "_" + (_obj as Plant).plantState.ToString();
+            name = _obj.GetObjectSpriteName(true);
+        }
+        else
+        {
+            name = _obj.GetObjectSpriteName(false);
         }
 
         renderer.sortingLayerName = "Foreground";
 
         obj.name = name + _obj.baseTile.x + "_" + _obj.baseTile.y;
+
         renderer.sprite = objSprites.GetSprite(name);
+
+        if(renderer.sprite == null )
+        {
+            Debug.Log("MISSING: " + name);
+        }
 
         if(_obj.isInstalled == false)
         {
@@ -70,6 +80,16 @@ public class InstalledSpriteController : MonoBehaviour
         {
             name = obj.GetObjectNameToString() + "_" + (obj as Plant).plantState.ToString();
             renderer.sprite = objSprites.GetSprite(name);
+        }
+        else if (obj.type == InstalledObjectType.FURNITURE)
+        {
+            name = obj.GetObjectSpriteName(false);
+            renderer.sprite = objSprites.GetSprite(name);
+        }
+
+        if (renderer.sprite == null)
+        {
+            Debug.Log("MISSING: " + name);
         }
 
         renderer.color = colour;
