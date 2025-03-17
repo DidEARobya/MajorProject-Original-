@@ -15,9 +15,9 @@ public class Cluster
     Tile[,] tiles;
     HashSet<Tile> tileset = new HashSet<Tile>();
     HashSet<Tile> beenChecked = new HashSet<Tile>();
-    public List<Region> regions = new List<Region>();
 
-    public HashSet<Tile> impassableTiles = new HashSet<Tile>();
+    public HashSet<Region> regions = new HashSet<Region>();
+
     public Cluster(WorldGrid grid, int _x, int _y)
     {
         size = RegionManager.clusterSize;
@@ -39,12 +39,11 @@ public class Cluster
     }
     public void UpdateCluster()
     {
-        foreach(Region region in regions)
+        foreach (Region region in regions)
         {
             region.Delete();
         }
 
-        impassableTiles.Clear();
         regions.Clear();
         beenChecked.Clear();
 
@@ -63,7 +62,7 @@ public class Cluster
                 continue;
             }
 
-            FloodFillCluster(tile, toCheck);
+            FloodFillFromTile(tile, toCheck);
 
             if (toCheck.tiles.Count > 0 && regions.Contains(toCheck) == false)
             {
@@ -71,21 +70,14 @@ public class Cluster
             }
         }
 
-        if(regions.Count == 0)
+        if (regions.Count == 0)
         {
             return;
         }
 
-        foreach(Region region in regions)
+        foreach (Region region in regions)
         {
             region.UpdateRegion();
-        }
-    }
-    public void UpdateRegionsNeighbours()
-    {
-        foreach(Region region in regions)
-        {
-            region.SetNeighbours();
         }
     }
     Tile GetUncheckedTile()
@@ -96,9 +88,8 @@ public class Cluster
             {
                 if (beenChecked.Contains(tiles[x, y]) == false)
                 {
-                    if (tiles[x, y].IsObjectInstalled() == true && ObjectManager.Contains(tiles[x, y].installedObject) && tiles[x, y].IsAccessible() == Accessibility.IMPASSABLE)
+                    if (tiles[x, y].IsAccessible() == Accessibility.IMPASSABLE)
                     {
-                        impassableTiles.Add(tiles[x, y]);
                         beenChecked.Add(tiles[x, y]);
                         continue;
                     }
@@ -110,21 +101,9 @@ public class Cluster
 
         return null;
     }
-    void FloodFillCluster(Tile startTile, Region toCheck)
-    {
-        FloodFillFromTile(startTile, toCheck);
-    }
-
     void FloodFillFromTile(Tile tile, Region toCheck)
     {
-        if (tile.IsObjectInstalled() == true && ObjectManager.Contains(tile.installedObject) && tile.IsAccessible() == Accessibility.IMPASSABLE)
-        {
-            impassableTiles.Add(tile);
-            beenChecked.Add(tile);
-            return;
-        }
-
-        if(tile.IsObjectInstalled() == true && ObjectManager.Contains(tile.installedObject) && tile.installedObject.type == InstalledObjectType.FURNITURE && (tile.installedObject as Furniture).furnitureType == FurnitureTypes.DOOR)
+        if(tile.IsObjectInstalled() == true && ObjectManager.Contains(tile.installedObject) && tile.installedObject.type == InstalledObjectType.FURNITURE && (tile.installedObject as Building).type == InstalledObjectType.FURNITURE)
         {
             beenChecked.Add(tile);
 
@@ -153,12 +132,12 @@ public class Cluster
 
             foreach (Tile t2 in t.GetAdjacentNeigbours())
             {
-                if (t2.IsObjectInstalled() == true && ObjectManager.Contains(t2.installedObject) && t2.installedObject.type == InstalledObjectType.FURNITURE && (t2.installedObject as Furniture).furnitureType == FurnitureTypes.DOOR)
+                if (t2.IsObjectInstalled() == true && ObjectManager.Contains(t2.installedObject) && t2.installedObject.type == InstalledObjectType.FURNITURE)
                 {
                     continue;
                 }
 
-                if (t2 != null && beenChecked.Contains(t2) == false && tileset.Contains(t2) == true && toCheck.Contains(t2) == false && (t2.IsAccessible() != Accessibility.IMPASSABLE || t2.installedObject == null))
+                if (t2 != null && beenChecked.Contains(t2) == false && tileset.Contains(t2) == true && toCheck.Contains(t2) == false && t2.IsAccessible() != Accessibility.IMPASSABLE)
                 {
                     stack.Push(t2);
                 }

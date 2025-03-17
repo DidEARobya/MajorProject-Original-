@@ -36,7 +36,7 @@ public class MenuDropdown : MonoBehaviour
                     break;
                 case MenuType.PLANT:
                     PlantType pType = new PlantType();
-                    pType = (PlantType)i;
+                    pType = (PlantType)i + 1;
 
                     buttons[i].onClick.AddListener(() => { SetType(pType); });
                     break;
@@ -51,20 +51,7 @@ public class MenuDropdown : MonoBehaviour
             return;
         }
 
-        switch(type)
-        {
-            case ItemType.WOOD:
-            uiObject.SetType(ItemTypes.WOOD); 
-            break;
-
-            case ItemType.STONE:
-            uiObject.SetType(ItemTypes.STONE);
-            break;
-
-            case ItemType.IRON:
-            uiObject.SetType(ItemTypes.IRON);
-            break;
-        }
+        uiObject.SetType(type);
     }
     public void SetType(PlantType type)
     {
@@ -77,7 +64,7 @@ public class MenuDropdown : MonoBehaviour
         switch (type)
         {
             case PlantType.OAK_TREE:
-                uiObject.SetType(PlantTypes.OAK_TREE);
+                uiObject.SetType(PlantType.OAK_TREE);
                 break;
         }
     }

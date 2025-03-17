@@ -119,6 +119,11 @@ public class CharacterController : InventoryOwner
 
             if (nextTile == null)
             {
+                if(currentTile != destinationTile)
+                {
+                    PathRequestHandler.RequestPath(this, destinationTile, true);
+                }
+
                 return;
             }
         }
@@ -161,7 +166,6 @@ public class CharacterController : InventoryOwner
 
             if (destinationTile == currentTile)
             {
-                currentTile.reservedBy = this;
                 pathFinder = null;
                 return;
             }
@@ -178,7 +182,6 @@ public class CharacterController : InventoryOwner
     }
     public void SetDestination(Tile tile)
     {
-        currentTile.reservedBy = null;
         destinationTile = tile;
     }
     public void AddCharacterUpdate(Action<CharacterController> callback)

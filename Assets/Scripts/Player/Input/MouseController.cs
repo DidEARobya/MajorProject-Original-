@@ -42,9 +42,9 @@ public class MouseController : MonoBehaviour
     public MouseMode mouseMode;
     public BuildMode buildMode;
 
-    public FurnitureTypes toBuild;
-    public ItemTypes toBuildMaterial;
-    public FloorTypes floorType;
+   public string toBuild;
+    public ItemData toBuildMaterial;
+    public FloorType floorType;
 
     protected Tile tileUnderMouse;
     protected Region highlightedRegion;
@@ -113,14 +113,13 @@ public class MouseController : MonoBehaviour
         selectedTile = null;
         selectedTileDisplay.SetActive(false);
     }
-    public void SetObject(FurnitureTypes obj, ItemTypes material, MouseMode mode)
+    public void SetObject(string building, MouseMode mode)
     {
         ResetSelected();
 
         buildMode = BuildMode.OBJECT;
         mouseMode = mode;
-        toBuild = obj;
-        toBuildMaterial = material;
+        toBuild = building;
 
         UpdateText();
     }
@@ -151,14 +150,13 @@ public class MouseController : MonoBehaviour
 
         UpdateText();
     }
-    public void SetFloor(FloorTypes floor, ItemTypes material, MouseMode mode)
+    public void SetFloor(FloorType floor, MouseMode mode)
     {
         ResetSelected();
 
         buildMode = BuildMode.FLOOR;
         mouseMode = mode;
         floorType = floor;
-        toBuildMaterial = material;
 
         UpdateText();
     }
@@ -217,7 +215,7 @@ public class MouseController : MonoBehaviour
 
         if(displayRegions == false && highlightedRegion != null)
         {
-            GameManager.GetRegionManager().ClearRegionDisplayAt(highlightedRegion);
+            highlightedRegion.DestroyDisplayTiles(false);
         }
     }
 
@@ -233,7 +231,7 @@ public class MouseController : MonoBehaviour
             return;
         }
 
-        if(Input.GetKeyUp(KeyCode.Tab))
+        if (Input.GetKeyUp(KeyCode.Tab))
         {
             SetToSelect();
         }
@@ -270,7 +268,11 @@ public class MouseController : MonoBehaviour
 
         if(displayRegions == true && tileUnderMouse != null && tileUnderMouse.region != highlightedRegion)
         {
-            GameManager.GetRegionManager().ClearRegionDisplayAt(highlightedRegion);
+            if(highlightedRegion != null)
+            {
+                highlightedRegion.DestroyDisplayTiles(false);
+            }
+
             highlightedRegion = tileUnderMouse.region;
 
             if (highlightedRegion != null)
@@ -586,7 +588,7 @@ public class MouseController : MonoBehaviour
                     break;
 
                 case BuildMode.OBJECT:
-                    buildModeController.Build(temp, buildMode, toBuild, toBuildMaterial);
+                    buildModeController.Build(temp, buildMode, toBuild);
                     break;
 
                 case BuildMode.FLOOR:

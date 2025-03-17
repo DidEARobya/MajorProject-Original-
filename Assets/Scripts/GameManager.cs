@@ -94,7 +94,6 @@ public class GameManager : MonoBehaviour
 
         taskManager = new TaskManager();
         taskManager.Init();
-        taskRequestHandler = new TaskRequestHandler();
 
         inventorySpriteController.Init();
         tileSpriteController.Init();
@@ -116,7 +115,7 @@ public class GameManager : MonoBehaviour
     {
         ObjectManager.Update(Time.deltaTime);
         CharacterManager.Update(Time.deltaTime);
-        taskRequestHandler.Update();
+        TaskRequestHandler.Update();
         PathRequestHandler.Update();
     }
     public static WorldController GetWorldController()

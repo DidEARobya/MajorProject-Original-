@@ -40,8 +40,8 @@ public class TileSpriteController : MonoBehaviour
 
     public void OnTileTypeChange(Tile tileData, GameObject tileObj)
     {
-        TerrainType type = TerrainTypes.GetTerrainType(tileData.terrainType);
-        FloorType floor = FloorTypes.GetFloorType(tileData.floorType);
+        TerrainType type = tileData.terrainType;
+        FloorType floor = tileData.floorType;
 
         SpriteRenderer renderer = tileObj.GetComponent<SpriteRenderer>();
 

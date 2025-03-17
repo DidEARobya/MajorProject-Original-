@@ -79,7 +79,7 @@ public class Zone
             return;
         }
 
-        if(zoneType == ZoneType.GROW && tile.floorType != FloorTypes.NONE)
+        if(zoneType == ZoneType.GROW && tile.floorType != FloorType.NONE)
         {
             return;
         }

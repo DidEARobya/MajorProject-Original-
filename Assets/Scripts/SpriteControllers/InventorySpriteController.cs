@@ -36,10 +36,10 @@ public class InventorySpriteController : MonoBehaviour
         renderer = obj.GetComponent<SpriteRenderer>();
         inventory.inventoryObject = obj;
 
-        obj.name = ItemTypes.GetItemType(inventory.item) + " " + inventory.stackSize;
+        obj.name = inventory.item.type + " " + inventory.stackSize;
         obj.transform.SetParent(inventory.owner.gameObj.transform, true);
 
-        renderer.sprite = itemSprites.GetSprite(ItemTypes.GetItemType(inventory.item).ToString());
+        renderer.sprite = itemSprites.GetSprite(inventory.item.type.ToString());
 
         InventoryOwnerType type = inventory.owner.GetOwnerType();
         renderer.sortingLayerName = "Foreground";

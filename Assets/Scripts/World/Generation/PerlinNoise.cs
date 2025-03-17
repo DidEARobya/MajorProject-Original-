@@ -29,7 +29,7 @@ public class PerlinNoise
 
         random = manager.random;
 
-        seed = manager.seed;
+        seed = Utility.GetRandomInt(1, 9999);
         seedVal = GenerateSeedValue(seed);
         scale = manager.terrainScale;
         offset = manager.terrainOffset;

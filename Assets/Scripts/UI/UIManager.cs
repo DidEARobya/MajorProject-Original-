@@ -29,6 +29,7 @@ public class UIManager : MonoBehaviour
     public GameObject materialsMenu;
     public GameObject plantMenu;
     public TextMeshProUGUI devToggleText;
+    public TextMeshProUGUI fpsText;
 
     private void Start()
     {
@@ -45,7 +46,9 @@ public class UIManager : MonoBehaviour
     }
     private void Update()
     {
-        if(Input.GetKeyUp(KeyCode.Escape))
+        fpsText.text = "FPS: " + ((int)(1f / Time.unscaledDeltaTime)).ToString();
+
+        if (Input.GetKeyUp(KeyCode.Escape))
         {
             buildPanel.SetActive(false);
             TogglePanels(null);

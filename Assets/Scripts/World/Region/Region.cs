@@ -13,36 +13,30 @@ using UnityEngine.UIElements;
 
 public class Region
 {
-    public int x;
-    public int y;
-
     public float gCost;
     public float hCost;
     public float fCost;
 
-    public HashSet<Region> neighbours = new HashSet<Region>();
-
     public HashSet<Tile> tiles = new HashSet<Tile>();
-    public HashSet<Tile> impassableTiles = new HashSet<Tile>();
     public HashSet<Tile> searchTiles = new HashSet<Tile>();
 
-    List<Tile> northPairs = new List<Tile>();
-    List<Tile> eastPairs = new List<Tile>();
-    List<Tile> southPairs = new List<Tile>();
-    List<Tile> westPairs = new List<Tile>();
+    private List<Tile> _northPairs = new List<Tile>();
+    private List<Tile> _eastPairs = new List<Tile>();
+    private List<Tile> _southPairs = new List<Tile>();
+    private List<Tile> _westPairs = new List<Tile>();
 
-    HashSet<int> spans = new HashSet<int>();
+    private HashSet<int> _spans = new HashSet<int>();
 
-    Dictionary<ItemTypes, int> itemsInRegion = new Dictionary<ItemTypes, int>();
-    Dictionary<FurnitureTypes, int> furnitureInRegion = new Dictionary<FurnitureTypes, int>();
-    Dictionary<OreTypes, int> oreInRegion = new Dictionary<OreTypes, int>();
-    Dictionary<PlantTypes, int> plantsInRegion = new Dictionary<PlantTypes, int>();
+    private Dictionary<ItemData, int> _itemsInRegion = new Dictionary<ItemData, int>();
+    private Dictionary<BuildingData, int> _buildingsInRegion = new Dictionary<BuildingData, int>();
+    private Dictionary<OreData, int> _oreInRegion = new Dictionary<OreData, int>();
+    private Dictionary<PlantData, int> _plantsInRegion = new Dictionary<PlantData, int>();
 
-    public Cluster inCluster;
+    public Cluster _inCluster;
     public bool isDoor;
-    public Region(Cluster _inCluster)
+    public Region(Cluster inCluster)
     {
-        inCluster = _inCluster;
+        _inCluster = inCluster;
         isDoor = false;
     }
     public void HighlightTiles(UnityEngine.Color colour, bool isNeighbour)
@@ -64,11 +58,13 @@ public class Region
             return;
         }
 
-        foreach(Region r in neighbours)
+        foreach(int i in _spans)
         {
-            if(r != null)
+            Region region = GameManager.GetRegionManager().GetNeighbour(i, this);
+
+            if(region != null)
             {
-                r.HighlightTiles(UnityEngine.Color.red, true);
+                region.HighlightTiles(UnityEngine.Color.red, true);
             }
         }
     }
@@ -85,11 +81,12 @@ public class Region
             return; 
         }
 
-        foreach (Region r in neighbours)
+        foreach (int i in _spans)
         {
-            if (r != null)
+            Region region = GameManager.GetRegionManager().GetNeighbour(i, this);
+            if(region != null)
             {
-                r.DestroyDisplayTiles(true);
+                region.DestroyDisplayTiles(true);
             }
         }
     }
@@ -105,9 +102,9 @@ public class Region
             Tile t = stack.Pop();
 
             beenChecked.Add(t);
-            Dictionary<Tile, Direction> neighbours = t.GetNeighboursDict();
-
-            foreach (Tile t2 in neighbours.Keys)
+            List<Tile> neighbours = t.GetAdjacentNeigbours();
+            
+            foreach (Tile t2 in neighbours)
             {
                 if (t2 != null && beenChecked.Contains(t2) == false && tiles.Contains(t2) == true)
                 {
@@ -116,13 +113,14 @@ public class Region
                     continue;
                 }
 
-                if(t2.IsObjectInstalled() == true)
+                float temp = Time.realtimeSinceStartup;
+                if (t2.IsObjectInstalled() == true)
                 {
-                    UpdateDict(t2.installedObject);
+                    //UpdateDict(t2.installedObject);
 
                     if(t2.IsAccessible() == Accessibility.IMPASSABLE)
                     {
-                        impassableTiles.Add(t2);
+                        searchTiles.Add(t2);
                     }
                 }
 
@@ -130,39 +128,20 @@ public class Region
             }
         }
 
-        GameManager.GetRegionManager().regions.Add(this);
-
         UpdateSpans();
     }
     public void UpdateSpans()
     {
-        SortSpans(northPairs, 0);
-        SortSpans(eastPairs, 1);
-        SortSpans(southPairs, 0);
-        SortSpans(westPairs, 1);
+        SortSpans(_northPairs, 0);
+        SortSpans(_eastPairs, 1);
+        SortSpans(_southPairs, 0);
+        SortSpans(_westPairs, 1);
 
-        if (spans.Count > 0)
+        if (_spans.Count > 0)
         {
-            foreach (int i in spans)
+            foreach (int i in _spans)
             {
                 GameManager.GetRegionManager().AddHash(i, this);
-            }
-        }
-    }
-    public virtual void SetNeighbours()
-    {
-        if(spans.Count == 0)
-        {
-            return;
-        }
-
-        foreach (int i in spans)
-        {
-            Region neighbour = GameManager.GetRegionManager().GetNeighbour(i, this);
-
-            if(neighbour != null && neighbours.Contains(neighbour) == false)
-            {
-                neighbours.Add(neighbour);
             }
         }
     }
@@ -204,7 +183,7 @@ public class Region
                 hashY = Mathf.FloorToInt(y / length);
 
                 hash = GenerateLinkHash(hashX, hashY, isVertical, length);
-                spans.Add(hash);
+                _spans.Add(hash);
 
                 tempIndex = index;
                 x = 0;
@@ -237,12 +216,11 @@ public class Region
         hashY = Mathf.FloorToInt(y / length);
 
         hash = GenerateLinkHash(hashX, hashY, isVertical, length);
-        spans.Add(hash);
+        _spans.Add(hash);
     }
     List<Tile> SortSpanList(List<Tile> toSort, int isVertical)
     {
         List<Tile> sortedTiles = new List<Tile>();
-        List<Tile> doorTiles = new List<Tile>();
 
         while (toSort.Count > 0)
         {
@@ -278,21 +256,13 @@ public class Region
             toSort.Remove(first);
         }
 
-        if(doorTiles.Count != 0)
-        {
-            foreach(Tile tile in doorTiles)
-            {
-                sortedTiles.Add(tile);
-            }
-        }
-
         return sortedTiles;
     }
     public void Delete()
     {
-        if(spans.Count > 0)
+        if(_spans.Count > 0)
         {
-            foreach(int i in spans)
+            foreach(int i in _spans)
             {
                 GameManager.GetRegionManager().RemoveHash(i, this);
             }
@@ -312,24 +282,36 @@ public class Region
             }
         }
 
-        GameManager.GetRegionManager().regions.Remove(this);
-
-        neighbours.Clear();
         tiles.Clear();
-        impassableTiles.Clear();
         searchTiles.Clear();
 
-        northPairs.Clear();
-        eastPairs.Clear();
-        southPairs.Clear();
-        westPairs.Clear();
+        _northPairs.Clear();
+        _eastPairs.Clear();
+        _southPairs.Clear();
+        _westPairs.Clear();
 
-        spans.Clear();
+        _spans.Clear();
 
-        itemsInRegion.Clear();
-        furnitureInRegion.Clear();
-        oreInRegion.Clear();
-        plantsInRegion.Clear();
+        _itemsInRegion.Clear();
+        _buildingsInRegion.Clear();
+        _oreInRegion.Clear();
+        _plantsInRegion.Clear();
+    }
+    public HashSet<Region> GetNeighbours()
+    {
+        HashSet<Region> neighbours = new HashSet<Region>();
+
+        foreach (int i in _spans)
+        {
+            Region neighbour = GameManager.GetRegionManager().GetNeighbour(i, this);
+
+            if(neighbour != null)
+            {
+                neighbours.Add(neighbour);
+            }
+        }
+
+        return neighbours;
     }
     public void AddTile(Tile tile)
     {
@@ -345,70 +327,55 @@ public class Region
     {
         Tile toCheck = t.North;
 
-        if (toCheck != null && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this && (toCheck.region as DoorRegion) == null)
+        if (toCheck != null && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this)
         {
-            northPairs.Add(toCheck);
+            _northPairs.Add(toCheck);
         }
 
         toCheck = t.East;
 
-        if (toCheck != null && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this && (toCheck.region as DoorRegion) == null)
+        if (toCheck != null && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this)
         {
-            eastPairs.Add(toCheck);
+            _eastPairs.Add(toCheck);
         }
 
         toCheck = t.South;
 
-        if (toCheck != null && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this && (toCheck.region as DoorRegion) == null)
+        if (toCheck != null && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this)
         {
-            southPairs.Add(t);
+            _southPairs.Add(t);
         }
 
         toCheck = t.West;
 
-        if (toCheck != null && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this && (toCheck.region as DoorRegion) == null)
+        if (toCheck != null && toCheck.IsAccessible() != Accessibility.IMPASSABLE && toCheck.region != this)
         {
-            westPairs.Add(t);
+            _westPairs.Add(t);
         }
     }
     public void UpdateRegion()
     {
         FindEdges(tiles.First());
+        _itemsInRegion.Clear();
 
-        searchTiles = new HashSet<Tile>(tiles);
-
-        foreach (Tile t in impassableTiles)
+        foreach (Tile tile in tiles)
         {
-            searchTiles.Add(t);
-        }
-
-        itemsInRegion.Clear();
-
-        int _x = 0;
-        int _y = 0;
-
-        foreach(Tile tile in tiles)
-        {
-            _x += tile.x;
-            _y += tile.y;
-
-            if(tile.inventory.item != null)
+            if (tile.inventory.item != null)
             {
                 UpdateDict(tile.inventory.item, tile.inventory.stackSize);
             }
 
-            if(tile.IsObjectInstalled() == true)
+            if (tile.IsObjectInstalled() == true)
             {
                 UpdateDict(tile.installedObject);
             }
-        }
 
-        x = Mathf.RoundToInt(_x / tiles.Count);
-        y = Mathf.RoundToInt(_y / tiles.Count);
+            searchTiles.Add(tile);
+        }
     }
-    public void UpdateDict(ItemTypes type, int amount)
+    public void UpdateDict(ItemData type, int amount)
     {
-        if (itemsInRegion.ContainsKey(type) == false)
+        if (_itemsInRegion.ContainsKey(type) == false)
         {
             if (amount < 0)
             {
@@ -416,15 +383,15 @@ public class Region
                 return;
             }
 
-            itemsInRegion.Add(type, amount);
+            _itemsInRegion.Add(type, amount);
             return;
         }
 
-        itemsInRegion[type] += amount;
+        _itemsInRegion[type] += amount;
        
-        if (itemsInRegion[type] <= 0)
+        if (_itemsInRegion[type] <= 0)
         {
-            itemsInRegion.Remove(type);
+            _itemsInRegion.Remove(type);
         }
     }
     public void UpdateDict(InstalledObject obj)
@@ -433,64 +400,64 @@ public class Region
         {
             case InstalledObjectType.FURNITURE:
 
-                if (furnitureInRegion.ContainsKey((obj as Furniture).furnitureType) == false)
+                if (_buildingsInRegion.ContainsKey((obj as Building)._data) == false)
                 {
-                    furnitureInRegion.Add((obj as Furniture).furnitureType, 1);
+                    _buildingsInRegion.Add((obj as Building)._data, 1);
                     return;
                 }
 
-                furnitureInRegion[(obj as Furniture).furnitureType] += 1;
+                _buildingsInRegion[(obj as Building)._data] += 1;
 
-                if (furnitureInRegion[(obj as Furniture).furnitureType] <= 0)
+                if (_buildingsInRegion[(obj as Building)._data] <= 0)
                 {
-                    furnitureInRegion.Remove((obj as Furniture).furnitureType);
+                    _buildingsInRegion.Remove((obj as Building)._data);
                 }
 
                 break;
 
             case InstalledObjectType.ORE:
 
-                if (oreInRegion.ContainsKey((obj as Ore).oreType) == false)
+                if (_oreInRegion.ContainsKey((obj as Ore)._data) == false)
                 {
-                    oreInRegion.Add((obj as Ore).oreType, 1);
+                    _oreInRegion.Add((obj as Ore)._data, 1);
                     return;
                 }
 
-                oreInRegion[(obj as Ore).oreType] += 1;
+                _oreInRegion[(obj as Ore)._data] += 1;
 
-                if (oreInRegion[(obj as Ore).oreType] <= 0)
+                if (_oreInRegion[(obj as Ore)._data] <= 0)
                 {
-                    oreInRegion.Remove((obj as Ore).oreType);
+                    _oreInRegion.Remove((obj as Ore)._data);
                 }
 
                 break;
 
             case InstalledObjectType.PLANT:
 
-                if (plantsInRegion.ContainsKey((obj as Plant).plantType) == false)
+                if (_plantsInRegion.ContainsKey((obj as Plant)._data) == false)
                 {
-                    plantsInRegion.Add((obj as Plant).plantType, 1);
+                    _plantsInRegion.Add((obj as Plant)._data, 1);
                     return;
                 }
 
-                plantsInRegion[(obj as Plant).plantType] += 1;
+                _plantsInRegion[(obj as Plant)._data] += 1;
 
-                if (plantsInRegion[(obj as Plant).plantType] <= 0)
+                if (_plantsInRegion[(obj as Plant)._data] <= 0)
                 {
-                    plantsInRegion.Remove((obj as Plant).plantType);
+                    _plantsInRegion.Remove((obj as Plant)._data);
                 }
 
                 break;
         }
     }
-    public int Contains(ItemTypes type)
+    public int Contains(ItemData type)
     {
-        if (itemsInRegion.ContainsKey(type) == false)
+        if (_itemsInRegion.ContainsKey(type) == false)
         {
             return 0;
         }
 
-        return itemsInRegion[type];
+        return _itemsInRegion[type];
     }
     public bool Contains(Tile tile)
     {
@@ -498,17 +465,18 @@ public class Region
     }
     public int GetItemDictSize()
     {
-        return itemsInRegion.Count;
+        return _itemsInRegion.Count;
     }
-    public bool ContainsUnstoredItem(ItemTypes type = null)
+    public bool ContainsUnstoredItem(ItemData type = null)
     {
-        if(itemsInRegion.Count == 0)
+        if(_itemsInRegion.Count == 0)
         {
             return false;
         }
+
         if(type != null)
         {
-            if(itemsInRegion.ContainsKey(type) == false)
+            if(_itemsInRegion.ContainsKey(type) == false)
             {
                 return false;
             }
@@ -552,7 +520,7 @@ public class Region
     {
         HashSet<Tile> toCheck = new HashSet<Tile>(tiles);
 
-        foreach (Tile t in impassableTiles)
+        foreach (Tile t in searchTiles)
         {
             toCheck.Add(t);
         }
@@ -592,7 +560,7 @@ public class Region
         length = hash & 0xF;
     }
 
-    public bool ContainsValidStorage(ItemTypes type, int amount)
+    public bool ContainsValidStorage(ItemData type, int amount)
     {
         foreach(Tile tile in tiles)
         {

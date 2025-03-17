@@ -31,8 +31,8 @@ public class TileDetails : MonoBehaviour
 
         posText.text = "x: " + tile.x + ", y: " + tile.y;
 
-        terrainText.text = "Terrain: " + TerrainTypes.GetTerrainType(tile.terrainType).ToString();
-        floorText.text = "Floor: " + FloorTypes.GetFloorType(tile.floorType).ToString();
+        terrainText.text = "Terrain: " + tile.terrainType.ToString();
+        floorText.text = "Floor: " + tile.floorType.ToString();
 
         if(tile.IsObjectInstalled() == true)
         {
@@ -45,7 +45,7 @@ public class TileDetails : MonoBehaviour
 
         if(tile.inventory.item != null)
         {
-            inventoryText.text = "Contains: " + ItemTypes.GetItemType(tile.inventory.item).ToString() + ", " + tile.inventory.stackSize.ToString();
+            inventoryText.text = "Contains: " + tile.inventory.item.type.ToString() + ", " + tile.inventory.stackSize.ToString();
         }
         else
         {

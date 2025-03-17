@@ -1,0 +1,19 @@
+{
+    "Items":
+    [
+        {
+            "type": "WOOD_FLOOR",
+            "movementCost": 5,
+            "constructionTime": 50.0, 
+            "requirementsItems":["WOOD"],
+            "requirementsAmounts":[4]
+        },
+        {
+            "type": "STONE_FLOOR",
+            "movementCost": 2,
+            "constructionTime": 100.0, 
+            "requirementsItems":["STONE"],
+            "requirementsAmounts":[4]
+        }
+    ]
+}

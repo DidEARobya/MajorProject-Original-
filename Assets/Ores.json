@@ -1,0 +1,19 @@
+{
+    "Items":
+    [
+        {
+            "type": "STONE_ORE",
+            "durability": 400,
+            "resourceType": "STONE",
+            "yieldMin": 8,
+            "yieldMax": 12
+        },
+        {
+            "type": "IRON_ORE",
+            "durability": 500,
+            "resourceType": "IRON",
+            "yieldMin": 6,
+            "yieldMax": 10
+        }
+    ]
+}

@@ -93,24 +93,9 @@ public class Path_AStar
 
         return false;
     }
-    Queue<INodeData> RetraceTilePath(Node start, Node end)
+    public bool IsRegionPathable(Region start, Region end, Tile target, bool _isPlayer)
     {
-        destination = end.data.GetTile();
-
-        Queue<INodeData> totalPath = new Queue<INodeData>();
-        Node current = end;
-
-        while (current != start)
-        {
-            totalPath.Enqueue(current.data);
-            current = current.cameFrom;
-        }
-
-        return new Queue<INodeData>(totalPath.Reverse());
-    }
-    public bool IsRegionPathable(Region start, Region end, bool _isPlayer)
-    {
-        if (start == null || end == null)
+        if (start == null || (end == null && target == null))
         {
             return false;
         }
@@ -127,12 +112,12 @@ public class Path_AStar
             Region current = openSet.Dequeue();
             closedSet.Add(current);
 
-            if (current == end)
+            if (current == end || current.searchTiles.Contains(target))
             {
                 return true;
             }
 
-            foreach (Region neighbour in current.neighbours)
+            foreach (Region neighbour in current.GetNeighbours())
             {
                 if (closedSet.Contains(neighbour) == true)
                 {
@@ -160,6 +145,22 @@ public class Path_AStar
 
         return false;
     }
+    Queue<INodeData> RetraceTilePath(Node start, Node end)
+    {
+        destination = end.data.GetTile();
+
+        Queue<INodeData> totalPath = new Queue<INodeData>();
+        Node current = end;
+
+        while (current != start)
+        {
+            totalPath.Enqueue(current.data);
+            current = current.cameFrom;
+        }
+
+        return new Queue<INodeData>(totalPath.Reverse());
+    }
+
     float DistanceBetween(Node start, Node goal)
     {
         int distX = Mathf.Abs(start.x - goal.x);

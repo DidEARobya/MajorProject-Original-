@@ -1,21 +1,39 @@
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Runtime.Serialization;
 
+[JsonConverter(typeof(StringEnumConverter))]
 public enum TerrainType
 {
-    GRASS,
+    [EnumMember(Value = "GOOD_SOIL")]
     GOOD_SOIL,
+    [EnumMember(Value = "POOR_SOIL")]
     POOR_SOIL,
 }
+[JsonConverter(typeof(StringEnumConverter))]
 public enum FloorType
 {
     NONE,
     TASK_FLOOR,
+    [EnumMember(Value = "WOOD_FLOOR")]
     WOOD_FLOOR,
+    [EnumMember(Value = "STONE_FLOOR")]
     STONE_FLOOR
+}
+[JsonConverter(typeof(StringEnumConverter))]
+public enum Accessibility
+{
+    [EnumMember(Value = "IMPASSABLE")]
+    IMPASSABLE,
+    [EnumMember(Value = "DELAYED")]
+    DELAYED,
+    [EnumMember(Value = "ACCESSIBLE")]
+    ACCESSIBLE
 }
 public enum Direction
 {
@@ -24,15 +42,9 @@ public enum Direction
     E,
     SE,
     S,
-    SW, 
+    SW,
     W,
     NW
-}
-public enum Accessibility
-{
-    IMPASSABLE,
-    DELAYED,
-    ACCESSIBLE
 }
 public class Tile : InventoryOwner, INodeData
 {
@@ -42,8 +54,8 @@ public class Tile : InventoryOwner, INodeData
     public GameObject tileObj;
     public Node pathNode;
 
-    public TerrainTypes terrainType = TerrainTypes.GOOD_SOIL;
-    public FloorTypes floorType = FloorTypes.NONE;
+    public TerrainType terrainType = TerrainType.GOOD_SOIL;
+    public FloorType floorType = FloorType.NONE;
 
     public InstalledObject installedObject;
 
@@ -62,7 +74,6 @@ public class Tile : InventoryOwner, INodeData
     public Task task;
 
     public bool isPendingTask = false;
-    public CharacterController reservedBy = null;
 
     public Zone zone = null;
     public GameObject zoneObj = null;
@@ -80,14 +91,7 @@ public class Tile : InventoryOwner, INodeData
         x = _x;
         y = _y;
 
-        if(noiseVal < 0)
-        {
-            SetTerrainType(TerrainTypes.GOOD_SOIL);
-        }
-        else
-        {
-            SetTerrainType(TerrainTypes.POOR_SOIL);
-        }
+        SetTerrainType(ThingsDataHandler.GetRandomTerrainType(noiseVal));
 
         InventoryManager.CreateNewInventory(InventoryOwnerType.TILE, this);
     }
@@ -128,7 +132,7 @@ public class Tile : InventoryOwner, INodeData
 
         tileObj = obj;
     }
-    public void SetTerrainType(TerrainTypes terrain)
+    public void SetTerrainType(TerrainType terrain)
     {
         if(terrainType == terrain)
         {
@@ -139,22 +143,19 @@ public class Tile : InventoryOwner, INodeData
 
         UpdateVisual();
     }
-    public void SetFloorType(FloorTypes floor)
+    public void SetFloorType(FloorType floor)
     {
         if (floorType == floor)
         {
             return;
         }
 
-        FloorType oldType = FloorTypes.GetFloorType(floorType);
-        FloorType newType = FloorTypes.GetFloorType(floor);
+        FloorType oldType = floorType;
+        FloorType newType = floor;
 
-        if (oldType != FloorType.NONE || oldType != FloorType.TASK_FLOOR)
+        if (oldType != FloorType.NONE && newType != FloorType.TASK_FLOOR && oldType != FloorType.TASK_FLOOR)
         {
-            if(newType != FloorType.TASK_FLOOR)
-            {
-                InventoryManager.AddToTileInventory(this, FloorTypes.GetRequirements(floorType));
-            }
+            InventoryManager.AddToTileInventory(this, ThingsDataHandler.GetFloorData(oldType).GetRequirements());
         }
 
         if (accessibility == Accessibility.IMPASSABLE && zone != null && zone.zoneType == ZoneType.GROW)
@@ -225,13 +226,13 @@ public class Tile : InventoryOwner, INodeData
 
         int cost = 0;
 
-        if(floorType == FloorTypes.NONE)
+        if(floorType == FloorType.NONE)
         {
-            cost += TerrainTypes.GetMovementCost(terrainType);
+            cost += ThingsDataHandler.GetTerrainData(terrainType).movementCost;
         }
         else
         {
-            cost += FloorTypes.GetMovementCost(floorType);
+            cost += ThingsDataHandler.GetFloorData(floorType).movementCost;
         }
 
         if(installedObject != null && installedObject.isInstalled)
@@ -281,7 +282,7 @@ public class Tile : InventoryOwner, INodeData
 
         return Accessibility.ACCESSIBLE;
     }
-    public Tile GetNearestAvailableInventory(ItemTypes type, int amount)
+    public Tile GetNearestAvailableInventory(ItemData type, int amount)
     {
         if(accessibility != Accessibility.IMPASSABLE && (inventory.item == null || inventory.CanBeStored(type, amount) != 0))
         {
@@ -478,79 +479,5 @@ public class Tile : InventoryOwner, INodeData
     public void RemoveTileChangedCallback(Action<Tile> callback)
     {
         tileChangedCallback -= callback;
-    }
-}
-
-public class TerrainTypes
-{
-    protected readonly TerrainType type;
-    protected readonly int movementCost;
-    protected readonly int plantGrowthChance;
-    protected readonly float fertilityMultiplier;
-
-    public static readonly TerrainTypes GOOD_SOIL = new TerrainTypes(TerrainType.GOOD_SOIL, 2, 10, 1.1f);
-    public static readonly TerrainTypes POOR_SOIL = new TerrainTypes(TerrainType.POOR_SOIL, 1, 2, 0.9f);
-    public static readonly TerrainTypes GRASS = new TerrainTypes(TerrainType.GRASS, 1, 2, 0.9f);
-
-    protected TerrainTypes(TerrainType _type, int _movementCost, int growthChance, float _fertilityMultiplier)
-    {
-        type = _type;
-        movementCost = _movementCost;
-        plantGrowthChance = growthChance;
-        fertilityMultiplier = _fertilityMultiplier;
-    }
-
-    public static TerrainType GetTerrainType(TerrainTypes type) 
-    {
-        return type.type;
-    }
-    public static int GetMovementCost(TerrainTypes type)
-    {
-        return type.movementCost;
-    }
-    public static int GetGrowthChance(TerrainTypes type)
-    {
-        return type.plantGrowthChance;
-    }
-    public static float GetFertilityMultiplier(TerrainTypes type)
-    {
-        return type.fertilityMultiplier;
-    }
-}
-public class FloorTypes
-{
-    protected readonly FloorType type;
-    protected readonly int movementCost;
-
-    protected readonly FloorRequirements requirements;
-
-    public static readonly FloorTypes NONE = new FloorTypes(FloorType.NONE, 0, null);
-    public static readonly FloorTypes TASK = new FloorTypes(FloorType.TASK_FLOOR, 0, null);
-    public static readonly FloorTypes WOOD = new FloorTypes(FloorType.WOOD_FLOOR, 1, FloorRequirements.WOOD);
-    public static readonly FloorTypes STONE = new FloorTypes(FloorType.STONE_FLOOR, 1, FloorRequirements.STONE);
-
-    protected FloorTypes(FloorType _type, int _movementCost, FloorRequirements _requirements)
-    {
-        type = _type;
-        movementCost = _movementCost;
-        requirements = _requirements;
-    }
-
-    public static FloorType GetFloorType(FloorTypes type)
-    {
-        return type.type;
-    }
-    public static int GetMovementCost(FloorTypes type)
-    {
-        return type.movementCost;
-    }
-    public static Dictionary<ItemTypes, int> GetRequirements(FloorTypes type)
-    {
-        if(type.requirements == null)
-        {
-            return null;
-        }
-
-        return FloorRequirements.GetRequirements(type.requirements);
     }
 }

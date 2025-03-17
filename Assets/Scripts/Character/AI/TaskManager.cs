@@ -169,7 +169,7 @@ public class TaskManager
 
         return task;
     }
-    public HaulTask CreateHaulToJobSiteTask(RequirementTask jobSite, CharacterController character, ItemTypes type, Tile toStoreAt, int amount = 0)
+    public HaulTask CreateHaulToJobSiteTask(RequirementTask jobSite, CharacterController character, ItemData type, Tile toStoreAt, int amount = 0)
     {
         if (InventoryManager.inventories.Count == 0)
         {

@@ -4,18 +4,20 @@ using UnityEngine;
 
 public class GrowZone : Zone
 {
-    PlantTypes toGrow;
+    PlantType toGrow;
 
     public GrowZone()
     {
         zoneType = ZoneType.GROW; 
         zoneColour = Color.green;
         zoneColour.a = 0.1f;
+
+        toGrow = PlantType.NONE;
     }
 
-    public void SetToGrow(PlantTypes type)
+    public void SetToGrow(PlantType type)
     {
-        if(type == null || type == toGrow)
+        if(type == PlantType.NONE || type == toGrow)
         {
             return;
         }
@@ -25,21 +27,21 @@ public class GrowZone : Zone
     }
     public override void UpdateZoneTasks()
     {
-        if(toGrow == null)
+        if (toGrow == PlantType.NONE)
         {
             return;
         }
 
-        foreach(Tile tile in tiles)
+        foreach (Tile tile in tiles)
         {
             if(tile.installedObject == null && tile.isPendingTask == false)
             {
-                Task task = new TendTask(tile, (t) => { ObjectManager.SpawnPlant(PlantTypes.OAK_TREE, tile, PlantState.SEED); }, TaskType.AGRICULTURE, false, 5f);
+                Task task = new TendTask(tile, (t) => { ObjectManager.SpawnPlant(toGrow, tile, PlantState.SEED); }, TaskType.AGRICULTURE, false, 5f);
                 GameManager.GetTaskManager().AddTask(task, TaskType.AGRICULTURE);
             }
             else
             {
-                if(tile.isPendingTask == false && tile.installedObject.type == InstalledObjectType.PLANT && (tile.installedObject as Plant).plantType != toGrow)
+                if(tile.isPendingTask == false && tile.installedObject.type == InstalledObjectType.PLANT && (tile.installedObject as Plant)._data.type != toGrow)
                 {
                     Task task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.AGRICULTURE, false, tile.installedObject.durability);
                     GameManager.GetTaskManager().AddTask(task, TaskType.AGRICULTURE);

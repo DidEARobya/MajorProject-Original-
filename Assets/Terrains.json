@@ -1,0 +1,21 @@
+{
+    "Items":
+    [
+        {
+            "type": "POOR_SOIL",
+            "movementCost": 1,
+            "randomPlantGrowthChance": 2,
+            "fertilityMultiplier": 0.9,
+            "noiseMin": -1,
+            "noiseMax": 0.3
+        },
+        {
+            "type": "GOOD_SOIL",
+            "movementCost": 2,
+            "randomPlantGrowthChance": 10,
+            "fertilityMultiplier": 2,
+            "noiseMin": 0.31,
+            "noiseMax": 1
+        }
+    ]
+}

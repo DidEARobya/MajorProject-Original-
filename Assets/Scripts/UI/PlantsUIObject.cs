@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.U2D;
 using UnityEngine.UI;
@@ -9,19 +10,19 @@ public class PlantsUIObject : UIObject, IButtonClickHandler
 {
     public TileActionsPanel tileActions;
 
-    PlantTypes plantType;
+    PlantType plantType;
 
     // Start is called before the first frame update
     void Start()
     {
-        plantType = null;
+        plantType = PlantType.NONE;
         UpdateDisplay();
     }
     public void OnButtonLeftClick()
     {
         tileActions.SetZonePlant(plantType);
     }
-    public override void SetType(PlantTypes type)
+    public override void SetType(PlantType type)
     {
         typeMenu.SetActive(false);
 
@@ -36,14 +37,14 @@ public class PlantsUIObject : UIObject, IButtonClickHandler
     }
     private void UpdateDisplay()
     {
-        if (plantType == null)
+        if (plantType == PlantType.NONE)
         {
             nameText.text = "Set Plant";
             image.sprite = null;
             return;
         }
 
-        nameText.text = PlantTypes.GetObjectType(plantType).ToString();
+        nameText.text = plantType.ToString();
         image.sprite = atlas.GetSprite(nameText.text + "_GROWN");
     }
 }
