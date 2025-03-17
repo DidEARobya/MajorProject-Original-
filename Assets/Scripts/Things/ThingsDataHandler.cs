@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class ThingsDataHandler : MonoBehaviour
@@ -16,6 +17,8 @@ public class ThingsDataHandler : MonoBehaviour
     public string plantFileName;
     [SerializeField]
     public string floorFileName;
+    [SerializeField]
+    public string terrainFileName;
 
     private List<BuildingData> _buildings = new List<BuildingData>();
     private Dictionary<string, BuildingData> _buildingDictionary = new Dictionary<string, BuildingData>();
@@ -31,6 +34,9 @@ public class ThingsDataHandler : MonoBehaviour
 
     private List<FloorData> _floors = new List<FloorData>();
     private Dictionary<FloorType, FloorData> _floorDictionary = new Dictionary<FloorType, FloorData>();
+
+    private List<TerrainData> _terrains = new List<TerrainData>();
+    private Dictionary<TerrainType, TerrainData> _terrainDictionary = new Dictionary<TerrainType, TerrainData>();
 
     // Start is called before the first frame update
     void Awake()
@@ -74,6 +80,13 @@ public class ThingsDataHandler : MonoBehaviour
         foreach (FloorData data in _floors)
         {
             _floorDictionary.Add(data.type, data);
+        }
+
+        _terrains = FileHandler.ReadFromJSON<TerrainData>(terrainFileName, false);
+
+        foreach(TerrainData data in _terrains)
+        {
+            _terrainDictionary.Add(data.type, data);
         }
     }
 
@@ -121,5 +134,32 @@ public class ThingsDataHandler : MonoBehaviour
         }
 
         return _instance._floorDictionary[type];
+    }
+    public static TerrainData GetTerrainData(TerrainType type)
+    {
+        if (_instance._terrainDictionary.ContainsKey(type) == false)
+        {
+            return null;
+        }
+
+        return _instance._terrainDictionary[type];
+    }
+
+    public static TerrainType GetRandomTerrainType(float val)
+    {
+        foreach(TerrainType type in _instance._terrainDictionary.Keys)
+        {
+            TerrainData data = GetTerrainData(type);
+
+            float min = data.noiseMin;
+            float max = data.noiseMax;
+
+            if(val >= min && val <= max)
+            {
+                return type;
+            }
+        }
+
+        return TerrainType.POOR_SOIL;
     }
 }

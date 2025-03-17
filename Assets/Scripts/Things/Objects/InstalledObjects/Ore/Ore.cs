@@ -49,7 +49,7 @@ public class Ore : InstalledObject
 
         if (isInstalled == true)
         {
-            InventoryManager.AddToTileInventory(ThingsDataHandler.GetItemData(_data.resourceType), baseTile, Utility.GetRandomNumber(_data.yieldMin, _data.yieldMax));
+            InventoryManager.AddToTileInventory(ThingsDataHandler.GetItemData(_data.resourceType), baseTile, Utility.GetRandomInt(_data.yieldMin, _data.yieldMax));
             GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile), baseTile);
             GameManager.GetWorldGrid().InvalidatePathGraph();
         }

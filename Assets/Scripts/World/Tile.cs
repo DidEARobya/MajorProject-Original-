@@ -7,10 +7,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Runtime.Serialization;
 
+[JsonConverter(typeof(StringEnumConverter))]
 public enum TerrainType
 {
-    GRASS,
+    [EnumMember(Value = "GOOD_SOIL")]
     GOOD_SOIL,
+    [EnumMember(Value = "POOR_SOIL")]
     POOR_SOIL,
 }
 [JsonConverter(typeof(StringEnumConverter))]
@@ -23,17 +25,6 @@ public enum FloorType
     [EnumMember(Value = "STONE_FLOOR")]
     STONE_FLOOR
 }
-public enum Direction
-{
-    N,
-    NE,
-    E,
-    SE,
-    S,
-    SW, 
-    W,
-    NW
-}
 [JsonConverter(typeof(StringEnumConverter))]
 public enum Accessibility
 {
@@ -44,6 +35,17 @@ public enum Accessibility
     [EnumMember(Value = "ACCESSIBLE")]
     ACCESSIBLE
 }
+public enum Direction
+{
+    N,
+    NE,
+    E,
+    SE,
+    S,
+    SW,
+    W,
+    NW
+}
 public class Tile : InventoryOwner, INodeData
 {
     Dictionary<Tile, Direction> neighbourTiles = new Dictionary<Tile, Direction>();
@@ -52,7 +54,7 @@ public class Tile : InventoryOwner, INodeData
     public GameObject tileObj;
     public Node pathNode;
 
-    public TerrainTypes terrainType = TerrainTypes.GOOD_SOIL;
+    public TerrainType terrainType = TerrainType.GOOD_SOIL;
     public FloorType floorType = FloorType.NONE;
 
     public InstalledObject installedObject;
@@ -72,7 +74,6 @@ public class Tile : InventoryOwner, INodeData
     public Task task;
 
     public bool isPendingTask = false;
-    public CharacterController reservedBy = null;
 
     public Zone zone = null;
     public GameObject zoneObj = null;
@@ -90,14 +91,7 @@ public class Tile : InventoryOwner, INodeData
         x = _x;
         y = _y;
 
-        if(noiseVal < 0)
-        {
-            SetTerrainType(TerrainTypes.GOOD_SOIL);
-        }
-        else
-        {
-            SetTerrainType(TerrainTypes.POOR_SOIL);
-        }
+        SetTerrainType(ThingsDataHandler.GetRandomTerrainType(noiseVal));
 
         InventoryManager.CreateNewInventory(InventoryOwnerType.TILE, this);
     }
@@ -138,7 +132,7 @@ public class Tile : InventoryOwner, INodeData
 
         tileObj = obj;
     }
-    public void SetTerrainType(TerrainTypes terrain)
+    public void SetTerrainType(TerrainType terrain)
     {
         if(terrainType == terrain)
         {
@@ -234,7 +228,7 @@ public class Tile : InventoryOwner, INodeData
 
         if(floorType == FloorType.NONE)
         {
-            cost += TerrainTypes.GetMovementCost(terrainType);
+            cost += ThingsDataHandler.GetTerrainData(terrainType).movementCost;
         }
         else
         {
@@ -485,42 +479,5 @@ public class Tile : InventoryOwner, INodeData
     public void RemoveTileChangedCallback(Action<Tile> callback)
     {
         tileChangedCallback -= callback;
-    }
-}
-
-public class TerrainTypes
-{
-    protected readonly TerrainType type;
-    protected readonly int movementCost;
-    protected readonly int plantGrowthChance;
-    protected readonly float fertilityMultiplier;
-
-    public static readonly TerrainTypes GOOD_SOIL = new TerrainTypes(TerrainType.GOOD_SOIL, 2, 10, 1.1f);
-    public static readonly TerrainTypes POOR_SOIL = new TerrainTypes(TerrainType.POOR_SOIL, 1, 2, 0.9f);
-    public static readonly TerrainTypes GRASS = new TerrainTypes(TerrainType.GRASS, 1, 2, 0.9f);
-
-    protected TerrainTypes(TerrainType _type, int _movementCost, int growthChance, float _fertilityMultiplier)
-    {
-        type = _type;
-        movementCost = _movementCost;
-        plantGrowthChance = growthChance;
-        fertilityMultiplier = _fertilityMultiplier;
-    }
-
-    public static TerrainType GetTerrainType(TerrainTypes type) 
-    {
-        return type.type;
-    }
-    public static int GetMovementCost(TerrainTypes type)
-    {
-        return type.movementCost;
-    }
-    public static int GetGrowthChance(TerrainTypes type)
-    {
-        return type.plantGrowthChance;
-    }
-    public static float GetFertilityMultiplier(TerrainTypes type)
-    {
-        return type.fertilityMultiplier;
     }
 }

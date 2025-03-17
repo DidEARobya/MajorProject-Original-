@@ -40,7 +40,7 @@ public class CellularAutomata
         {
             for(int y = 0; y < height; y++)
             {
-                int rand = Utility.GetRandomNumber(0, 100);
+                int rand = Utility.GetRandomInt(0, 100);
 
                 if(rand > noiseDensity)
                 {
