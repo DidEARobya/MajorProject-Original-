@@ -182,6 +182,26 @@ ScriptedImporter:
     edges: []
     tessellationDetail: 0
     uvTransform: {x: 0, y: 0}
+  - name: TASK_FLOOR
+    originalName: 
+    pivot: {x: 0, y: 0}
+    alignment: 6
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 68
+      y: 4
+      width: 32
+      height: 32
+    spriteID: 733428a30280b6d4c84dbaaa51882626
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 0, y: 0}
   asepriteLayers:
   - layerIndex: 0
     guid: 947242939
@@ -195,7 +215,7 @@ ScriptedImporter:
       cellRect:
         x: 0
         y: 0
-        width: 64
+        width: 96
         height: 32
       spriteId: 04b212bee20164a49a1b2517ad8364a7
     linkedCells: []

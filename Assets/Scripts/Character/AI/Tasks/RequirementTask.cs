@@ -17,8 +17,6 @@ public class RequirementTask : Task
     public Dictionary<ItemData, int> requirements;
     public Dictionary<ItemData, int> storedRequirements;
 
-    FloorType floorType;
-
     bool isInitialised = false;
 
     public RequirementTask(Tile _tile, Action<Task> _taskCompleteCallback, TaskType type, Dictionary<ItemData, int> _requirements, bool _isFloor, float _taskTime = 1) : base(_tile, _taskCompleteCallback, type, _isFloor, _taskTime)
@@ -29,7 +27,6 @@ public class RequirementTask : Task
 
         if(isFloor == true)
         {
-            floorType = tile.floorType;
             AddTaskCompleteCallback((t) => { if (tile.taskDisplayObject != null) { GameObject.Destroy(tile.taskDisplayObject); }; });
 
             if (tile.taskDisplayObject == null)
