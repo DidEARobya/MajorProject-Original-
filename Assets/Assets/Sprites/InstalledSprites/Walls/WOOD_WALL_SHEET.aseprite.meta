@@ -149,8 +149,8 @@ ScriptedImporter:
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
-      x: 4
-      y: 70
+      x: 6
+      y: 72
       width: 64
       height: 64
     spriteID: ad84e603154eb074ab958b6b9588742b
@@ -169,8 +169,8 @@ ScriptedImporter:
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
-      x: 70
-      y: 136
+      x: 72
+      y: 138
       width: 64
       height: 64
     spriteID: 871873eefbc5fad40ba8a744a95d63c2
@@ -189,8 +189,8 @@ ScriptedImporter:
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
-      x: 136
-      y: 4
+      x: 138
+      y: 6
       width: 64
       height: 64
     spriteID: 376194465acb8094eb2637eba6664f9a
@@ -209,8 +209,8 @@ ScriptedImporter:
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
-      x: 4
-      y: 4
+      x: 6
+      y: 6
       width: 64
       height: 64
     spriteID: 9cb56f5c25db8c7459130211745de524
@@ -229,8 +229,8 @@ ScriptedImporter:
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
-      x: 4
-      y: 136
+      x: 6
+      y: 138
       width: 64
       height: 64
     spriteID: 88251ffb7850eab4fb7a0c9c40b6c15a
@@ -249,8 +249,8 @@ ScriptedImporter:
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
-      x: 136
-      y: 136
+      x: 138
+      y: 138
       width: 64
       height: 64
     spriteID: 64be6f7e2fc481f4a90c38cfeb54961d
@@ -269,8 +269,8 @@ ScriptedImporter:
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
-      x: 212
-      y: 221
+      x: 214
+      y: 6
       width: 64
       height: 64
     spriteID: d70be670b610aaa4584f2f579990c51f
@@ -289,8 +289,8 @@ ScriptedImporter:
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
-      x: 145
-      y: 289
+      x: 286
+      y: 152
       width: 64
       height: 64
     spriteID: d4dfcef2e1662f24d964db11d668c6e4
@@ -309,8 +309,8 @@ ScriptedImporter:
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
-      x: 71
-      y: 289
+      x: 280
+      y: 72
       width: 64
       height: 64
     spriteID: 9a74ddf559c08534fb43488754f196ce
@@ -329,8 +329,8 @@ ScriptedImporter:
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
-      x: 212
-      y: 356
+      x: 214
+      y: 137
       width: 64
       height: 64
     spriteID: f95dd20b7857bb64d82d8594de6e8bce
@@ -349,8 +349,8 @@ ScriptedImporter:
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
-      x: 4
-      y: 289
+      x: 214
+      y: 72
       width: 64
       height: 64
     spriteID: af743fd5ecca46a41ae79e231547e23a
@@ -369,8 +369,8 @@ ScriptedImporter:
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
-      x: 212
-      y: 289
+      x: 352
+      y: 152
       width: 64
       height: 64
     spriteID: 11139852a491b2440885674b5f91cbb9
@@ -389,8 +389,8 @@ ScriptedImporter:
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
-      x: 276
-      y: 4
+      x: 492
+      y: 139
       width: 64
       height: 64
     spriteID: e32d7a9618da51b4a93f1715d539942d
@@ -409,8 +409,8 @@ ScriptedImporter:
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
-      x: 484
-      y: 69
+      x: 492
+      y: 70
       width: 64
       height: 64
     spriteID: b8e493a8438782540b0f1debd841eadf
@@ -429,8 +429,8 @@ ScriptedImporter:
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
-      x: 484
-      y: 214
+      x: 71
+      y: 280
       width: 64
       height: 64
     spriteID: cbb19f9aa5fe8764abda28a98cb5699c
@@ -449,8 +449,8 @@ ScriptedImporter:
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
-      x: 551
-      y: 214
+      x: 426
+      y: 139
       width: 64
       height: 64
     spriteID: 15f79bec8b3c71746a99f2db6f076f9a
@@ -473,10 +473,10 @@ ScriptedImporter:
     - name: WOOD_WALL_SHEET
       frameIndex: 0
       cellRect:
-        x: 16
-        y: 16
-        width: 611
-        height: 416
+        x: 14
+        y: 14
+        width: 619
+        height: 406
       spriteId: 36e3d61d6633da5478dcdb5fbb3d8120
     linkedCells: []
     parentIndex: -1
