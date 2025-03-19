@@ -7,7 +7,9 @@ using UnityEngine;
 public class BuildingData
 {
     public string name;
-    public FurnitureType type;
+    public BuildingType type;
+    public int width;
+    public int height;
     public int durability;
     public float constructionTime;
     public Accessibility baseAccessibility;

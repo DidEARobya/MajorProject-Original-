@@ -16,7 +16,7 @@ public class Ore : InstalledObject
         obj.baseTile = tile;
         obj.durability = obj._data.durability;
 
-        if (tile.InstallObject(obj) == false)
+        if (tile.PlaceObject(obj) == false)
         {
             return null;
         }
@@ -31,11 +31,10 @@ public class Ore : InstalledObject
 
         isInstalled = true;
         baseTile.accessibility = Accessibility.IMPASSABLE;
-        baseTile.installedObject = this;
 
         GameManager.GetWorldGrid().InvalidatePathGraph();
 
-        GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile), baseTile);
+        GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile), baseTile, false);
 
         if (updateObjectCallback != null)
         {
@@ -50,7 +49,7 @@ public class Ore : InstalledObject
         if (isInstalled == true)
         {
             InventoryManager.AddToTileInventory(ThingsDataHandler.GetItemData(_data.resourceType), baseTile, Utility.GetRandomInt(_data.yieldMin, _data.yieldMax));
-            GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile), baseTile);
+            GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile), baseTile, false);
             GameManager.GetWorldGrid().InvalidatePathGraph();
         }
 

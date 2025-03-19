@@ -2,12 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class Building : InstalledObject
 {
     public ItemData baseMaterial;
     public BuildingData _data;
-    static public Building PlaceObject(BuildingData data, Tile tile, bool _isInstalled)
+
+    private HashSet<Tile> _tiles = new HashSet<Tile>();
+    private List<Building> _neighbourBuildings = new List<Building>();
+
+    public Direction _rotation;
+    static public Building PlaceObject(BuildingData data, Tile tile, bool _isInstalled, Direction rotation)
     {
         if(data == null)
         {
@@ -16,17 +22,58 @@ public class Building : InstalledObject
         }
 
         Building obj = new Building();
-        obj.type = InstalledObjectType.FURNITURE;
+        obj._rotation = rotation;
+
+        if(rotation == Direction.N || rotation == Direction.S)
+        {
+            for (int x = tile.x; x < (tile.x + data.width); x++)
+            {
+                for (int y = tile.y; y < (tile.y + data.height); y++)
+                {
+                    Tile t = GameManager.GetWorldGrid().GetTile(x, y);
+
+                    if (Utility.IsValidTile(t) == false || t.PlaceObject(obj) == false)
+                    {
+                        foreach (Tile t2 in obj._tiles)
+                        {
+                            t2.ClearInstalledObject();
+                        }
+
+                        return null;
+                    }
+
+                    obj._tiles.Add(t);
+                }
+            }
+        }
+        else
+        {
+            for (int x = tile.x; x < (tile.x + data.height); x++)
+            {
+                for (int y = tile.y; y < (tile.y + data.width); y++)
+                {
+                    Tile t = GameManager.GetWorldGrid().GetTile(x, y);
+
+                    if (Utility.IsValidTile(t) == false || t.PlaceObject(obj) == false)
+                    {
+                        foreach (Tile t2 in obj._tiles)
+                        {
+                            t2.ClearInstalledObject();
+                        }
+
+                        return null;
+                    }
+
+                    obj._tiles.Add(t);
+                }
+            }
+        }
 
         obj.baseTile = tile;
+        obj.type = InstalledObjectType.BUILDING;
         obj.durability = data.durability;
         obj.hasRelativeRotation = data.hasRelativeRotation;
         obj._data = data;
-
-        if (tile.InstallObject(obj) == false)
-        {
-            return null;
-        }
 
         if (_isInstalled == true)
         {
@@ -39,16 +86,14 @@ public class Building : InstalledObject
     {
         base.Install();
 
-        isInstalled = true;
-        baseTile.accessibility = _data.baseAccessibility;
-        GameManager.GetWorldGrid().InvalidatePathGraph();
-
-        if (baseTile.accessibility == Accessibility.IMPASSABLE && baseTile.zone != null)
+        foreach(Tile tile in _tiles)
         {
-            baseTile.zone.RemoveTile(baseTile); 
+            tile.InstallObject();
         }
 
-        GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile), baseTile);
+        GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile), baseTile, (_tiles.Count > 1));
+
+        isInstalled = true;
 
         if (_data.baseAccessibility == Accessibility.DELAYED)
         {
@@ -59,23 +104,32 @@ public class Building : InstalledObject
         {
             updateObjectCallback(this);
         }
+
+        GameManager.GetWorldGrid().InvalidatePathGraph();
     }
     public override void UnInstall()
     {
         base.UnInstall();
-        GameManager.GetInstalledSpriteController().Uninstall(this);
 
         if (_data.baseAccessibility == Accessibility.DELAYED)
         {
             RemoveOnActionCallback(InstalledObjectAction.Door_UpdateAction);
         }
 
+        foreach (Tile tile in _tiles)
+        {
+            tile.ClearInstalledObject();
+        }
+
         if (isInstalled == true)
         {
             InventoryManager.AddToTileInventory(baseTile, _data.GetRequirements());
-            GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile), baseTile);
+            GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile), baseTile, (_tiles.Count > 1));
             GameManager.GetWorldGrid().InvalidatePathGraph();
         }
+
+        UpdateNeighbourSprites(_neighbourBuildings);
+        GameManager.GetInstalledSpriteController().Uninstall(this);
 
         UnityEngine.Object.Destroy(gameObject);
     }
@@ -85,62 +139,62 @@ public class Building : InstalledObject
     }
     public override string GetObjectSpriteName(bool updateNeighbours)
     {
-        if (_data.type != FurnitureType.WALL)
+        if (_data.type != BuildingType.WALL)
         {
-            return GetObjectNameToString();
+            return GetObjectNameToString() + "_" + _rotation.ToString();
         }
 
         string spriteName = _data.name + "_";
-        List<Building> validNeighbours = new List<Building>();
+        _neighbourBuildings.Clear();
 
         bool hasNeighbour = false;
 
-        if(baseTile.North != null && baseTile.North.installedObject != null && baseTile.North.installedObject.type == InstalledObjectType.FURNITURE)
+        if(baseTile.North != null && baseTile.North.installedObject != null && baseTile.North.installedObject != this && baseTile.North.installedObject.type == InstalledObjectType.BUILDING)
         {
             BuildingData data = (baseTile.North.installedObject as Building)._data;
 
-            if(data != null && (data.type == FurnitureType.WALL || data.type == FurnitureType.DOOR))
+            if(data != null && (data.type == BuildingType.WALL || data.type == BuildingType.DOOR))
             {
                 spriteName += "N";
                 hasNeighbour = true;
 
-                validNeighbours.Add(baseTile.North.installedObject as Building);
+                _neighbourBuildings.Add(baseTile.North.installedObject as Building);
             }
         }
-        if (baseTile.East != null && baseTile.East.installedObject != null && baseTile.East.installedObject.type == InstalledObjectType.FURNITURE)
+        if (baseTile.East != null && baseTile.East.installedObject != null && baseTile.East.installedObject != this && baseTile.East.installedObject.type == InstalledObjectType.BUILDING)
         {
             BuildingData data = (baseTile.East.installedObject as Building)._data;
 
-            if (data != null && (data.type == FurnitureType.WALL || data.type == FurnitureType.DOOR))
+            if (data != null && (data.type == BuildingType.WALL || data.type == BuildingType.DOOR))
             {
                 spriteName += "E";
                 hasNeighbour = true;
 
-                validNeighbours.Add(baseTile.East.installedObject as Building);
+                _neighbourBuildings.Add(baseTile.East.installedObject as Building);
             }
         }
-        if (baseTile.South != null && baseTile.South.installedObject != null && baseTile.South.installedObject.type == InstalledObjectType.FURNITURE)
+        if (baseTile.South != null && baseTile.South.installedObject != null && baseTile.South.installedObject != this && baseTile.South.installedObject.type == InstalledObjectType.BUILDING)
         {
             BuildingData data = (baseTile.South.installedObject as Building)._data;
 
-            if (data != null && (data.type == FurnitureType.WALL || data.type == FurnitureType.DOOR))
+            if (data != null && (data.type == BuildingType.WALL || data.type == BuildingType.DOOR))
             {
                 spriteName += "S";
                 hasNeighbour = true;
 
-                validNeighbours.Add(baseTile.South.installedObject as Building);
+                _neighbourBuildings.Add(baseTile.South.installedObject as Building);
             }
         }
-        if (baseTile.West != null && baseTile.West.installedObject != null && baseTile.West.installedObject.type == InstalledObjectType.FURNITURE)
+        if (baseTile.West != null && baseTile.West.installedObject != null && baseTile.West.installedObject != this && baseTile.West.installedObject.type == InstalledObjectType.BUILDING)
         {
             BuildingData data = (baseTile.West.installedObject as Building)._data;
 
-            if (data != null && (data.type == FurnitureType.WALL || data.type == FurnitureType.DOOR))
+            if (data != null && (data.type == BuildingType.WALL || data.type == BuildingType.DOOR))
             {
                 spriteName += "W";
                 hasNeighbour = true;
 
-                validNeighbours.Add(baseTile.West.installedObject as Building);
+                _neighbourBuildings.Add(baseTile.West.installedObject as Building);
             }
         }
 
@@ -151,7 +205,7 @@ public class Building : InstalledObject
         
         if(updateNeighbours == true)
         {
-            UpdateNeighbourSprites(validNeighbours);
+            UpdateNeighbourSprites(_neighbourBuildings);
         }
 
         return spriteName;
@@ -179,5 +233,9 @@ public class Building : InstalledObject
     {
         //Edit
         return 1;
+    }
+    public override Accessibility GetAccessibility()
+    {
+        return _data.baseAccessibility;
     }
 }

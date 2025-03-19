@@ -75,6 +75,7 @@ public class MouseController : MonoBehaviour
     bool toAdd;
     ZoneType zoneType;
 
+    Direction buildRotation;
     // Start is called before the first frame update
     void Start()
     {
@@ -87,6 +88,8 @@ public class MouseController : MonoBehaviour
         buildModeController = BuildModeController.instance;
 
         SetToSelect();
+
+        buildRotation = Direction.N;
     }
 
     public void Init(WorldGrid _grid)
@@ -236,6 +239,24 @@ public class MouseController : MonoBehaviour
             SetToSelect();
         }
 
+        if (Input.GetKeyUp(KeyCode.R))
+        {
+            switch(buildRotation)
+            {
+                case Direction.N:
+                    buildRotation = Direction.E;
+                    break;
+                case Direction.E:
+                    buildRotation = Direction.S;
+                    break;
+                case Direction.S:
+                    buildRotation = Direction.W;
+                    break;
+                case Direction.W:
+                    buildRotation = Direction.N;
+                    break;
+            }
+        }
         UpdateMousePos();
 
         if (EventSystem.current.IsPointerOverGameObject() == false)
@@ -588,7 +609,7 @@ public class MouseController : MonoBehaviour
                     break;
 
                 case BuildMode.OBJECT:
-                    buildModeController.Build(temp, buildMode, toBuild);
+                    buildModeController.Build(temp, buildMode, buildRotation, toBuild);
                     break;
 
                 case BuildMode.FLOOR:

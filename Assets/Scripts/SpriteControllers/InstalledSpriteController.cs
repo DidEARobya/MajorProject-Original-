@@ -30,8 +30,29 @@ public class InstalledSpriteController : MonoBehaviour
 
         string name;
         
-        if(_obj.type == InstalledObjectType.FURNITURE)
+        if(_obj.type == InstalledObjectType.BUILDING)
         {
+            //Direction rotation = (_obj as Building)._rotation;
+
+            //switch(()
+            //{
+            //    case Direction.N:
+            //        break;
+
+            //    case Direction.E:
+            //        obj.transform.position += new Vector3(0, 1);
+            //        obj.transform.Rotate(new Vector3(0, 0, -90));
+            //        break;
+            //    case Direction.S:
+            //        obj.transform.position += new Vector3(1, 1);
+            //        obj.transform.Rotate(new Vector3(0, 0, 180));
+            //        break;
+            //    case Direction.W:
+            //        obj.transform.position += new Vector3(1, 0);
+            //        obj.transform.Rotate(new Vector3(0, 0, 90));
+            //        break;
+            //}
+
             name = _obj.GetObjectSpriteName(true);
         }
         else
@@ -76,16 +97,16 @@ public class InstalledSpriteController : MonoBehaviour
         Color colour = renderer.color;
         colour.a = 100;
 
-        if (obj.type == InstalledObjectType.PLANT)
-        {
-            name = obj.GetObjectNameToString() + "_" + (obj as Plant).plantState.ToString();
-            renderer.sprite = objSprites.GetSprite(name);
-        }
-        else if (obj.type == InstalledObjectType.FURNITURE)
+        if (obj.type == InstalledObjectType.BUILDING)
         {
             name = obj.GetObjectSpriteName(false);
-            renderer.sprite = objSprites.GetSprite(name);
         }
+        else
+        {
+            name = obj.GetObjectSpriteName(false);
+        }
+
+        renderer.sprite = objSprites.GetSprite(name);
 
         if (renderer.sprite == null)
         {
@@ -97,16 +118,7 @@ public class InstalledSpriteController : MonoBehaviour
     }
     public void UpdateSpriteRotation(InstalledObject obj)
     {
-        if (obj.baseTile.North != null && obj.baseTile.North.IsObjectInstalled() == true && obj.baseTile.South != null && obj.baseTile.South.IsObjectInstalled() == true)
-        {
-            obj.gameObject.transform.rotation = Quaternion.Euler(0, 0, 90);
-            obj.gameObject.transform.position += new Vector3(1, 0, 0);
-        }
-        else if (obj.baseTile.West != null && obj.baseTile.West.IsObjectInstalled() == true && obj.baseTile.East != null && obj.baseTile.East.IsObjectInstalled() == true)
-        {
-            obj.gameObject.transform.rotation = Quaternion.Euler(0, 0, 0);
-            obj.gameObject.transform.position = obj.baseTile.tileObj.transform.position;
-        }
+        //do
     }
     public void Uninstall(InstalledObject obj)
     {

@@ -4,6 +4,8 @@
         {
             "name": "WOOD_WALL",
             "type": "WALL",
+            "width": 1,
+            "height": 1,
             "durability": 400,
             "constructionTime": 50.0, 
             "baseAccessibility": "IMPASSABLE",
@@ -14,6 +16,8 @@
         {
             "name": "STONE_WALL",
             "type": "WALL",
+            "width": 1,
+            "height": 1,
             "durability": 500,
             "constructionTime": 75.0, 
             "baseAccessibility": "IMPASSABLE",
@@ -24,6 +28,8 @@
         {
             "name": "IRON_WALL",
             "type": "WALL",
+            "width": 1,
+            "height": 1,
             "durability": 600,
             "constructionTime": 100.0, 
             "baseAccessibility": "IMPASSABLE",
@@ -34,6 +40,8 @@
         {
             "name": "WOOD_DOOR",
             "type": "DOOR",
+            "width": 1,
+            "height": 1,
             "durability": 300,
             "constructionTime": 60.0, 
             "baseAccessibility": "DELAYED",
@@ -44,6 +52,8 @@
         {
             "name": "STONE_DOOR",
             "type": "DOOR",
+            "width": 1,
+            "height": 1,
             "durability": 400,
             "constructionTime": 85.0, 
             "baseAccessibility": "DELAYED",
@@ -54,11 +64,25 @@
         {
             "name": "IRON_DOOR",
             "type": "DOOR",
+            "width": 1,
+            "height": 1,
             "durability": 500,
             "constructionTime": 110.0, 
             "baseAccessibility": "DELAYED",
             "hasRelativeRotation": true,
             "requirementsItems":["IRON"],
+            "requirementsAmounts":[4]
+        },
+        {
+            "name": "WOOD_BED",
+            "type": "BED",
+            "width": 1,
+            "height": 2,
+            "durability": 300,
+            "constructionTime": 110.0, 
+            "baseAccessibility": "IMPASSABLE",
+            "hasRelativeRotation": false,
+            "requirementsItems":["WOOD"],
             "requirementsAmounts":[4]
         }
     ]

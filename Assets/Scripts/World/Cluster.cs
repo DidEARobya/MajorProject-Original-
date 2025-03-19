@@ -103,7 +103,7 @@ public class Cluster
     }
     void FloodFillFromTile(Tile tile, Region toCheck)
     {
-        if(tile.IsObjectInstalled() == true && ObjectManager.Contains(tile.installedObject) && tile.installedObject.type == InstalledObjectType.FURNITURE && (tile.installedObject as Building).type == InstalledObjectType.FURNITURE)
+        if(tile.IsObjectInstalled() == true && ObjectManager.Contains(tile.installedObject) && tile.installedObject.type == InstalledObjectType.BUILDING && (tile.installedObject as Building).type == InstalledObjectType.BUILDING)
         {
             beenChecked.Add(tile);
 
@@ -132,7 +132,7 @@ public class Cluster
 
             foreach (Tile t2 in t.GetAdjacentNeigbours())
             {
-                if (t2.IsObjectInstalled() == true && ObjectManager.Contains(t2.installedObject) && t2.installedObject.type == InstalledObjectType.FURNITURE)
+                if (t2.IsObjectInstalled() == true && ObjectManager.Contains(t2.installedObject) && t2.installedObject.type == InstalledObjectType.BUILDING)
                 {
                     continue;
                 }

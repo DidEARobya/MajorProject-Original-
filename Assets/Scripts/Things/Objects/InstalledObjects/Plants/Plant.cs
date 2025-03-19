@@ -22,7 +22,7 @@ public class Plant : InstalledObject
         obj.states = new Dictionary<PlantState, GrowthState>();
         obj.plantState = state;
 
-        if (tile.InstallObject(obj) == false)
+        if (tile.PlaceObject(obj) == false)
         {
             return null;
         }
@@ -47,7 +47,6 @@ public class Plant : InstalledObject
         base.Install();
 
         baseTile.accessibility = Accessibility.ACCESSIBLE;
-        baseTile.installedObject = this;
         isInstalled = true;
 
         states.Add(PlantState.SEED, new SeedState(this));
@@ -60,7 +59,7 @@ public class Plant : InstalledObject
 
         GameManager.GetWorldGrid().InvalidatePathGraph();
 
-        GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile), baseTile);
+        GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile), baseTile, false);
 
         if (updateObjectCallback != null)
         {
@@ -93,7 +92,7 @@ public class Plant : InstalledObject
                 baseTile.zone.UpdateZoneTasks();
             }
 
-            GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile), baseTile);
+            GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile), baseTile, false);
             GameManager.GetWorldGrid().InvalidatePathGraph();
         }
 

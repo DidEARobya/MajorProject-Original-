@@ -7,15 +7,8 @@ using UnityEngine.UI;
 
 public class StructuresUIObject : UIObject, IButtonClickHandler
 {
-    public enum UIObjectType
-    {
-        WALL,
-        DOOR,
-        FLOOR
-    }
-
     MouseController mouseController;
-    public UIObjectType objectType;
+    public BuildingType objectType;
 
     ItemType itemType;
 
@@ -30,15 +23,15 @@ public class StructuresUIObject : UIObject, IButtonClickHandler
     {
         switch(objectType)
         {
-            case UIObjectType.WALL:
-            mouseController.SetObject(itemType.ToString() + "_WALL", MouseMode.ROW);
+            case BuildingType.WALL:
+            mouseController.SetObject(itemType.ToString() + "_" + objectType.ToString(), MouseMode.ROW);
             break;
 
-           case UIObjectType.DOOR:
-            mouseController.SetObject(itemType.ToString() + "_DOOR", MouseMode.SINGLE);
+           case BuildingType.DOOR:
+            mouseController.SetObject(itemType.ToString() + "_" + objectType.ToString(), MouseMode.SINGLE);
             break;
 
-            case UIObjectType.FLOOR:
+            case BuildingType.FLOOR:
 
                 switch(itemType)
                 {
@@ -50,7 +43,11 @@ public class StructuresUIObject : UIObject, IButtonClickHandler
                         break;
                 }
 
-            break;
+                break;
+
+            case BuildingType.BED:
+                mouseController.SetObject(itemType.ToString() + "_" + objectType.ToString(), MouseMode.SINGLE);
+                break;
         }
     }
     public override void SetType(ItemType type)

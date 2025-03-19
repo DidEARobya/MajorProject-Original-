@@ -8,9 +8,9 @@ public static class ObjectManager
 {
     static HashSet<InstalledObject> installedObjects = new HashSet<InstalledObject>();
     static Action<InstalledObject> installObjectCallback;
-    public static void InstallBuilding(string name, Tile tile, bool isInstalled)
+    public static void InstallBuilding(string name, Tile tile, bool isInstalled, Direction rotation)
     {
-        InstalledObject obj = Building.PlaceObject(ThingsDataHandler.GetBuildingData(name), tile, isInstalled);
+        InstalledObject obj = Building.PlaceObject(ThingsDataHandler.GetBuildingData(name), tile, isInstalled, rotation);
 
         if (obj == null)
         {
