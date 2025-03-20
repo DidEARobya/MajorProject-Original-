@@ -8,12 +8,13 @@ public class BuildingData
 {
     public string name;
     public BuildingType type;
+    public Accessibility baseAccessibility;
     public int width;
     public int height;
     public int durability;
+    public int movementCost;
+    public bool canRotate;
     public float constructionTime;
-    public Accessibility baseAccessibility;
-    public bool hasRelativeRotation;
     public List<ItemType> requirementsItems;
     public List<int> requirementsAmounts;
 

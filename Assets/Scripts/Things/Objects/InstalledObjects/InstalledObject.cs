@@ -23,7 +23,7 @@ public class InstalledObject
 
     public float durability;
     public bool isInstalled = false;
-    public bool hasRelativeRotation = false;
+    public bool canRotate = false;
 
     protected Action<InstalledObject> updateObjectCallback;
 

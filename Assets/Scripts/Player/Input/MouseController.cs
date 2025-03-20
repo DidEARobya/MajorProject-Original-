@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 using Cinemachine;
 using TMPro;
 using System.Linq.Expressions;
+using Unity.VisualScripting;
 
 public enum MouseMode
 {
@@ -116,12 +117,20 @@ public class MouseController : MonoBehaviour
         selectedTile = null;
         selectedTileDisplay.SetActive(false);
     }
-    public void SetObject(string building, MouseMode mode)
+    public void SetObject(string building, BuildingType type)
     {
         ResetSelected();
 
+        if(type == BuildingType.WALL)
+        {
+            mouseMode = MouseMode.ROW;
+        }
+        else
+        {
+            mouseMode = MouseMode.SINGLE;
+        }
+
         buildMode = BuildMode.OBJECT;
-        mouseMode = mode;
         toBuild = building;
 
         UpdateText();
@@ -153,12 +162,12 @@ public class MouseController : MonoBehaviour
 
         UpdateText();
     }
-    public void SetFloor(FloorType floor, MouseMode mode)
+    public void SetFloor(FloorType floor)
     {
         ResetSelected();
 
         buildMode = BuildMode.FLOOR;
-        mouseMode = mode;
+        mouseMode = MouseMode.AREA;
         floorType = floor;
 
         UpdateText();
@@ -221,7 +230,6 @@ public class MouseController : MonoBehaviour
             highlightedRegion.DestroyDisplayTiles(false);
         }
     }
-
     void UpdateText()
     {
         modeText.text = "Mode: " + buildMode.ToString();
@@ -257,11 +265,12 @@ public class MouseController : MonoBehaviour
                     break;
             }
         }
-        UpdateMousePos();
 
-        if (EventSystem.current.IsPointerOverGameObject() == false)
+        UpdateMousePos();
+        
+        if(IsMouseOverGameWindow == true)
         {
-            if(tileUnderMouse != null)
+            if (tileUnderMouse != null)
             {
                 tileOutline.transform.position = tileUnderMouse.tileObj.transform.position;
 
@@ -270,7 +279,10 @@ public class MouseController : MonoBehaviour
                     tileDetails.SetDisplayedTile(tileUnderMouse);
                 }
             }
+        }
 
+        if(Input.GetMouseButtonDown(0) || EventSystem.current.IsPointerOverGameObject() == false)
+        {
             MouseInputs();
         }
     }
@@ -635,6 +647,14 @@ public class MouseController : MonoBehaviour
                     buildModeController.SpawnCharacter(temp);
                     break;
             }
+        }
+    }
+    bool IsMouseOverGameWindow
+    {
+        get
+        {
+            Vector3 mp = Input.mousePosition;
+            return !(0 > mp.x || 0 > mp.y || Screen.width < mp.x || Screen.height < mp.y);
         }
     }
 }

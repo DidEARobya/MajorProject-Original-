@@ -32,27 +32,6 @@ public class InstalledSpriteController : MonoBehaviour
         
         if(_obj.type == InstalledObjectType.BUILDING)
         {
-            //Direction rotation = (_obj as Building)._rotation;
-
-            //switch(()
-            //{
-            //    case Direction.N:
-            //        break;
-
-            //    case Direction.E:
-            //        obj.transform.position += new Vector3(0, 1);
-            //        obj.transform.Rotate(new Vector3(0, 0, -90));
-            //        break;
-            //    case Direction.S:
-            //        obj.transform.position += new Vector3(1, 1);
-            //        obj.transform.Rotate(new Vector3(0, 0, 180));
-            //        break;
-            //    case Direction.W:
-            //        obj.transform.position += new Vector3(1, 0);
-            //        obj.transform.Rotate(new Vector3(0, 0, 90));
-            //        break;
-            //}
-
             name = _obj.GetObjectSpriteName(true);
         }
         else
@@ -83,7 +62,7 @@ public class InstalledSpriteController : MonoBehaviour
     }
     public void OnInstalledObjectChanged(InstalledObject obj)
     {
-        if (obj.hasRelativeRotation == true)
+        if (obj.canRotate == true)
         {
             UpdateSpriteRotation(obj);
         }

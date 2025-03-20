@@ -18,7 +18,9 @@ public enum BuildingType
     [EnumMember(Value = "FLOOR")]
     FLOOR,
     [EnumMember(Value = "BED")]
-    BED
+    BED,
+    [EnumMember(Value = "TABLE")]
+    TABLE
 }
 [JsonConverter(typeof(StringEnumConverter))]
 public enum OreType

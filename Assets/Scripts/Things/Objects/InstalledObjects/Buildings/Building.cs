@@ -24,7 +24,7 @@ public class Building : InstalledObject
         Building obj = new Building();
         obj._rotation = rotation;
 
-        if(rotation == Direction.N || rotation == Direction.S)
+        if(data.canRotate == false || (rotation == Direction.N || rotation == Direction.S))
         {
             for (int x = tile.x; x < (tile.x + data.width); x++)
             {
@@ -72,7 +72,7 @@ public class Building : InstalledObject
         obj.baseTile = tile;
         obj.type = InstalledObjectType.BUILDING;
         obj.durability = data.durability;
-        obj.hasRelativeRotation = data.hasRelativeRotation;
+        obj.canRotate = data.canRotate;
         obj._data = data;
 
         if (_isInstalled == true)
@@ -141,7 +141,14 @@ public class Building : InstalledObject
     {
         if (_data.type != BuildingType.WALL)
         {
-            return GetObjectNameToString() + "_" + _rotation.ToString();
+            if(canRotate == true)
+            {
+                return GetObjectNameToString() + "_" + _rotation.ToString();
+            }
+            else
+            {
+                return GetObjectNameToString();
+            }
         }
 
         string spriteName = _data.name + "_";
@@ -231,8 +238,7 @@ public class Building : InstalledObject
     }
     public override int GetMovementCost()
     {
-        //Edit
-        return 1;
+        return _data.movementCost;
     }
     public override Accessibility GetAccessibility()
     {
