@@ -8,45 +8,45 @@ using UnityEngine.TextCore.Text;
 
 public class TaskManager
 {
-    Dictionary<TaskType, List<Task>> taskLists = new Dictionary<TaskType, List<Task>>();
+    Dictionary<TaskType, List<ConstructionSite>> taskLists = new Dictionary<TaskType, List<ConstructionSite>>();
 
     Action<Task> taskCreatedCallback;
 
     public void Init()
     {
-        taskLists.Add(TaskType.CONSTRUCTION, new List<Task>());
-        taskLists.Add(TaskType.MINING, new List<Task>());
-        taskLists.Add(TaskType.AGRICULTURE, new List<Task>());
+        taskLists.Add(TaskType.CONSTRUCTION, new List<ConstructionSite>());
+        //taskLists.Add(TaskType.MINING, new List<Task>());
+        //taskLists.Add(TaskType.AGRICULTURE, new List<Task>());
     }
-    public void AddTask(Task task, TaskType type)
+    public void AddTaskSite(ConstructionSite site, TaskType type)
     {
-        if(task == null)
+        if(site == null)
         {
             return;
         }
 
-        if (taskLists[type].Contains(task) == true)
+        if (taskLists[type].Contains(site) == true)
         {
             return;
         }
 
-        taskLists[type].Add(task);
+        taskLists[type].Add(site);
 
         if(taskCreatedCallback != null)
         {
-            taskCreatedCallback(task);
+            //taskCreatedCallback(site);
         }
     }
-    public void RemoveTask(Task task, TaskType type)
+    public void RemoveTaskSite(ConstructionSite site, TaskType type)
     {
-        if (task == null || taskLists.ContainsKey(type) == false)
+        if (site == null || taskLists.ContainsKey(type) == false)
         {
             return;
         }
 
-        if (taskLists[type].Contains(task) == true)
+        if (taskLists[type].Contains(site) == true)
         {
-            taskLists[type].Remove(task);
+            taskLists[type].Remove(site);
         }
     }
     public void AddTaskCallback(Action<Task> task)
@@ -59,16 +59,16 @@ public class TaskManager
     }
     public Task GetTask(TaskType type, CharacterController character)
     {
-        if (taskLists[type].Count == 0)
+        if (taskLists.ContainsKey(type) == false || taskLists[type].Count == 0)
         {
             return null;
         }
 
         bool taskAvailable = false;
 
-        foreach (Task t in taskLists[type])
+        foreach (ConstructionSite s in taskLists[type])
         {
-            if(character.ignoredTasks.Contains(t) == false)
+            if(character.ignoredTaskSites.Contains(s) == false)
             {
                 taskAvailable = true;
             }
@@ -76,27 +76,63 @@ public class TaskManager
 
         if(taskAvailable == false)
         {
+            Debug.Log("Task Ignored");
             return null;    
         }
 
-        Task task = GetClosestValidTask(character.currentTile, type);
+        ConstructionSite site = GetClosestValidSite(character.currentTile, character, type);
 
-        if (task == null)
+        if (site == null)
         {
-            foreach(Task t in taskLists[type])
+            foreach(ConstructionSite t in taskLists[type])
             {
-                character.ignoredTasks.Add(t);
+                Debug.Log("Task Ignored");
+                character.ignoredTaskSites.Add(t);
             }
 
             return null;
         }
 
-        taskLists[type].Remove(task);
+        Task task = site.GetTask(character);
+
+        if (task == null)
+        {
+            Debug.Log("GetTask null");
+            character.ignoredTaskSites.Add(site);
+            return null;
+        }
+
+        if(site.IsWorkable() == false)
+        {
+            taskLists[type].Remove(site);
+        }
 
         return task;
     }
+    ConstructionSite GetClosestValidSite(Tile start, CharacterController character, TaskType type)
+    {
+        Tile closest = null;
 
-    Task GetClosestValidTask(Tile start, TaskType type)
+        BFS_Search search = new BFS_Search();
+        Region toCheck = search.GetClosestRegionWithTask(out closest, GameManager.GetRegionManager().GetRegionAtTile(start), character, true, type);
+
+        search = null;
+
+        if (toCheck == null)
+        {
+            Debug.Log("toCheck is null");
+            return null;
+        }
+
+        if(closest == null)
+        {
+            Debug.Log("closest is null");
+            return null;
+        }
+
+        return closest.site;
+    }
+    /*Task GetClosestValidTask(Tile start, TaskType type)
     {
         BFS_Search search = new BFS_Search();
         Region toCheck = search.GetClosestRegionWithTask(GameManager.GetRegionManager().GetRegionAtTile(start), true, type);
@@ -134,7 +170,7 @@ public class TaskManager
         }
 
         return closest.task;
-    }
+    }*/
     public int GetQueueSize(TaskType type)
     {
         return taskLists[type].Count;
@@ -169,7 +205,7 @@ public class TaskManager
 
         return task;
     }
-    public HaulTask CreateHaulToJobSiteTask(RequirementTask jobSite, CharacterController character, ItemData type, Tile toStoreAt, int amount = 0)
+    public HaulTask CreateHaulToJobSiteTask(ConstructionSite jobSite, CharacterController character, ItemData type, Tile toStoreAt, int amount = 0)
     {
         if (InventoryManager.inventories.Count == 0)
         {
@@ -180,10 +216,11 @@ public class TaskManager
 
         if (tile == null)
         {
+            Debug.Log("NO TILE");
             return null;
         }
 
-        HaulTask task = new HaulTask(tile, (t) => { jobSite.StoreComponent(character.inventory); }, toStoreAt, (t) => { InventoryManager.PickUp(character, tile, amount); }, TaskType.HAULING);
+        HaulTask task = new HaulTask(tile, (task) => { jobSite.StoreMaterials(task, character, character.inventory); }, toStoreAt, (task) => { InventoryManager.PickUp(character, tile, amount); }, TaskType.HAULING);
 
         return task;
     }

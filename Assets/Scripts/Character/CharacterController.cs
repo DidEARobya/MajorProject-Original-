@@ -34,7 +34,7 @@ public class CharacterController : InventoryOwner
     public Task activeTask;
     public List<Task> taskList = new List<Task>();
 
-    public HashSet<Task> ignoredTasks = new HashSet<Task>(); 
+    public HashSet<ConstructionSite> ignoredTaskSites = new HashSet<ConstructionSite>(); 
 
     Action<CharacterController> characterUpdateCallback;
     

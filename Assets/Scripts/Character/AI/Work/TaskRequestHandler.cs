@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using Unity.Jobs;
 using UnityEngine;
 
 public class TaskRequestHandler
@@ -26,13 +27,13 @@ public class TaskRequestHandler
     {
         if (requests.Count > 0 && isHandlingRequest == false)
         {
-            ThreadPool.QueueUserWorkItem(delegate { ThreadedCompleteRequest(); });
+            ThreadedCompleteRequest();
         }
     }
     static void ThreadedCompleteRequest()
     {
-        lock (requestCompleteLock)
-        {
+        //lock (requestCompleteLock)
+        //{
             if (requests.Count == 0)
             {
                 return;
@@ -44,6 +45,7 @@ public class TaskRequestHandler
 
             if (request == null)
             {
+
                 isHandlingRequest = false;
                 return;
             }
@@ -55,9 +57,8 @@ public class TaskRequestHandler
                 task.worker = request;
                 request.taskList.Add(task);
             }
-
             request.requestedTask = false;
             isHandlingRequest = false;
-        }
+       //}
     }
 }

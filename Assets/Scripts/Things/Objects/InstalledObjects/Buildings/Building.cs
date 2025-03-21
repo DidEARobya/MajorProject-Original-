@@ -82,6 +82,10 @@ public class Building : InstalledObject
 
         return obj;
     }
+    public HashSet<Tile> GetTiles()
+    {
+        return _tiles;
+    }
     public override void Install()
     {
         base.Install();

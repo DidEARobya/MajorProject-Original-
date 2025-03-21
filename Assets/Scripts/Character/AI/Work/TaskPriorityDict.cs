@@ -1,7 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using Unity.Collections;
+using Unity.Jobs;
 using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 
@@ -36,6 +39,10 @@ public class TaskPriorityDict
 
     public Task GetTask()
     {
+        Task t = CheckForTask(PriorityLevel.ONE);
+
+        return t;
+
         var length = Enum.GetNames(typeof(TaskType)).Length;
 
         for (int i = 0; i < length; i++)
@@ -53,7 +60,27 @@ public class TaskPriorityDict
 
     Task CheckForTask(PriorityLevel level)
     {
-        for(int i = 0; i < levelList.Count; i++)
+        TaskType ty = TaskType.CONSTRUCTION;
+
+        Task t = null;
+
+        if (ty == TaskType.HAULING)
+        {
+            t = GameManager.GetTaskManager().CreateHaulToStorageTask(owner);
+        }
+        else
+        {
+            t = GameManager.GetTaskManager().GetTask(ty, owner);
+        }
+
+        if (t != null)
+        {
+            return t;
+        }
+
+        return null;
+
+        for (int i = 0; i < levelList.Count; i++)
         {
             if (levelList[i] != level)
             {
@@ -61,6 +88,7 @@ public class TaskPriorityDict
             }
 
             TaskType type = (TaskType)i;
+
             Task task = null;
 
             if(type == TaskType.HAULING)

@@ -37,19 +37,19 @@ public class GrowZone : Zone
             if(tile.installedObject == null && tile.isPendingTask == false)
             {
                 Task task = new TendTask(tile, (t) => { ObjectManager.SpawnPlant(toGrow, tile, PlantState.SEED); }, TaskType.AGRICULTURE, false, 5f);
-                GameManager.GetTaskManager().AddTask(task, TaskType.AGRICULTURE);
+                //GameManager.GetTaskManager().AddTask(task, TaskType.AGRICULTURE);
             }
             else
             {
                 if(tile.isPendingTask == false && tile.installedObject.type == InstalledObjectType.PLANT && (tile.installedObject as Plant)._data.type != toGrow)
                 {
                     Task task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.AGRICULTURE, false, tile.installedObject.durability);
-                    GameManager.GetTaskManager().AddTask(task, TaskType.AGRICULTURE);
+                    //GameManager.GetTaskManager().AddTask(task, TaskType.AGRICULTURE);
                 }
                 else if(tile.isPendingTask == false && tile.installedObject.type == InstalledObjectType.PLANT && (tile.installedObject as Plant).plantState == PlantState.GROWN)
                 {
                     Task task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.AGRICULTURE, false, tile.installedObject.durability);
-                    GameManager.GetTaskManager().AddTask(task, TaskType.AGRICULTURE);
+                    //GameManager.GetTaskManager().AddTask(task, TaskType.AGRICULTURE);
                 }
             }
         }

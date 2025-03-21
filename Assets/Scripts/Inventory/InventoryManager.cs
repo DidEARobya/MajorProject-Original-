@@ -154,42 +154,26 @@ public static class InventoryManager
     {
         if(inventories.Count == 0)
         {
+            Debug.Log("null");
             return null;
         }
 
+        Tile closest = null;
+
         BFS_Search search = new BFS_Search();
-        Region toCheck = search.GetClosestRegionWithItem(GameManager.GetRegionManager().GetRegionAtTile(start), true, false, itemType);
+        Region toCheck = search.GetClosestRegionWithItem(out closest, GameManager.GetRegionManager().GetRegionAtTile(start), start, true, false, itemType);
 
         search = null;
 
         if(toCheck == null)
         {
+            Debug.Log("toCheck");
             return null;
-        }
-
-        float lowestDist = Mathf.Infinity;
-
-        Tile closest = null;
-
-        foreach(Tile tile in toCheck.tiles)
-        {
-            if (tile.inventory.item != itemType || tile.inventory.isQueried == true)
-            {
-                continue;
-            }
-
-            int distX = Mathf.Abs(start.x - tile.x);
-            int distY = Mathf.Abs(start.y - tile.y);
-
-            if (lowestDist > (distX + distY))
-            {
-                closest = tile;
-                lowestDist = distX + distY;
-            }
         }
 
         if(closest == null)
         {
+            Debug.Log("closest");
             return null;
         }
 
@@ -207,6 +191,10 @@ public static class InventoryManager
             {
                 inventory.isQueried = true;
             }
+            else
+            {
+                inventory.isQueried = false;
+            }
         }
 
         return closest;
@@ -217,19 +205,13 @@ public static class InventoryManager
         {
             return null;
         }
+        Tile closest = null;
 
         BFS_Search search = new BFS_Search();
         Region toCheck;
 
-        if (checkStored == false)
-        {
-            toCheck = search.GetClosestRegionWithItem(GameManager.GetRegionManager().GetRegionAtTile(start), true, true);
-        }
-        else
-        {
-            toCheck = search.GetClosestRegionWithItem(GameManager.GetRegionManager().GetRegionAtTile(start), true);
-        }
-        
+        toCheck = search.GetClosestRegionWithItem(out closest, GameManager.GetRegionManager().GetRegionAtTile(start), start, true, checkStored);
+
         search = null;
 
         if (toCheck == null)
@@ -237,37 +219,10 @@ public static class InventoryManager
             return null;
         }
 
-        float lowestDist = Mathf.Infinity;
-        Tile closest = null;
-
-        foreach (Tile tile in toCheck.tiles)
-        {
-            if (tile.inventory.item == null || tile.inventory.isQueried == true)
-            {
-                continue;
-            }
-            if (checkStored == false && tile.inventory.isStored == true)
-            {
-                continue;
-            }
-
-            int distX = Mathf.Abs(start.x - tile.x);
-            int distY = Mathf.Abs(start.y - tile.y);
-
-            if (lowestDist > (distX + distY))
-            {
-                closest = tile;
-                lowestDist = distX + distY;
-            }
-        }
-
         if(closest == null)
         {
             return null;
         }
-
-        Inventory inventory = closest.inventory;
-        inventory.isQueried = true;
 
         return closest;
     }

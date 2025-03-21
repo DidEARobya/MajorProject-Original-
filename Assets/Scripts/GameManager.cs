@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Jobs;
 using UnityEngine;
 using UnityEngine.U2D;
 
@@ -115,8 +116,12 @@ public class GameManager : MonoBehaviour
     {
         ObjectManager.Update(Time.deltaTime);
         CharacterManager.Update(Time.deltaTime);
+
+        //JobHandle taskRequestHandle = TaskRequestUpdate();
         TaskRequestHandler.Update();
         PathRequestHandler.Update();
+
+        //taskRequestHandle.Complete();
     }
     public static WorldController GetWorldController()
     {
@@ -153,5 +158,19 @@ public class GameManager : MonoBehaviour
     public static ZoneManager GetZoneManager()
     {
         return instance.zoneManager;
+    }
+
+    private JobHandle TaskRequestUpdate()
+    {
+        TaskRequestUpdateJob job = new TaskRequestUpdateJob();
+        return job.Schedule();
+    }
+}
+
+public struct TaskRequestUpdateJob : IJob
+{
+    public void Execute()
+    {
+        TaskRequestHandler.Update();
     }
 }

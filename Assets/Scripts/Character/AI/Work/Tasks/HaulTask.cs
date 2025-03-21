@@ -8,6 +8,7 @@ public class HaulTask : Task
     Tile storageTile;
 
     Action<Task> gatherCompleteCallback;
+    Action _taskCancelledCallback;
 
     bool isGathering = true;
     bool pathRequested = false;
@@ -17,6 +18,11 @@ public class HaulTask : Task
         storageTile = _storageTile;
         gatherCompleteCallback = _gatherCompleteCallback;
     }
+    public void BindTaskCancelledCallback(Action taskCancelled)
+    {
+        _taskCancelledCallback += taskCancelled;
+    }
+
     public override void InitTask(CharacterController character)
     {
         base.InitTask(character);
@@ -63,6 +69,11 @@ public class HaulTask : Task
     }
     public override void CancelTask(bool isCancelled, bool toIgnore = false)
     {
+        if(_taskCancelledCallback != null)
+        {
+            _taskCancelledCallback();
+        }
+
         if (isCancelled == false)
         {
             storageTile.isPendingTask = false;

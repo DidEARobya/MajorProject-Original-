@@ -33,7 +33,7 @@ public static class CharacterManager
     {
         foreach (CharacterController character in characters)
         {
-            character.ignoredTasks.Clear();
+            character.ignoredTaskSites.Clear();
         }
     }
     public static void DisplayWorkMenu()

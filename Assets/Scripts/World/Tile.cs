@@ -77,6 +77,7 @@ public class Tile : InventoryOwner, INodeData
     public Accessibility accessibility = Accessibility.ACCESSIBLE;
 
     public Task task;
+    public ConstructionSite site;
 
     public bool isPendingTask = false;
 
@@ -210,6 +211,10 @@ public class Tile : InventoryOwner, INodeData
     public InstalledObject GetInstalledObject()
     {
         return installedObject;
+    }
+    public Building GetBuilding()
+    {
+        return installedObject as Building;
     }
     public void InstallObject()
     {

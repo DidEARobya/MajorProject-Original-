@@ -14,7 +14,7 @@ public class BFS_Search
     public BFS_Search()
     {
     }
-    public Region GetClosestRegionWithItem(Region start, bool _isPlayer, bool checkIfStored = false, ItemData item = null)
+    public Region GetClosestRegionWithItem(out Tile destination, Region start, Tile characterLocation, bool _isPlayer, bool checkIfStored = false, ItemData item = null)
     {
         openSet = new Queue<Region>();
         openSet.Enqueue(start);
@@ -35,14 +35,7 @@ public class BFS_Search
             {
                 if (current.GetItemDictSize() > 0)
                 {
-                    if (checkIfStored == true)
-                    {
-                        if (current.ContainsUnstoredItem() == true)
-                        {
-                            return current;
-                        }
-                    }
-                    else
+                    if (current.ContainsItem(out destination, characterLocation, checkIfStored) == true)
                     {
                         return current;
                     }
@@ -52,14 +45,7 @@ public class BFS_Search
             {
                 if (current.Contains(item) > 0)
                 {
-                    if(checkIfStored == true)
-                    {
-                        if(current.ContainsUnstoredItem() == true)
-                        {
-                            return current;
-                        }
-                    }
-                    else
+                    if(current.ContainsItem(out destination, characterLocation, checkIfStored, item) == true)
                     {
                         return current;
                     }
@@ -77,9 +63,10 @@ public class BFS_Search
             }
         }
 
+        destination = null;
         return null;
     }
-    public Region GetClosestRegionWithTask(Region start, bool _isPlayer, TaskType type)
+    public Region GetClosestRegionWithTask(out Tile destination, Region start, CharacterController character, bool _isPlayer, TaskType type)
     {
         openSet = new Queue<Region>();
         openSet.Enqueue(start);
@@ -96,7 +83,7 @@ public class BFS_Search
 
             beenChecked.Add(current);
 
-            if(current.ContainsTask(type) == true)
+            if(current.ContainsTaskSite(out destination, character, type) == true)
             {
                 return current;
             }
@@ -112,6 +99,7 @@ public class BFS_Search
             }
         }
 
+        destination = null;
         return null;
     }
     public Region GetClosestRegionWithStorage(Region start, bool _isPlayer, ItemData type, int amount)

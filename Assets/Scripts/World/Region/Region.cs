@@ -9,6 +9,7 @@ using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 using UnityEngine.UIElements;
 
 public class Region
@@ -467,10 +468,11 @@ public class Region
     {
         return _itemsInRegion.Count;
     }
-    public bool ContainsUnstoredItem(ItemData type = null)
+    public bool ContainsItem(out Tile destination, Tile start, bool checkStored, ItemData type = null)
     {
         if(_itemsInRegion.Count == 0)
         {
+            destination = null;
             return false;
         }
 
@@ -478,42 +480,80 @@ public class Region
         {
             if(_itemsInRegion.ContainsKey(type) == false)
             {
+                destination = null;
                 return false;
             }
         }
 
-        foreach(Tile tile in tiles)
+        Tile closest = null;
+        float lowestDist = Mathf.Infinity;
+
+        foreach (Tile tile in tiles)
         {
-            if(type == null)
+            int distX = Mathf.Abs(start.x - tile.x);
+            int distY = Mathf.Abs(start.y - tile.y);
+
+            if (type == null)
             {
-                if (tile.inventory.item != null && tile.inventory.isQueried == false && tile.inventory.isStored == false)
+                if (tile.inventory.item != null && tile.inventory.isQueried == false)
                 {
-                    return true;
+                    if (checkStored == true && lowestDist > (distX + distY))
+                    {
+                        closest = tile;
+                        lowestDist = distX + distY;
+                    }
+
+                    if (tile.inventory.isStored == false && lowestDist > (distX + distY))
+                    {
+                        closest = tile;
+                        lowestDist = distX + distY;
+                    }
                 }
             }
             else
             {
-                if (tile.inventory.item == type && tile.inventory.isQueried == false && tile.inventory.isStored == false)
+                if (tile.inventory.item == type && tile.inventory.isQueried == false)
                 {
-                    return true;
+
+                    if (checkStored == true)
+                    {
+                        closest = tile;
+                        lowestDist = distX + distY;
+                    }
+
+                    if (tile.inventory.isStored == false)
+                    {
+                        closest = tile;
+                        lowestDist = distX + distY;
+                    }
                 }
             }
         }
 
+        if(closest != null)
+        {
+            destination = closest;
+            destination.inventory.isQueried = true;
+            return true;
+        }
+
+        destination = null;
         return false;
     }
-    public bool ContainsTask(TaskType type)
+    public bool ContainsTaskSite(out Tile destination, CharacterController character, TaskType type)
     {
         foreach (Tile tile in searchTiles)
         {
-            if(tile.task == null || tile.task.taskType != type || tile.task.worker != null)
+            if(tile.site == null || character.ignoredTaskSites.Contains(tile.site) || tile.site.IsWorkable() == false)
             {
                 continue;
             }
 
+            destination = tile;
             return true;
         }
 
+        destination = null;
         return false;
     }
     public Task GetClosestTask(TaskType type, Tile start)

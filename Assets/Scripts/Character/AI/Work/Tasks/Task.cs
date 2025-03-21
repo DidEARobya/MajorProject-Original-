@@ -72,7 +72,7 @@ public class Task
         {
             if(isCancelled == true && toIgnore == true)
             {
-                worker.ignoredTasks.Add(this);
+               // worker.ignoredTasks.Add(this);
             }
 
             worker.CancelTask(this);
@@ -81,11 +81,11 @@ public class Task
 
         if (isCancelled == true)
         {
-            GameManager.GetTaskManager().AddTask(this, taskType);
+            //GameManager.GetTaskManager().AddTask(this, taskType);
             return;
         }
 
-        GameManager.GetTaskManager().RemoveTask(this, taskType);
+        //GameManager.GetTaskManager().RemoveTaskSite(this, taskType);
 
         tile.isPendingTask = false;
         tile.task = null;
