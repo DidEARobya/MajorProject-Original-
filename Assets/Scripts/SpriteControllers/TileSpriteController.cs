@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.U2D;
+using UnityEngine.WSA;
 
 public class TileSpriteController : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class TileSpriteController : MonoBehaviour
     public GameObject zoneParent;
     public GameObject selectedParent;
     public GameObject regionParent;
+    public GameObject taskFloorObject;
 
     WorldController worldController;
     public void AssignAtlas()
@@ -160,5 +162,10 @@ public class TileSpriteController : MonoBehaviour
         Color colour = tileData.regionColour;
         colour.a = 0.1f;
         selectedRenderer.color = colour;
+    }
+
+    public Sprite GetFloorSprite(FloorType type)
+    {
+        return floorSprites.GetSprite(type.ToString());
     }
 }

@@ -7,11 +7,14 @@ using UnityEngine;
 public class BuildingData
 {
     public string name;
-    public FurnitureType type;
-    public int durability;
-    public float constructionTime;
+    public BuildingType type;
     public Accessibility baseAccessibility;
-    public bool hasRelativeRotation;
+    public int width;
+    public int height;
+    public int durability;
+    public int movementCost;
+    public bool canRotate;
+    public float constructionTime;
     public List<ItemType> requirementsItems;
     public List<int> requirementsAmounts;
 

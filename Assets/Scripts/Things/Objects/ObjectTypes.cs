@@ -9,12 +9,18 @@ using UnityEngine;
 using UnityEngine.TextCore.Text;
 
 [JsonConverter(typeof(StringEnumConverter))]
-public enum FurnitureType
+public enum BuildingType
 {
     [EnumMember(Value = "WALL")]
     WALL,
     [EnumMember(Value = "DOOR")]
-    DOOR
+    DOOR,
+    [EnumMember(Value = "FLOOR")]
+    FLOOR,
+    [EnumMember(Value = "BED")]
+    BED,
+    [EnumMember(Value = "TABLE")]
+    TABLE
 }
 [JsonConverter(typeof(StringEnumConverter))]
 public enum OreType

@@ -398,7 +398,7 @@ public class Region
     {
         switch(obj.type)
         {
-            case InstalledObjectType.FURNITURE:
+            case InstalledObjectType.BUILDING:
 
                 if (_buildingsInRegion.ContainsKey((obj as Building)._data) == false)
                 {

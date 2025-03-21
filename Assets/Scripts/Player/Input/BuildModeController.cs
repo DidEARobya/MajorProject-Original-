@@ -28,22 +28,27 @@ public class BuildModeController : MonoBehaviour
     {
         grid = GameManager.GetWorldGrid();
     }
-    public void Build(HashSet<Tile> tiles, BuildMode mode, string toBuild = "")
+    public void Build(HashSet<Tile> tiles, BuildMode mode, Direction rotation, string toBuild = "")
     {
         foreach (Tile tile in tiles)
         {
             Task task;
 
-            if (tile != null && toBuild != null && tile.GetInstalledObject() == null && tile.isPendingTask == false)
+            if (Utility.IsValidTile(tile) /*tile != null && toBuild != null && tile.GetInstalledObject() == null && tile.isPendingTask == false*/)
             {
                 if(GameManager.instance.devMode == true)
                 {
-                    ObjectManager.InstallBuilding(toBuild, tile, true);
+                    ObjectManager.InstallBuilding(toBuild, tile, true, rotation);
                     continue;
                 }
 
-                ObjectManager.InstallBuilding(toBuild, tile, false);
+                ObjectManager.InstallBuilding(toBuild, tile, false, rotation);
                 InstalledObject obj = tile.GetInstalledObject();
+
+                if(obj == null)
+                {
+                    return;
+                }
 
                 task = new RequirementTask(tile, (t) => { obj.Install(); }, TaskType.CONSTRUCTION, ThingsDataHandler.GetBuildingData(toBuild).GetRequirements(), false);
                 GameManager.GetTaskManager().AddTask(task, task.taskType);
@@ -56,7 +61,7 @@ public class BuildModeController : MonoBehaviour
         {
             Task task;
 
-            if (tile.IsObjectInstalled() == true && tile.installedObject.type == InstalledObjectType.FURNITURE)
+            if (tile.IsObjectInstalled() == true && tile.installedObject.type == InstalledObjectType.BUILDING)
             {
                 if (GameManager.instance.devMode == true)
                 {

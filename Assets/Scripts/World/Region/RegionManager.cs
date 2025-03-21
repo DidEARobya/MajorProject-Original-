@@ -91,7 +91,7 @@ public class RegionManager
 
         return _clusters[x, y];
     }
-    public void UpdateCluster(Cluster cluster, Tile updatedTile)
+    public void UpdateCluster(Cluster cluster, Tile updatedTile, bool checkDiagonals)
     {
         if (_hasGenerated == false)
         {
@@ -102,9 +102,20 @@ public class RegionManager
 
         if(updatedTile != null)
         {
-            foreach(Tile tile in updatedTile.GetAdjacentNeigbours())
+            List<Tile> toCheck = new List<Tile>();
+
+            if(checkDiagonals == true)
             {
-                if(tile.region == null || tile.region._inCluster == cluster)
+                toCheck = updatedTile.GetNeighboursDict().Keys.ToList();
+            }
+            else
+            {
+                toCheck = updatedTile.GetAdjacentNeigbours();
+            }
+
+            foreach(Tile tile in toCheck)
+            {
+                if(tile.region != null && tile.region._inCluster == cluster)
                 {
                     continue;
                 }
@@ -131,6 +142,14 @@ public class RegionManager
         UpdateClusterAt(x - 1, y);
         UpdateClusterAt(x + 1, y);
         UpdateClusterAt(x, y - 1);
+
+        if(checkDiagonals == true)
+        {
+            UpdateClusterAt(x + 1, y + 1);
+            UpdateClusterAt(x + 1, y - 1);
+            UpdateClusterAt(x - 1, y - 1);
+            UpdateClusterAt(x - 1, y + 1);
+        }
     }
     void UpdateClusterAt(int x, int y)
     {

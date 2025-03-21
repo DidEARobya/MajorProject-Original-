@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Runtime.Serialization;
+using Unity.VisualScripting.Antlr3.Runtime.Tree;
+using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 
 [JsonConverter(typeof(StringEnumConverter))]
 public enum TerrainType
@@ -57,8 +59,11 @@ public class Tile : InventoryOwner, INodeData
     public TerrainType terrainType = TerrainType.GOOD_SOIL;
     public FloorType floorType = FloorType.NONE;
 
-    public InstalledObject installedObject;
-
+    public InstalledObject installedObject
+    {
+        get;
+        private set;
+    }
     public Inventory inventory;
 
     public WorldGrid world;
@@ -84,6 +89,8 @@ public class Tile : InventoryOwner, INodeData
     public Color regionColour;
     public bool displayRegion = false;
     public GameObject regionDisplayObj = null;
+
+    public GameObject taskDisplayObject = null;
     public Tile(WorldGrid grid, int _x, int _y, float noiseVal = 0) : base (InventoryOwnerType.TILE)
     {
         world = grid;
@@ -95,7 +102,6 @@ public class Tile : InventoryOwner, INodeData
 
         InventoryManager.CreateNewInventory(InventoryOwnerType.TILE, this);
     }
-
     public void SetNeighbours()
     {
         int length = world.mapSize;
@@ -184,7 +190,7 @@ public class Tile : InventoryOwner, INodeData
             tileChangedCallback(this);
         }
     }
-    public bool InstallObject(InstalledObject obj)
+    public bool PlaceObject(InstalledObject obj)
     {
         if (obj == null)
         {
@@ -205,6 +211,20 @@ public class Tile : InventoryOwner, INodeData
     {
         return installedObject;
     }
+    public void InstallObject()
+    {
+        if (installedObject == null)
+        {
+            return;
+        }
+
+        accessibility = installedObject.GetAccessibility();
+
+        if (accessibility == Accessibility.IMPASSABLE && zone != null)
+        {
+            zone.RemoveTile(this);
+        }
+    }
     public void UninstallObject()
     {
         if(installedObject == null)
@@ -213,7 +233,9 @@ public class Tile : InventoryOwner, INodeData
         }
 
         installedObject.UnInstall();
-
+    }
+    public void ClearInstalledObject()
+    {
         installedObject = null;
         accessibility = Accessibility.ACCESSIBLE;
     }

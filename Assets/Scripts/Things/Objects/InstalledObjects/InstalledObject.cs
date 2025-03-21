@@ -6,7 +6,7 @@ using UnityEngine;
 
 public enum InstalledObjectType
 {
-    FURNITURE,
+    BUILDING,
     ORE,
     PLANT
 }
@@ -23,7 +23,7 @@ public class InstalledObject
 
     public float durability;
     public bool isInstalled = false;
-    public bool hasRelativeRotation = false;
+    public bool canRotate = false;
 
     protected Action<InstalledObject> updateObjectCallback;
 
@@ -42,18 +42,25 @@ public class InstalledObject
     public virtual void Install() 
     {
         ObjectManager.AddInstalledObject(this);
-        baseTile.installedObject = this;
     }
     public virtual void UnInstall() 
     {
         ObjectManager.RemoveInstalledObject(this);
-        baseTile.installedObject = null;
+        baseTile.PlaceObject(null);
         baseTile.accessibility = Accessibility.ACCESSIBLE;
     }
     public virtual int GetMovementCost() { return 0; }
     public virtual string GetObjectNameToString()
     {
         return " ";
+    }
+    public virtual string GetObjectSpriteName(bool updateNeighbours)
+    {
+        return GetObjectNameToString();
+    }
+    public virtual Accessibility GetAccessibility()
+    {
+        return Accessibility.ACCESSIBLE;
     }
     public void AddOnActionCallback(Action<InstalledObject, float> callback)
     {

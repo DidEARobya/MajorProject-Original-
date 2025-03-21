@@ -7,17 +7,11 @@ using UnityEngine.UI;
 
 public class StructuresUIObject : UIObject, IButtonClickHandler
 {
-    public enum UIObjectType
-    {
-        WALL,
-        DOOR,
-        FLOOR
-    }
-
     MouseController mouseController;
-    public UIObjectType objectType;
+    public BuildingType objectType;
 
     ItemType itemType;
+    public string additionalInfo;
 
     // Start is called before the first frame update
     void Start()
@@ -28,29 +22,25 @@ public class StructuresUIObject : UIObject, IButtonClickHandler
     }
     public void OnButtonLeftClick()
     {
-        switch(objectType)
+        if(objectType == BuildingType.TABLE)
         {
-            case UIObjectType.WALL:
-            mouseController.SetObject(itemType.ToString() + "_WALL", MouseMode.ROW);
-            break;
-
-           case UIObjectType.DOOR:
-            mouseController.SetObject(itemType.ToString() + "_DOOR", MouseMode.SINGLE);
-            break;
-
-            case UIObjectType.FLOOR:
-
-                switch(itemType)
-                {
-                    case ItemType.WOOD:
-                        mouseController.SetFloor(FloorType.WOOD_FLOOR, MouseMode.AREA);
-                        break;
-                    case ItemType.STONE:
-                        mouseController.SetFloor(FloorType.STONE_FLOOR, MouseMode.AREA);
-                        break;
-                }
-
-            break;
+            mouseController.SetObject(itemType.ToString() + "_" + objectType.ToString() + "_" + additionalInfo, objectType);
+        }
+        else if (objectType == BuildingType.FLOOR)
+        {
+            switch (itemType)
+            {
+                case ItemType.WOOD:
+                    mouseController.SetFloor(FloorType.WOOD_FLOOR);
+                    break;
+                case ItemType.STONE:
+                    mouseController.SetFloor(FloorType.STONE_FLOOR);
+                    break;
+            }
+        }
+        else
+        {
+            mouseController.SetObject(itemType.ToString() + "_" + objectType.ToString(), objectType);
         }
     }
     public override void SetType(ItemType type)
@@ -68,6 +58,13 @@ public class StructuresUIObject : UIObject, IButtonClickHandler
     }
     private void UpdateDisplay()
     {
+        if(objectType == BuildingType.TABLE)
+        {
+            nameText.text = itemType.ToString() + "_" + objectType.ToString() + "_" + additionalInfo;
+            image.sprite = atlas.GetSprite(itemType.ToString() + "_" + objectType.ToString() + "_" + additionalInfo);
+            return;
+        }
+
         nameText.text = itemType.ToString() + " " + objectType.ToString();
         image.sprite = atlas.GetSprite(itemType.ToString() + "_" + objectType.ToString());
     }
