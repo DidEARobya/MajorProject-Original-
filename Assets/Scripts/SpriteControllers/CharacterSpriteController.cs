@@ -7,7 +7,7 @@ using UnityEngine.Rendering;
 public class CharacterSpriteController : MonoBehaviour
 {
     [SerializeField]
-    public Sprite characterSprite;
+    public GameObject characterPrefab;
 
     WorldGrid grid;
     public void Init()
@@ -21,15 +21,11 @@ public class CharacterSpriteController : MonoBehaviour
     }
     public void OnCharacterCreated(CharacterController character)
     {
-        GameObject obj = new GameObject();
+        GameObject obj = Instantiate(characterPrefab);
 
         obj.name = "Character";
         obj.transform.position = new Vector3(character.x, character.y);
         obj.transform.SetParent(this.transform, true);
-
-        SpriteRenderer renderer = obj.AddComponent<SpriteRenderer>();
-        renderer.sprite = characterSprite;
-        renderer.sortingLayerName = "Foreground";
 
         character.SetCharacterObj(obj);
         character.AddCharacterUpdate(OnCharacterUpdate);
@@ -37,6 +33,26 @@ public class CharacterSpriteController : MonoBehaviour
 
     void OnCharacterUpdate(CharacterController character)
     {
-        character.characterObj.transform.position = new Vector2(character.x, character.y);
+        character.characterObj.transform.position = new Vector2(character.x + 0.5f, character.y);
+
+        if (character.nextTile == null)
+        {
+            return;
+        }
+
+        if(character.nextTile.x >= character.x)
+        {
+            if(character.characterObj.transform.rotation != new Quaternion(0, 0, 0, 0))
+            {
+                character.characterObj.transform.rotation = new Quaternion(0, 0, 0, 0);
+            }
+        }
+        else
+        {
+            if (character.characterObj.transform.rotation != new Quaternion(0, 180, 0, 0))
+            {
+                character.characterObj.transform.rotation = new Quaternion(0, 180, 0, 0);
+            }
+        }
     }
 }
