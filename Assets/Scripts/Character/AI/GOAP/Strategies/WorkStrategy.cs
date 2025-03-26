@@ -41,7 +41,7 @@ public class WorkStrategy : IActionStrategy
             return;
         }
 
-        if (character.requestedPath == false && character.pathFinder == null && character.activeTask != null)
+        if (character.activeTask != null && character.activeTask.IsWorkable() == false)
         {
             if (character.activeTask.taskType == TaskType.HAULING)
             {

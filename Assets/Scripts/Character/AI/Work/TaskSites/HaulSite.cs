@@ -1,11 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using UnityEngine;
 
-public class ConstructionSite
+public class HaulSite
 {
     private List<Tile> _tiles;
 
@@ -15,12 +14,11 @@ public class ConstructionSite
     public Dictionary<ItemData, int> _expectedRequirements;
     private Dictionary<ItemData, int> _storedRequirements;
 
-    private Action<Task> _constructionCompleteCallback;
+    private Action<Task> _haulCompleteCallback;
 
     public List<Task> _activeTasks;
-    public ConstructionTask _constructionTask;
-    public ConstructionSite(List<Tile> tiles, BuildingData data, Action<Task> constructionCompleteCallback)
-    { 
+    public HaulSite(List<Tile> tiles, Dictionary<ItemData, int> requirements, Action<Task> haulCompleteCallback)
+    {
         _tiles = tiles;
 
         foreach (Tile tile in _tiles)
@@ -28,23 +26,18 @@ public class ConstructionSite
             tile.site = this;
         }
 
-        _data = data;
-        _constructionCompleteCallback = constructionCompleteCallback;
-        _requirements = _data.GetRequirements();
+        _haulCompleteCallback = haulCompleteCallback;
+        _requirements = requirements;
         _expectedRequirements = new Dictionary<ItemData, int>();
         _storedRequirements = new Dictionary<ItemData, int>();
         _activeTasks = new List<Task>();
-
-        _constructionTask = new ConstructionTask(_tiles[0], (t) => { CompleteTaskSite(); }, TaskType.CONSTRUCTION, false, _data.constructionTime);
-        _constructionTask.BindTaskCancelledCallback(() => {  _activeTasks.Add(_constructionTask); });
-        _activeTasks.Add(_constructionTask);
     }
     void CompleteTaskSite()
     {
         Debug.Log("COMPLETE");
-        if (_constructionCompleteCallback != null)
+        if (_haulCompleteCallback != null)
         {
-            _constructionCompleteCallback(null);
+            _haulCompleteCallback(null);
         }
 
         foreach (Task t in _activeTasks)
@@ -61,7 +54,7 @@ public class ConstructionSite
     }
     public void CancelConstruction()
     {
-        foreach(Task task in _activeTasks)
+        foreach (Task task in _activeTasks)
         {
             task.CancelTask(false);
         }
@@ -88,13 +81,13 @@ public class ConstructionSite
     }
     public Task GetTask(CharacterController worker)
     {
-        if(IsWorkable() == false)
+        if (IsWorkable() == false)
         {
             Debug.Log("Not workable");
             return null;
         }
 
-        if(IsRequirementsFulfilled() == true)
+        if (IsRequirementsFulfilled() == true)
         {
             _activeTasks.Remove(_constructionTask);
             return _constructionTask;
@@ -136,8 +129,8 @@ public class ConstructionSite
             }
         }
 
-        if(task == null)
-        {                
+        if (task == null)
+        {
             return null;
         }
 

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 
 public class GOAP_Sensor
@@ -21,17 +22,16 @@ public class GOAP_Sensor
 
     public void Update(float deltaTime)
     {
-        timer += deltaTime;
-
-        if(character.activeTask != null || character.taskList.Count != 0)
+        if (character.activeTask == null && character.taskList.Count == 0)
         {
-            return;
-        }
+            timer += deltaTime;
 
-        if(timer > scanInterval)
-        {
-            TaskRequestHandler.RequestTask(character);
-            timer = 0.0f;
+            if (timer > scanInterval)
+            {
+
+                TaskRequestHandler.RequestTask(character);
+                timer = 0.0f;
+            }
         }
     }
 }

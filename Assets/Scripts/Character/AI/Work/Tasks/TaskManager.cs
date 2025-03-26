@@ -76,7 +76,6 @@ public class TaskManager
 
         if(taskAvailable == false)
         {
-            Debug.Log("Task Ignored");
             return null;    
         }
 
@@ -86,7 +85,6 @@ public class TaskManager
         {
             foreach(ConstructionSite t in taskLists[type])
             {
-                Debug.Log("Task Ignored");
                 character.ignoredTaskSites.Add(t);
             }
 
@@ -97,14 +95,8 @@ public class TaskManager
 
         if (task == null)
         {
-            Debug.Log("GetTask null");
             character.ignoredTaskSites.Add(site);
             return null;
-        }
-
-        if(site.IsWorkable() == false)
-        {
-            taskLists[type].Remove(site);
         }
 
         return task;

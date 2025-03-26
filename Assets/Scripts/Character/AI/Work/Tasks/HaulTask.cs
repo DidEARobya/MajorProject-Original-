@@ -13,7 +13,7 @@ public class HaulTask : Task
     bool isGathering = true;
     bool pathRequested = false;
 
-    public HaulTask(Tile _tile, Action<Task> _taskCompleteCallback, Tile _storageTile, Action<Task> _gatherCompleteCallback, TaskType _type, bool _isFloor = false, float _taskTime = 1, RequirementTask _task = null) : base(_tile, _taskCompleteCallback, _type, _isFloor, _taskTime)
+    public HaulTask(Tile _tile, Action<Task> _taskCompleteCallback, Tile _storageTile, Action<Task> _gatherCompleteCallback, TaskType _type, bool _isFloor = false, float _taskTime = 1) : base(_tile, _taskCompleteCallback, _type, _isFloor, _taskTime)
     {
         storageTile = _storageTile;
         gatherCompleteCallback = _gatherCompleteCallback;
@@ -69,7 +69,8 @@ public class HaulTask : Task
     }
     public override void CancelTask(bool isCancelled, bool toIgnore = false)
     {
-        if(_taskCancelledCallback != null)
+        Debug.Log("HAUL CANCELLED");
+        if (_taskCancelledCallback != null)
         {
             _taskCancelledCallback();
         }

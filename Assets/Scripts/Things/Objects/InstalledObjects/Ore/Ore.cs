@@ -57,7 +57,7 @@ public class Ore : InstalledObject
     }
     public void QueueMiningTask()
     {
-        Task task = new MineTask(baseTile, (t) => { baseTile.UninstallObject(); }, TaskType.MINING, false, baseTile.GetInstalledObject().durability);
+        //Task task = new MineTask(baseTile, (t) => { baseTile.UninstallObject(); }, TaskType.MINING, false, baseTile.GetInstalledObject().durability);
         //GameManager.GetTaskManager().AddTask(task, task.taskType);
     }
     public override string GetObjectNameToString()

@@ -34,31 +34,36 @@ public class TaskRequestHandler
     {
         //lock (requestCompleteLock)
         //{
-            if (requests.Count == 0)
-            {
-                return;
-            }
+        //}
 
-            isHandlingRequest = true;
+        if (requests.Count == 0)
+        {
+            return;
+        }
 
-            CharacterController request = requests.Dequeue();
+        isHandlingRequest = true;
 
-            if (request == null)
-            {
+        CharacterController request = requests.Dequeue();
 
-                isHandlingRequest = false;
-                return;
-            }
+        if (request == null)
+        {
 
-            Task task = request.priorityDict.GetTask();
-
-            if (task != null)
-            {
-                task.worker = request;
-                request.taskList.Add(task);
-            }
-            request.requestedTask = false;
             isHandlingRequest = false;
-       //}
+            return;
+        }
+
+        Task task = request.priorityDict.GetTask();
+
+        if (task != null)
+        {
+            task.worker = request;
+            request.taskList.Add(task);
+        }
+        else
+        {
+            //Debug.Log("NULL");
+        }
+        request.requestedTask = false;
+        isHandlingRequest = false;
     }
 }

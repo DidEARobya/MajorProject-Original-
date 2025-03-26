@@ -72,7 +72,7 @@ public class BuildModeController : MonoBehaviour
                     continue;
                 }
 
-                task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.CONSTRUCTION, false, tile.installedObject.durability);
+                //task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.CONSTRUCTION, false, tile.installedObject.durability);
                 //GameManager.GetTaskManager().AddTask(task, task.taskType);
             }
         }
@@ -91,7 +91,7 @@ public class BuildModeController : MonoBehaviour
                     continue;
                 }
 
-                task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.MINING, false, tile.installedObject.durability);
+                //task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.MINING, false, tile.installedObject.durability);
                 //GameManager.GetTaskManager().AddTask(task, task.taskType);
             }
         }
@@ -110,7 +110,7 @@ public class BuildModeController : MonoBehaviour
                     continue;
                 }
 
-                task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.AGRICULTURE, false, tile.installedObject.durability);
+                //task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.AGRICULTURE, false, tile.installedObject.durability);
                 //GameManager.GetTaskManager().AddTask(task, task.taskType);
             }
         }
@@ -129,7 +129,7 @@ public class BuildModeController : MonoBehaviour
                     continue;
                 }
 
-                task = new RequirementTask(tile, (t) => { tile.SetFloorType(floorType); }, TaskType.CONSTRUCTION, ThingsDataHandler.GetFloorData(floorType).GetRequirements(), true, 0.3f);
+                //task = new RequirementTask(tile, (t) => { tile.SetFloorType(floorType); }, TaskType.CONSTRUCTION, ThingsDataHandler.GetFloorData(floorType).GetRequirements(), true, 0.3f);
                 //GameManager.GetTaskManager().AddTask(task, task.taskType);
             }
         }
@@ -151,7 +151,7 @@ public class BuildModeController : MonoBehaviour
 
             Task task;
 
-            task = new DestroyTask(tile, (t) => { tile.SetFloorType(FloorType.NONE); }, TaskType.CONSTRUCTION, true, 50);
+            //task = new DestroyTask(tile, (t) => { tile.SetFloorType(FloorType.NONE); }, TaskType.CONSTRUCTION, true, 50);
             //GameManager.GetTaskManager().AddTask(task, task.taskType);
         }
     }

@@ -90,4 +90,19 @@ public class Task
         tile.isPendingTask = false;
         tile.task = null;
     }
+
+    public virtual void EndTask()
+    {
+
+    }
+
+    public bool IsWorkable()
+    {
+        if(worker == null || (worker.currentTile.IsNeighbour(tile) == false && worker.requestedPath == false && worker.pathFinder == null))
+        {
+            return false;
+        }
+
+        return true;
+    }
 }

@@ -182,6 +182,7 @@ public class CharacterController : InventoryOwner
     }
     public void SetDestination(Tile tile)
     {
+        nextTile = currentTile;
         destinationTile = tile;
     }
     public void AddCharacterUpdate(Action<CharacterController> callback)

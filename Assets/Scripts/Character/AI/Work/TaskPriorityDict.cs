@@ -40,7 +40,6 @@ public class TaskPriorityDict
     public Task GetTask()
     {
         Task t = CheckForTask(PriorityLevel.ONE);
-
         return t;
 
         var length = Enum.GetNames(typeof(TaskType)).Length;
