@@ -14,6 +14,14 @@ public class PathRequestHandler
 
     public static void RequestPath(CharacterController character, Tile destination, bool acceptNeighbours)
     {
+        //Temporary solution to correct stuck characters
+        if(character.currentTile.accessibility == Accessibility.IMPASSABLE)
+        {
+            Tile tile = character.currentTile.GetNearestAvailableTile();
+            character.currentTile = tile;
+            Debug.Log("CHARACTER STUCK");
+        }
+
         PathRequest request = new PathRequest(character, destination, acceptNeighbours);  
         
         if (requests.Contains(request))

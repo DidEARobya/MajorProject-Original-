@@ -1,96 +1,80 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
-public class HaulSite
+public class HaulSite : TaskSite
 {
-    private List<Tile> _tiles;
-
-    private BuildingData _data;
-
     public Dictionary<ItemData, int> _requirements;
-    public Dictionary<ItemData, int> _expectedRequirements;
     private Dictionary<ItemData, int> _storedRequirements;
 
-    private Action<Task> _haulCompleteCallback;
-
-    public List<Task> _activeTasks;
-    public HaulSite(List<Tile> tiles, Dictionary<ItemData, int> requirements, Action<Task> haulCompleteCallback)
+    public HaulSite(List<Tile> tiles, Dictionary<ItemData, int> requirements, Action haulCompleteCallback)
     {
-        _tiles = tiles;
+        siteTiles = tiles;
 
-        foreach (Tile tile in _tiles)
+        foreach (Tile tile in siteTiles)
         {
             tile.site = this;
         }
 
-        _haulCompleteCallback = haulCompleteCallback;
-        _requirements = requirements;
-        _expectedRequirements = new Dictionary<ItemData, int>();
-        _storedRequirements = new Dictionary<ItemData, int>();
-        _activeTasks = new List<Task>();
-    }
-    void CompleteTaskSite()
-    {
-        Debug.Log("COMPLETE");
-        if (_haulCompleteCallback != null)
-        {
-            _haulCompleteCallback(null);
-        }
+        canHaveMultipleWorkers = true;
 
-        foreach (Task t in _activeTasks)
+        siteCompleteCallback += haulCompleteCallback;
+
+        _requirements = requirements;
+        _storedRequirements = new Dictionary<ItemData, int>();
+        activeTasks = new List<Task>();
+
+        GameManager.GetTaskManager().AddTaskSite(this, TaskType.HAULING);
+    }
+    protected override void CompleteTaskSite()
+    {
+        foreach (Task t in activeTasks)
         {
             t.CancelTask(false);
         }
 
-        foreach (Tile tile in _tiles)
+        foreach (Tile tile in siteTiles)
         {
             tile.site = null;
         }
 
-        GameManager.GetTaskManager().RemoveTaskSite(this, TaskType.CONSTRUCTION);
+        GameManager.GetTaskManager().RemoveTaskSite(this, TaskType.HAULING);
+
+        base.CompleteTaskSite();
     }
-    public void CancelConstruction()
+    public void CancelTaskSite()
     {
-        foreach (Task task in _activeTasks)
+        foreach (Task task in activeTasks)
         {
             task.CancelTask(false);
         }
 
-        foreach (Tile tile in _tiles)
+        foreach (Tile tile in siteTiles)
         {
             tile.site = null;
         }
 
-        _tiles[0].UninstallObject();
+        siteTiles[0].UninstallObject();
     }
-    public bool IsWorkable()
+    public override bool IsWorkable()
     {
-        if ((NeedsMaterials() == false && IsRequirementsFulfilled() == false) || _activeTasks.Contains(_constructionTask) == false)
+        if (base.IsWorkable() == false || IsRequirementsFulfilled() == true)
         {
             return false;
         }
 
         return true;
     }
-    public bool NeedsMaterials()
-    {
-        return !(_expectedRequirements.Keys.Count == _requirements.Keys.Count && _expectedRequirements.Keys.All(k => _requirements.ContainsKey(k) && object.Equals(_requirements[k], _expectedRequirements[k])));
-    }
-    public Task GetTask(CharacterController worker)
+    public override Task GetTask(CharacterController worker)
     {
         if (IsWorkable() == false)
         {
             Debug.Log("Not workable");
             return null;
-        }
-
-        if (IsRequirementsFulfilled() == true)
-        {
-            _activeTasks.Remove(_constructionTask);
-            return _constructionTask;
         }
 
         Task task = CreateHaulTask(worker);
@@ -102,90 +86,66 @@ public class HaulSite
 
         foreach (ItemData item in _requirements.Keys)
         {
-            if (_expectedRequirements.ContainsKey(item) == false)
+            if (_storedRequirements.ContainsKey(item) == false)
             {
-                _expectedRequirements.Add(item, 0);
+                _storedRequirements.Add(item, 0);
             }
 
-            if (_expectedRequirements[item] != _requirements[item])
+            if (_storedRequirements[item] == _requirements[item])
             {
-                int remaining = Mathf.Abs(_expectedRequirements[item] - _requirements[item]);
+                continue;
+            }
 
-                task = GameManager.GetTaskManager().CreateHaulToJobSiteTask(this, worker, item, _tiles[0], remaining);
+            int remaining = Mathf.Abs(_storedRequirements[item] - _requirements[item]);
+
+            foreach (Tile tile in siteTiles)
+            {
+                task = GameManager.GetTaskManager().CreateHaulToHaulSiteTask(this, worker, item, tile, remaining);
 
                 if (task != null)
                 {
-                    int adjust = remaining;
+                    int adjust = task.tile.inventory.stackSize;
 
-                    if (remaining > task.tile.inventory.stackSize)
+                    if (adjust > remaining)
                     {
-                        adjust = task.tile.inventory.stackSize;
+                        adjust = remaining;
                     }
 
-                    task.BindTaskCancelledCallback(() => { _expectedRequirements[item] -= adjust; });
-                    _expectedRequirements[item] += adjust;
-                    break;
+                    task.BindTaskCancelledCallback(() => { Debug.Log(_storedRequirements[item]); _storedRequirements[item] -= adjust; Debug.Log(adjust + " : " + _storedRequirements[item]); });
+                    _storedRequirements[item] += adjust;
+
+                    activeTasks.Add(task);
+                    return task;
                 }
             }
         }
 
-        if (task == null)
-        {
-            return null;
-        }
-
-        _activeTasks.Add(task);
-        return task;
+        return null;
     }
     public void StoreMaterials(Task task, CharacterController worker, Inventory inventory)
     {
-        if (_activeTasks.Contains(task) == false)
+        InventoryManager.ClearInventory(inventory);
+
+        if (IsRequirementsFulfilled() == true && activeTasks.Count == 0)
         {
-            Debug.LogError("Construction site recieved task complete from unverified task");
-        }
-        else
-        {
-            _activeTasks.Remove(task);
-        }
-
-        if (inventory.item == null)
-        {
-            return;
-        }
-
-        int amount = inventory.stackSize;
-
-        if (_requirements.ContainsKey(inventory.item) == false)
-        {
-            InventoryManager.DropInventory(worker.inventory, worker.currentTile);
-            return;
-        }
-
-        if (_storedRequirements.ContainsKey(inventory.item) == false)
-        {
-            _storedRequirements.Add(inventory.item, amount);
-            InventoryManager.ClearInventory(inventory);
-
-            return;
-        }
-
-        if (_storedRequirements[inventory.item] + amount > _requirements[inventory.item])
-        {
-            int excess = (_storedRequirements[inventory.item] + amount);
-
-            inventory.stackSize -= amount;
-            _storedRequirements[inventory.item] = _requirements[inventory.item];
-
-            InventoryManager.AddToTileInventory(inventory.item, worker.currentTile, excess);
-        }
-        else
-        {
-            _storedRequirements[inventory.item] += amount;
-            InventoryManager.ClearInventory(inventory);
+            CompleteTaskSite();
         }
     }
     public bool IsRequirementsFulfilled()
     {
-        return _storedRequirements.Keys.Count == _requirements.Keys.Count && _storedRequirements.Keys.All(k => _requirements.ContainsKey(k) && object.Equals(_requirements[k], _storedRequirements[k]));
+        if(_storedRequirements.Count != _requirements.Count)
+        {
+            return false;
+        }
+
+        foreach(ItemData item  in _storedRequirements.Keys)
+        {
+            if (_storedRequirements[item] != _requirements[item])
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

@@ -16,6 +16,7 @@ public class Task
     public CharacterController worker;
 
     protected Action<Task> taskCompleteCallback;
+    protected Action<Task> taskCancelledCallback;
 
     protected bool isFloor;
 
@@ -46,7 +47,14 @@ public class Task
     {
         taskCompleteCallback -= _taskCompleteCallback;
     }
-
+    public void AddTaskCancelledCallback(Action<Task> _taskCancelledCallback)
+    {
+        taskCancelledCallback += _taskCancelledCallback;
+    }
+    public void RemoveTaskCancelledCallback(Action<Task> _taskCancelledCallback)
+    {
+        taskCancelledCallback -= _taskCancelledCallback;
+    }
     public virtual Task CheckTaskRequirements()
     {
         return null;
@@ -68,6 +76,11 @@ public class Task
     }
     public virtual void CancelTask(bool isCancelled, bool toIgnore = false)
     {
+        if(taskCancelledCallback != null)
+        {
+            taskCancelledCallback(this);
+        }
+
         if (worker != null)
         {
             if(isCancelled == true && toIgnore == true)

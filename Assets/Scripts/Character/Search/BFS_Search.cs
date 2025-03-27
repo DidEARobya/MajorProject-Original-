@@ -66,7 +66,7 @@ public class BFS_Search
         destination = null;
         return null;
     }
-    public Region GetClosestRegionWithTask(out Tile destination, Region start, CharacterController character, bool _isPlayer, TaskType type)
+    public Region GetClosestRegionWithTaskSite(out Tile destination, Region start, CharacterController character, bool _isPlayer, TaskType type)
     {
         openSet = new Queue<Region>();
         openSet.Enqueue(start);

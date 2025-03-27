@@ -544,7 +544,7 @@ public class Region
     {
         foreach (Tile tile in searchTiles)
         {
-            if(tile.site == null || character.ignoredTaskSites.Contains(tile.site) || tile.site.IsWorkable() == false)
+            if (tile.site == null || tile.site.GetSiteType() != type || character.ignoredTaskSites.Contains(tile.site) || tile.site.IsWorkable() == false)
             {
                 continue;
             }

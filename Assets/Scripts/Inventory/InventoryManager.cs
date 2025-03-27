@@ -47,7 +47,7 @@ public static class InventoryManager
 
         if(excess != 0)
         {
-            Tile temp = tile.GetNearestAvailableInventory(type, excess);
+            Tile temp = tile.GetNearestAvailableInventory(type, excess, true);
 
             if (temp != null)
             {

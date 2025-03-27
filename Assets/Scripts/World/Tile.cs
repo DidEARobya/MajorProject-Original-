@@ -77,7 +77,8 @@ public class Tile : InventoryOwner, INodeData
     public Accessibility accessibility = Accessibility.ACCESSIBLE;
 
     public Task task;
-    public ConstructionSite site;
+    public TaskSite site;
+    public CharacterController reservedBy;
 
     public bool isPendingTask = false;
 
@@ -309,16 +310,16 @@ public class Tile : InventoryOwner, INodeData
 
         return Accessibility.ACCESSIBLE;
     }
-    public Tile GetNearestAvailableInventory(ItemData type, int amount)
+    public Tile GetNearestAvailableInventory(ItemData type, int amount, bool acceptSelf)
     {
-        if(accessibility != Accessibility.IMPASSABLE && (inventory.item == null || inventory.CanBeStored(type, amount) != 0))
+        if(acceptSelf == true && accessibility != Accessibility.IMPASSABLE && (inventory.item == null || inventory.CanBeStored(type, amount) != 0) && installedObject == null)
         {
-            return this;
+             return this;      
         }
-        
+
         foreach(Tile tile in neighbourTiles.Keys)
         {
-            if(tile.accessibility != Accessibility.IMPASSABLE && (tile.inventory.item == null || tile.inventory.CanBeStored(type, amount) != 0))
+            if(tile.accessibility != Accessibility.IMPASSABLE && (tile.inventory.item == null || tile.inventory.CanBeStored(type, amount) != 0) && tile.installedObject == null)
             {
                 return tile;
             }
@@ -328,7 +329,7 @@ public class Tile : InventoryOwner, INodeData
         {
             foreach(Tile _tile in tile.neighbourTiles.Keys)
             {
-                if (_tile.accessibility != Accessibility.IMPASSABLE && (_tile.inventory.item == null || _tile.inventory.CanBeStored(type, amount) != 0))
+                if (_tile.accessibility != Accessibility.IMPASSABLE && (_tile.inventory.item == null || _tile.inventory.CanBeStored(type, amount) != 0) && _tile.installedObject == null)
                 {
                     return _tile;
                 }

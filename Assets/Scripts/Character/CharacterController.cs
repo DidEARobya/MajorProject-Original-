@@ -34,7 +34,7 @@ public class CharacterController : InventoryOwner
     public Task activeTask;
     public List<Task> taskList = new List<Task>();
 
-    public HashSet<ConstructionSite> ignoredTaskSites = new HashSet<ConstructionSite>(); 
+    public HashSet<TaskSite> ignoredTaskSites = new HashSet<TaskSite>(); 
 
     Action<CharacterController> characterUpdateCallback;
     
@@ -166,6 +166,11 @@ public class CharacterController : InventoryOwner
 
             if (destinationTile == currentTile)
             {
+                if(destinationTile.reservedBy == this)
+                {
+                    destinationTile.reservedBy = null;
+                }
+
                 pathFinder = null;
                 return;
             }
@@ -184,6 +189,7 @@ public class CharacterController : InventoryOwner
     {
         nextTile = currentTile;
         destinationTile = tile;
+        destinationTile.reservedBy = this;
     }
     public void AddCharacterUpdate(Action<CharacterController> callback)
     {
@@ -206,7 +212,7 @@ public class CharacterController : InventoryOwner
     }
     public void EndTask(Task task)
     {
-        if(activeTask == task)
+        if (activeTask == task)
         {
             activeTask = null;
             return;

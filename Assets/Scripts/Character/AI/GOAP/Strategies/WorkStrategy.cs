@@ -43,6 +43,7 @@ public class WorkStrategy : IActionStrategy
 
         if (character.activeTask != null && character.activeTask.IsWorkable() == false)
         {
+            Debug.Log("WORK CANCEL");
             if (character.activeTask.taskType == TaskType.HAULING)
             {
                 character.activeTask.CancelTask(false);
@@ -57,6 +58,7 @@ public class WorkStrategy : IActionStrategy
     {
         if (character.activeTask != null)
         {
+            Debug.Log("WORK CANCEL STOP");
             character.activeTask.CancelTask(true);
         }
 

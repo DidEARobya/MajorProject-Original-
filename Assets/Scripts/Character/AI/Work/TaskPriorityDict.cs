@@ -59,25 +59,18 @@ public class TaskPriorityDict
 
     Task CheckForTask(PriorityLevel level)
     {
-        TaskType ty = TaskType.CONSTRUCTION;
+        TaskType ty = TaskType.HAULING;
 
         Task t = null;
+        t = GameManager.GetTaskManager().GetTask(ty, owner);
 
-        if (ty == TaskType.HAULING)
+        if(t == null)
         {
-            t = GameManager.GetTaskManager().CreateHaulToStorageTask(owner);
-        }
-        else
-        {
+            ty = TaskType.CONSTRUCTION;
             t = GameManager.GetTaskManager().GetTask(ty, owner);
         }
 
-        if (t != null)
-        {
-            return t;
-        }
-
-        return null;
+        return t;
 
         for (int i = 0; i < levelList.Count; i++)
         {

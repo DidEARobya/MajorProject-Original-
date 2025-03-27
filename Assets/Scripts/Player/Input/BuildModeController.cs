@@ -50,8 +50,9 @@ public class BuildModeController : MonoBehaviour
                     return;
                 }
 
-                ConstructionSite site = new ConstructionSite(obj.GetTiles().ToList(), obj._data, (t) => { obj.Install(); });
-                GameManager.GetTaskManager().AddTaskSite(site, TaskType.CONSTRUCTION);
+                BuildingData data = ThingsDataHandler.GetBuildingData(toBuild);
+
+                HaulSite site = new HaulSite(obj.GetTiles().ToList(), data.GetRequirements(), () => { new ConstructionSite(obj.GetTiles().ToList(), data, () => obj.Install()); });
 
                 //task = new RequirementTask(tile, (t) => { obj.Install(); }, TaskType.CONSTRUCTION, ThingsDataHandler.GetBuildingData(toBuild).GetRequirements(), false);
                // GameManager.GetTaskManager().AddTask(task, task.taskType);

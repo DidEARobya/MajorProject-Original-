@@ -32,38 +32,36 @@ public class TaskRequestHandler
     }
     static void ThreadedCompleteRequest()
     {
-        //lock (requestCompleteLock)
-        //{
-        //}
-
-        if (requests.Count == 0)
+        lock (requestCompleteLock)
         {
-            return;
-        }
+            if (requests.Count == 0)
+            {
+                return;
+            }
 
-        isHandlingRequest = true;
+            isHandlingRequest = true;
 
-        CharacterController request = requests.Dequeue();
+            CharacterController request = requests.Dequeue();
 
-        if (request == null)
-        {
+            if (request == null)
+            {
 
+                isHandlingRequest = false;
+                return;
+            }
+
+            Task task = request.priorityDict.GetTask();
+
+            if (task != null)
+            {
+                task.worker = request;
+                request.taskList.Add(task);
+            }
+
+            request.requestedTask = false;
             isHandlingRequest = false;
-            return;
         }
 
-        Task task = request.priorityDict.GetTask();
 
-        if (task != null)
-        {
-            task.worker = request;
-            request.taskList.Add(task);
-        }
-        else
-        {
-            //Debug.Log("NULL");
-        }
-        request.requestedTask = false;
-        isHandlingRequest = false;
     }
 }
