@@ -10,8 +10,6 @@ public class PathRequestHandler
 
     static object requestCompleteLock = new object();
 
-    static bool isHandlingRequest = false;
-
     public static void RequestPath(CharacterController character, Tile destination, bool acceptNeighbours)
     {
         //Temporary solution to correct stuck characters
@@ -35,7 +33,7 @@ public class PathRequestHandler
     }
     public static void Update()
     {
-        if (requests.Count > 0 && isHandlingRequest == false)
+        while (requests.Count > 0)
         {
             ThreadPool.QueueUserWorkItem(delegate { ThreadedCompleteRequest(); });
         }
@@ -49,13 +47,10 @@ public class PathRequestHandler
                 return;
             }
 
-            isHandlingRequest = true;
-
             PathRequest request = requests.Dequeue();
 
             if (request.character == null || request.destination == null)
             {
-                isHandlingRequest = false;
                 return;
             } 
 
@@ -80,14 +75,11 @@ public class PathRequestHandler
             character.SetDestination(path.destination);
             character.pathFinder = path;
             character.requestedPath = false;
-
-            isHandlingRequest = false;
         }
     }
     static void NoValidPath(CharacterController character)
     {
         Debug.Log("No Path");
-        isHandlingRequest = false;
 
         if (character.activeTask != null)
         {
