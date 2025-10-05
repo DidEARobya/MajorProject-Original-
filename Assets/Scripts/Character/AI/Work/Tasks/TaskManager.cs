@@ -16,8 +16,8 @@ public class TaskManager
     {
         _taskSiteList.Add(TaskType.CONSTRUCTION, new HashSet<TaskSite>());
         _taskSiteList.Add(TaskType.HAULING, new HashSet<TaskSite>());
-        //taskLists.Add(TaskType.MINING, new List<Task>());
-        //taskLists.Add(TaskType.AGRICULTURE, new List<Task>());
+        _taskSiteList.Add(TaskType.MINING, new HashSet<TaskSite>());
+        _taskSiteList.Add(TaskType.AGRICULTURE, new HashSet<TaskSite>());
     }
     public void AddTaskSite(TaskSite site, TaskType type)
     {

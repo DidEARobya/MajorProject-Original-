@@ -8,9 +8,28 @@ using UnityEngine.TextCore.Text;
 
 public class ConstructionSite : TaskSite
 {
-    private BuildingData _data;
+    private ConstructionData _data;
 
-    public ConstructionSite(List<Tile> tiles, BuildingData data, Action constructionCompleteCallback)
+    public ConstructionSite(Tile tile, ConstructionData data, Action constructionCompleteCallback)
+    {
+        siteTiles = new List<Tile>();
+        siteTiles.Add(tile);
+
+        foreach (Tile t in siteTiles)
+        {
+            t.site = this;
+        }
+
+        canHaveMultipleWorkers = false;
+
+        _data = data;
+        siteCompleteCallback += constructionCompleteCallback;
+
+        activeTasks = new List<Task>();
+
+        GameManager.GetTaskManager().AddTaskSite(this, TaskType.CONSTRUCTION);
+    }
+    public ConstructionSite(List<Tile> tiles, ConstructionData data, Action constructionCompleteCallback)
     { 
         siteTiles = tiles;
 
@@ -44,7 +63,7 @@ public class ConstructionSite : TaskSite
 
         base.CompleteTaskSite();
     }
-    public void CancelConstruction()
+    public override void CancelTaskSite()
     {
         foreach(Task task in activeTasks)
         {
@@ -56,9 +75,15 @@ public class ConstructionSite : TaskSite
             tile.site = null;
         }
 
-        siteTiles[0].UninstallObject();
+        if(_data.constructionType == ConstructionType.BUILDING)
+        {
+            siteTiles[0].UninstallObject();
+        }
+        else
+        {
+            
+        }
     }
-
     public override Task GetTask(CharacterController worker)
     {
         if(IsWorkable() == false)
@@ -77,7 +102,7 @@ public class ConstructionSite : TaskSite
             }
         }
 
-        Task task = new ConstructionTask(siteTiles[0], (t) => { activeTasks.Remove(t); CompleteTaskSite(); }, TaskType.CONSTRUCTION, false, _data.constructionTime);
+        Task task = new ConstructionTask(siteTiles[0], (t) => { activeTasks.Remove(t); CompleteTaskSite(); }, TaskType.CONSTRUCTION, _data.constructionTime);
         task.AddTaskCancelledCallback((t) => { activeTasks.Remove(t); if (siteWorker == worker) { siteWorker = null; } else { Debug.Log("TRIED REMOVING INVALID WORKER FROM SITE"); } });
         activeTasks.Add(task);
         siteWorker = worker;

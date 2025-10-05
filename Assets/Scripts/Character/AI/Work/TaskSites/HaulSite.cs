@@ -11,6 +11,27 @@ public class HaulSite : TaskSite
     public Dictionary<ItemData, int> _requirements;
     private Dictionary<ItemData, int> _storedRequirements;
 
+    public HaulSite(Tile tile, Dictionary<ItemData, int> requirements, Action haulCompleteCallback)
+    {
+        siteTiles = new List<Tile>();
+        siteTiles.Add(tile);
+
+        foreach (Tile t in siteTiles)
+        {
+            t.site = this;
+        }
+
+        canHaveMultipleWorkers = true;
+
+        siteCompleteCallback += haulCompleteCallback;
+
+        _requirements = requirements;
+        _storedRequirements = new Dictionary<ItemData, int>();
+        activeTasks = new List<Task>();
+
+        GameManager.GetTaskManager().AddTaskSite(this, TaskType.HAULING);
+    }
+
     public HaulSite(List<Tile> tiles, Dictionary<ItemData, int> requirements, Action haulCompleteCallback)
     {
         siteTiles = tiles;

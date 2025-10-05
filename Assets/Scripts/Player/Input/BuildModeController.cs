@@ -32,8 +32,6 @@ public class BuildModeController : MonoBehaviour
     {
         foreach (Tile tile in tiles)
         {
-            //Task task;
-
             if (Utility.IsValidTile(tile) /*tile != null && toBuild != null && tile.GetInstalledObject() == null && tile.isPendingTask == false*/)
             {
                 if(GameManager.instance.devMode == true)
@@ -53,9 +51,6 @@ public class BuildModeController : MonoBehaviour
                 BuildingData data = ThingsDataHandler.GetBuildingData(toBuild);
 
                 HaulSite site = new HaulSite(obj.GetTiles().ToList(), data.GetRequirements(), () => { new ConstructionSite(obj.GetTiles().ToList(), data, () => obj.Install()); });
-
-                //task = new RequirementTask(tile, (t) => { obj.Install(); }, TaskType.CONSTRUCTION, ThingsDataHandler.GetBuildingData(toBuild).GetRequirements(), false);
-               // GameManager.GetTaskManager().AddTask(task, task.taskType);
             }
         }  
     }
@@ -63,9 +58,7 @@ public class BuildModeController : MonoBehaviour
     {
         foreach (Tile tile in tiles)
         {
-            Task task;
-
-            if (tile.IsObjectInstalled() == true && tile.installedObject.type == InstalledObjectType.BUILDING)
+            if (tile.IsObjectInstalled() == true && tile.installedObject.type == InstalledObjectType.BUILDING && tile.site == null)
             {
                 if (GameManager.instance.devMode == true)
                 {
@@ -73,8 +66,7 @@ public class BuildModeController : MonoBehaviour
                     continue;
                 }
 
-                //task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.CONSTRUCTION, false, tile.installedObject.durability);
-                //GameManager.GetTaskManager().AddTask(task, task.taskType);
+                DestructionSite site = new DestructionSite(tile, TaskType.CONSTRUCTION, () => { tile.UninstallObject(); });
             }
         }
     }
@@ -82,8 +74,6 @@ public class BuildModeController : MonoBehaviour
     {
         foreach (Tile tile in tiles)
         {
-            Task task;
-
             if (tile.IsObjectInstalled() == true && tile.installedObject.type == InstalledObjectType.ORE)
             {
                 if (GameManager.instance.devMode == true)
@@ -92,8 +82,7 @@ public class BuildModeController : MonoBehaviour
                     continue;
                 }
 
-                //task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.MINING, false, tile.installedObject.durability);
-                //GameManager.GetTaskManager().AddTask(task, task.taskType);
+                DestructionSite site = new DestructionSite(tile, TaskType.MINING, () => { tile.UninstallObject(); });
             }
         }
     }
@@ -101,8 +90,6 @@ public class BuildModeController : MonoBehaviour
     {
         foreach (Tile tile in tiles)
         {
-            Task task;
-
             if (tile.IsObjectInstalled() == true && tile.installedObject.type == InstalledObjectType.PLANT)
             {
                 if (GameManager.instance.devMode == true)
@@ -111,8 +98,7 @@ public class BuildModeController : MonoBehaviour
                     continue;
                 }
 
-                //task = new DestroyTask(tile, (t) => { tile.UninstallObject(); }, TaskType.AGRICULTURE, false, tile.installedObject.durability);
-                //GameManager.GetTaskManager().AddTask(task, task.taskType);
+                DestructionSite site = new DestructionSite(tile, TaskType.AGRICULTURE, () => { tile.UninstallObject(); });
             }
         }
     }
@@ -120,8 +106,6 @@ public class BuildModeController : MonoBehaviour
     {
         foreach (Tile tile in tiles)
         {
-            Task task;
-
             if (tile != null && tile.IsAccessible() != Accessibility.IMPASSABLE)
             {
                 if (GameManager.instance.devMode == true)
@@ -130,8 +114,8 @@ public class BuildModeController : MonoBehaviour
                     continue;
                 }
 
-                //task = new RequirementTask(tile, (t) => { tile.SetFloorType(floorType); }, TaskType.CONSTRUCTION, ThingsDataHandler.GetFloorData(floorType).GetRequirements(), true, 0.3f);
-                //GameManager.GetTaskManager().AddTask(task, task.taskType);
+                FloorData data = ThingsDataHandler.GetFloorData(floorType);
+                HaulSite site = new HaulSite(tile, data.GetRequirements(), () => { new ConstructionSite(tile, data, () => tile.SetFloorType(floorType)); });
             }
         }
     }
@@ -150,10 +134,7 @@ public class BuildModeController : MonoBehaviour
                 continue;
             }
 
-            Task task;
-
-            //task = new DestroyTask(tile, (t) => { tile.SetFloorType(FloorType.NONE); }, TaskType.CONSTRUCTION, true, 50);
-            //GameManager.GetTaskManager().AddTask(task, task.taskType);
+            DestructionSite site = new DestructionSite(tile, TaskType.CONSTRUCTION, () => { tile.SetFloorType(FloorType.NONE); }, true);
         }
     }
     public void CancelTask(HashSet<Tile> tiles)

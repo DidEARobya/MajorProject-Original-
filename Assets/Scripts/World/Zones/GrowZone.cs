@@ -36,7 +36,7 @@ public class GrowZone : Zone
         {
             if(tile.installedObject == null && tile.isPendingTask == false)
             {
-                Task task = new TendTask(tile, (t) => { ObjectManager.SpawnPlant(toGrow, tile, PlantState.SEED); }, TaskType.AGRICULTURE, false, 5f);
+                Task task = new TendTask(tile, (t) => { ObjectManager.SpawnPlant(toGrow, tile, PlantState.SEED); }, TaskType.AGRICULTURE, 5f);
                 //GameManager.GetTaskManager().AddTask(task, TaskType.AGRICULTURE);
             }
             else

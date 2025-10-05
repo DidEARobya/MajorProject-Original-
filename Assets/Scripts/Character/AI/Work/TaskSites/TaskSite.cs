@@ -36,6 +36,10 @@ public class TaskSite
 
         return false;
     }
+    public virtual void CancelTaskSite()
+    {
+
+    }
     protected virtual void CompleteTaskSite()
     {
         if(siteCompleteCallback != null)

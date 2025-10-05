@@ -18,15 +18,13 @@ public class Task
     protected Action<Task> taskCompleteCallback;
     protected Action<Task> taskCancelledCallback;
 
-    protected bool isFloor;
 
-    public Task (Tile _tile, Action<Task> _taskCompleteCallback, TaskType type, bool _isFloor, float _taskTime = 1)
+    public Task (Tile _tile, Action<Task> _taskCompleteCallback, TaskType type, float _taskTime = 1)
     {
         tile = _tile;
         tile.task = this;
         taskTime = _taskTime;
         taskType = type;
-        isFloor = _isFloor;
 
         if(tile != null)
         {

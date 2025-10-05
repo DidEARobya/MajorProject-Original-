@@ -114,13 +114,22 @@ public class Region
                     continue;
                 }
 
-                float temp = Time.realtimeSinceStartup;
+                if (t2.installedObject != null && t2.IsObjectInstalled() == false)
+                {
+                    Debug.Log("WOW");
+                }
+
                 if (t2.IsObjectInstalled() == true)
                 {
                     //UpdateDict(t2.installedObject);
 
                     if(t2.IsAccessible() == Accessibility.IMPASSABLE)
                     {
+                        if(t2.installedObject.type == InstalledObjectType.BUILDING)
+                        {
+                            Debug.Log("Added impassable to searchtiles");
+                        }
+
                         searchTiles.Add(t2);
                     }
                 }
@@ -591,7 +600,6 @@ public class Region
     {
         return (x << 17) | (y << 5) | (direction << 4) | length;
     }
-
     public void ExtractValuesFromHash(int hash, out int x, out int y, out int direction, out int length)
     {
         x = (hash >> 17) & 0xFFF;

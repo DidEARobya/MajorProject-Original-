@@ -39,8 +39,8 @@ public class TaskPriorityDict
 
     public Task GetTask()
     {
-        Task t = CheckForTask(PriorityLevel.ONE);
-        return t;
+        //Task t = CheckForTask(PriorityLevel.ONE);
+        //return t;
 
         var length = Enum.GetNames(typeof(TaskType)).Length;
 
@@ -59,19 +59,6 @@ public class TaskPriorityDict
 
     Task CheckForTask(PriorityLevel level)
     {
-        TaskType ty = TaskType.HAULING;
-
-        Task t = null;
-        t = GameManager.GetTaskManager().GetTask(ty, owner);
-
-        if(t == null)
-        {
-            ty = TaskType.CONSTRUCTION;
-            t = GameManager.GetTaskManager().GetTask(ty, owner);
-        }
-
-        return t;
-
         for (int i = 0; i < levelList.Count; i++)
         {
             if (levelList[i] != level)
@@ -81,16 +68,7 @@ public class TaskPriorityDict
 
             TaskType type = (TaskType)i;
 
-            Task task = null;
-
-            if(type == TaskType.HAULING)
-            {
-                task = GameManager.GetTaskManager().CreateHaulToStorageTask(owner);
-            }
-            else
-            {
-                task = GameManager.GetTaskManager().GetTask(type, owner);
-            }
+            Task task = GameManager.GetTaskManager().GetTask(type, owner);
 
             if(task != null)
             {

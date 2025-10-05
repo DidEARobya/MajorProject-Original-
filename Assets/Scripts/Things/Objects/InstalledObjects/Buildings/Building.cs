@@ -95,9 +95,9 @@ public class Building : InstalledObject
             tile.InstallObject();
         }
 
-        GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile), baseTile, (_tiles.Count > 1));
-
         isInstalled = true;
+
+        GameManager.GetRegionManager().UpdateCluster(GameManager.GetRegionManager().GetClusterAtTile(baseTile), baseTile, (_tiles.Count > 1));
 
         if (_data.baseAccessibility == Accessibility.DELAYED)
         {
